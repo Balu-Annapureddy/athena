@@ -19,6 +19,7 @@ class EvidenceCandidate:
     candidate_id: CandidateId
     entity_id: str                      # The financial entity (e.g., ticker, indicator name)
     statement: str                      # Objective, threshold-based statement
+    source_category: str                # E.g. 'FINANCIAL_STATEMENT', 'MARKET_DATA', 'MACRO'
     source_fact_ids: List[FactId]
     source_measurement_ids: List[str]   # FormulaId.value strings of DerivedMeasurements used
     rule_name: str

@@ -15,6 +15,7 @@ class TestEvidenceCandidate(unittest.TestCase):
             candidate_id=cid,
             entity_id=entity_id,
             statement=statement,
+            source_category="FINANCIAL_STATEMENT",
             source_fact_ids=[fid],
             source_measurement_ids=["ROE"],
             rule_name="TestRule",
@@ -29,12 +30,13 @@ class TestEvidenceCandidate(unittest.TestCase):
             c.statement = "Modified"
 
     def test_source_lists_are_copied(self) -> None:
-        """Mutating external lists must not affect the frozen candidate."""
+        """Mutating external lists after construction must not alter candidate state."""
         fid = FactId.generate()
         cid = EvidenceCandidate.derive_id("ENT", "R", "1.0", [str(fid)])
         meas = ["ROE"]
         c = EvidenceCandidate(
             candidate_id=cid, entity_id="ENT", statement="S.",
+            source_category="FINANCIAL_STATEMENT",
             source_fact_ids=[fid], source_measurement_ids=meas,
             rule_name="R", rule_version="1.0", policy_version="1.0",
             assembled_at=datetime.now(timezone.utc)

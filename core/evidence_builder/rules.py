@@ -51,6 +51,7 @@ class EvidenceCandidateRule(ABC):
         self,
         entity_id: str,
         statement: str,
+        source_category: str,
         source_fact_ids: list,
         source_measurement_ids: List[str],
         policy: ThresholdPolicy
@@ -66,6 +67,7 @@ class EvidenceCandidateRule(ABC):
             candidate_id=candidate_id,
             entity_id=entity_id,
             statement=statement,
+            source_category=source_category,
             source_fact_ids=list(source_fact_ids),
             source_measurement_ids=list(source_measurement_ids),
             rule_name=self.name,
@@ -103,7 +105,7 @@ class FundamentalCandidateRule(EvidenceCandidateRule):
                 if roe >= policy.min_roe else
                 f"ROE ({roe:.1%}) falls below configured profitability threshold ({policy.min_roe:.1%})."
             )
-            candidates.append(self._make_candidate("FUNDAMENTAL", stmt, all_fact_ids, all_meas_ids, policy))
+            candidates.append(self._make_candidate("FUNDAMENTAL", stmt, "FINANCIAL_STATEMENT", all_fact_ids, all_meas_ids, policy))
 
         if FormulaId.NET_MARGIN in measurements:
             nm = measurements[FormulaId.NET_MARGIN].measurement.value
@@ -112,7 +114,7 @@ class FundamentalCandidateRule(EvidenceCandidateRule):
                 if nm >= policy.min_net_margin else
                 f"Net margin ({nm:.1%}) falls below configured margin threshold ({policy.min_net_margin:.1%})."
             )
-            candidates.append(self._make_candidate("FUNDAMENTAL", stmt, all_fact_ids, all_meas_ids, policy))
+            candidates.append(self._make_candidate("FUNDAMENTAL", stmt, "FINANCIAL_STATEMENT", all_fact_ids, all_meas_ids, policy))
 
         if FormulaId.DEBT_TO_EQUITY in measurements:
             dte = measurements[FormulaId.DEBT_TO_EQUITY].measurement.value
@@ -121,7 +123,7 @@ class FundamentalCandidateRule(EvidenceCandidateRule):
                 if dte <= policy.max_debt_to_equity else
                 f"Debt-to-Equity ({dte:.2f}x) exceeds configured leverage threshold ({policy.max_debt_to_equity:.2f}x)."
             )
-            candidates.append(self._make_candidate("FUNDAMENTAL", stmt, all_fact_ids, all_meas_ids, policy))
+            candidates.append(self._make_candidate("FUNDAMENTAL", stmt, "FINANCIAL_STATEMENT", all_fact_ids, all_meas_ids, policy))
 
         return candidates
 
@@ -148,7 +150,7 @@ class PriceCandidateRule(EvidenceCandidateRule):
             close = fact.value.value
             stmt = f"Closing price observation recorded at {close} (price fact extracted; threshold comparison pending moving average data)."
             candidates.append(
-                self._make_candidate("PRICE", stmt, [fact.id], [], policy)
+                self._make_candidate("PRICE", stmt, "MARKET_DATA", [fact.id], [], policy)
             )
 
         return candidates
@@ -177,7 +179,7 @@ class MacroCandidateRule(EvidenceCandidateRule):
             units = fact.value.units
             stmt = f"Macroeconomic indicator observation recorded at {value}{units}."
             candidates.append(
-                self._make_candidate("MACRO", stmt, [fact.id], [], policy)
+                self._make_candidate("MACRO", stmt, "MACRO", [fact.id], [], policy)
             )
 
         return candidates

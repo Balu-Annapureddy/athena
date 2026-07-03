@@ -7,6 +7,9 @@ from core.evidence.accumulator import EvidenceState, EvidenceRecord, LedgerEntry
 from core.evidence.decay import DecayStrategy, NeverDecay, LinearDecay, ExponentialDecay, QuarterlyDecay
 from core.evidence.agreement import calculate_agreement, calculate_conflict, calculate_coverage, calculate_diversity
 from core.evidence.metrics import calculate_engine_metrics
+from core.evidence.context import EvidenceEvaluationContext
+from core.evidence.evaluator import EvidenceEvaluator
+from core.evidence.engine import EvidenceEngine
 
 __all__ = [
     "EvidenceState",
@@ -23,4 +26,8 @@ __all__ = [
     "calculate_coverage",
     "calculate_diversity",
     "calculate_engine_metrics",
+    "EvidenceEvaluationContext",
+    "EvidenceEvaluator",
+    "EvidenceEngine",
 ]
+

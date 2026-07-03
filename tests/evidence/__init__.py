@@ -1,1 +1,1 @@
-"""Evidence Engine tests package."""
+"""Sprint 8 evidence integration tests package."""
