@@ -120,3 +120,9 @@ class MarketImpactId(DomainId):
 class FactId(DomainId):
     """Identifier for Fact entities."""
     pass
+
+
+@dataclass(frozen=True)
+class CandidateId(DomainId):
+    """Identifier for EvidenceCandidate entities."""
+    pass

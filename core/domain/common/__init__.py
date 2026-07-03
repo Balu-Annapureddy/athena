@@ -18,6 +18,7 @@ from core.domain.common.identifiers import (
     EventId,
     MarketImpactId,
     FactId,
+    CandidateId,
 )
 from core.domain.common.metadata import DomainMetadata
 from core.domain.common.validation import (
@@ -45,6 +46,7 @@ __all__ = [
     "EventId",
     "MarketImpactId",
     "FactId",
+    "CandidateId",
     "DomainMetadata",
     "validate_positive",
     "validate_non_negative",
