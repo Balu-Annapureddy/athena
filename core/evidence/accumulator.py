@@ -3,12 +3,13 @@
 from enum import Enum
 from datetime import datetime, timezone
 from dataclasses import dataclass, field
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from types import MappingProxyType
 from core.domain.common import (
     EvidenceId,
     HypothesisId,
     FactId,
+    CandidateId,
     validate_range,
     validate_non_empty_string,
 )
@@ -41,6 +42,7 @@ class EvidenceRecord:
     expires_at: datetime
     source_category: str  # E.g. 'REGULATORY', 'FINANCIAL_STATEMENT', 'MARKET_DATA', 'NEWS', 'SOCIAL'
     version: int = 1
+    candidate_id: Optional[CandidateId] = None  # Originating EvidenceCandidate — preserves explainability chain
 
     def __post_init__(self) -> None:
         validate_range(self.trust, 0.0, 1.0, "trust")
@@ -99,7 +101,8 @@ class EvidenceAccumulator:
         occurred_at: datetime,
         expires_at: datetime,
         source_category: str,
-        state: EvidenceState = EvidenceState.NEW
+        state: EvidenceState = EvidenceState.NEW,
+        candidate_id: Optional[CandidateId] = None
     ) -> EvidenceRecord:
         """Create or merge new facts into the accumulator, logging the transaction to the ledger."""
         now = datetime.now(timezone.utc)
@@ -125,7 +128,8 @@ class EvidenceAccumulator:
                 occurred_at=existing.occurred_at,
                 expires_at=expires_at,
                 source_category=source_category,
-                version=existing.version + 1
+                version=existing.version + 1,
+                candidate_id=candidate_id or existing.candidate_id
             )
             event_type = "UPDATE"
         else:
@@ -143,7 +147,8 @@ class EvidenceAccumulator:
                 occurred_at=occurred_at,
                 expires_at=expires_at,
                 source_category=source_category,
-                version=1
+                version=1,
+                candidate_id=candidate_id
             )
             event_type = "CREATE"
 
