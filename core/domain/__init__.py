@@ -32,6 +32,7 @@ from core.domain.enums import (
     Timeframe,
     RecommendationAction,
     SignalDirection,
+    ThesisDirection,
     RiskSeverity,
 )
 
@@ -94,6 +95,7 @@ __all__ = [
     "Timeframe",
     "RecommendationAction",
     "SignalDirection",
+    "ThesisDirection",
     "RiskSeverity",
     # Value Objects
     "Candle",

@@ -11,7 +11,7 @@ from core.domain.common import (
     InferenceId,
     validate_non_empty_string
 )
-from core.domain.enums import RecommendationAction
+from core.domain.enums import ThesisDirection
 from core.domain.value_objects import Confidence, RiskAssessment
 
 class InvestmentThesis(BaseEntity):
@@ -24,7 +24,7 @@ class InvestmentThesis(BaseEntity):
         self,
         metadata: DomainMetadata,
         target_security_id: SecurityId,
-        recommendation_action: RecommendationAction,
+        thesis_direction: ThesisDirection,
         confidence: Confidence,
         associated_hypothesis_id: HypothesisId,
         evidence_ids: List[EvidenceId],
@@ -38,7 +38,7 @@ class InvestmentThesis(BaseEntity):
         validate_non_empty_string(str(target_security_id), "target_security_id")
 
         self._target_security_id = target_security_id
-        self._recommendation_action = recommendation_action
+        self._thesis_direction = thesis_direction
         self._confidence = confidence
         self._associated_hypothesis_id = associated_hypothesis_id
         self._evidence_ids = list(evidence_ids)
@@ -54,9 +54,9 @@ class InvestmentThesis(BaseEntity):
         return self._target_security_id
 
     @property
-    def recommendation_action(self) -> RecommendationAction:
-        """The core recommended action (e.g. BUY, SELL, HOLD)."""
-        return self._recommendation_action
+    def thesis_direction(self) -> ThesisDirection:
+        """The directional bias of this investment case (e.g. BULLISH, BEARISH)."""
+        return self._thesis_direction
 
     @property
     def confidence(self) -> Confidence:

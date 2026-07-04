@@ -15,3 +15,11 @@ class SignalDirection(Enum):
     BUY = "BUY"
     SELL = "SELL"
     NEUTRAL = "NEUTRAL"
+
+
+class ThesisDirection(Enum):
+    """Directional bias of an Investment Thesis (independent of execution decisions)."""
+    BULLISH = "BULLISH"
+    BEARISH = "BEARISH"
+    NEUTRAL = "NEUTRAL"
+    MIXED = "MIXED"

@@ -61,8 +61,10 @@ class TestStrategyProfiles(unittest.TestCase):
             metadata=thesis_meta
         )
         
+        from core.domain.enums import ThesisDirection
+
         self.assertEqual(thesis.target_security_id, sec_id)
-        self.assertEqual(thesis.recommendation_action, RecommendationAction.BUY)
+        self.assertEqual(thesis.thesis_direction, ThesisDirection.BULLISH)
         self.assertIn(meta_roe.id, thesis.inference_ids)
         self.assertIn(meta_debt.id, thesis.inference_ids)
         self.assertIn(ev_id, thesis.evidence_ids)

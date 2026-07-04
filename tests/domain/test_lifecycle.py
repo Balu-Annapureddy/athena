@@ -15,7 +15,7 @@ from core.domain.common import (
     SecurityId,
     DomainMetadata,
 )
-from core.domain.enums import RecommendationAction, SignalDirection, RiskSeverity
+from core.domain.enums import RecommendationAction, SignalDirection, ThesisDirection, RiskSeverity
 from core.domain.value_objects import Confidence, RiskAssessment
 from core.domain.entities import (
     Observation,
@@ -119,7 +119,7 @@ class TestReasoningLifecycle(unittest.TestCase):
         thesis = InvestmentThesis(
             metadata=thesis_meta,
             target_security_id=sec_id,
-            recommendation_action=RecommendationAction.BUY,
+            thesis_direction=ThesisDirection.BULLISH,
             confidence=conf,
             associated_hypothesis_id=hyp_id,
             evidence_ids=[ev_id],
