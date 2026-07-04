@@ -5,9 +5,12 @@ from enum import Enum
 class RecommendationAction(Enum):
     """Actions suggested by an Investment Thesis or execution Decision."""
     BUY = "BUY"
-    SELL = "SELL"
+    ADD = "ADD"
     HOLD = "HOLD"
-    NEUTRAL = "NEUTRAL"
+    REDUCE = "REDUCE"
+    SELL = "SELL"
+    WATCHLIST = "WATCHLIST"
+    NO_ACTION = "NO_ACTION"
 
 
 class SignalDirection(Enum):
