@@ -72,10 +72,12 @@ class StrategyProfile:
             "Bear": "Downside limits reached, triggering invalidation rules."
         }
 
+        from core.domain.enums import ThesisDirection
+
         return InvestmentThesis(
             metadata=metadata,
             target_security_id=security_id,
-            recommendation_action=RecommendationAction.BUY,  # Strategy evaluated bullish
+            thesis_direction=ThesisDirection.BULLISH,  # Strategy evaluated bullish
             confidence=confidence,
             associated_hypothesis_id=associated_hypothesis_id,
             evidence_ids=evidence_ids,
