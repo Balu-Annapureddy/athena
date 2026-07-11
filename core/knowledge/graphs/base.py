@@ -16,6 +16,16 @@ class PredicateType(Enum):
     SHIFTS = "SHIFTS"
     MODIFIES = "MODIFIES"
     DERIVES = "DERIVES"
+    
+    # Real-world instance relation predicates
+    CEO_OF = "CEO_OF"
+    SUPPLIER_OF = "SUPPLIER_OF"
+    COMPETITOR_OF = "COMPETITOR_OF"
+    OWNED_BY = "OWNED_BY"
+    OPERATES_IN = "OPERATES_IN"
+    PEER_OF = "PEER_OF"
+    PARTNERS_WITH = "PARTNERS_WITH"
+
 
 
 @dataclass(frozen=True)
