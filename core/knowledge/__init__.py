@@ -17,6 +17,8 @@ from core.knowledge.graphs import (
     EventGraph,
     StrategyGraph,
 )
+from core.knowledge.engine import KnowledgeGraphEngine
+from core.knowledge.loader import KnowledgeLoader
 
 __all__ = [
     "TaxonomyCategory",
@@ -32,4 +34,6 @@ __all__ = [
     "EconomicGraph",
     "EventGraph",
     "StrategyGraph",
+    "KnowledgeGraphEngine",
+    "KnowledgeLoader",
 ]
