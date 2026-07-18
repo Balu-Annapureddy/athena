@@ -22,8 +22,9 @@ class AthenaAPIException(Exception):
 class AthenaClient:
     """Python Client Library communicating with Athena's REST server."""
 
-    def __init__(self, base_url: str = "http://localhost:8080") -> None:
+    def __init__(self, base_url: str = "http://localhost:8080", api_key: Optional[str] = None) -> None:
         self.base_url = base_url.rstrip("/")
+        self.api_key = api_key
         self.knowledge = AthenaClient.KnowledgeNamespace(self)
         self.memory = AthenaClient.MemoryNamespace(self)
         self.explanation = AthenaClient.ExplanationNamespace(self)
@@ -40,9 +41,11 @@ class AthenaClient:
 
         req_data = None
         headers = {}
+        if self.api_key:
+            headers["Authorization"] = f"Bearer {self.api_key}"
         if data is not None:
             req_data = json.dumps(data).encode("utf-8")
-            headers = {"Content-Type": "application/json"}
+            headers["Content-Type"] = "application/json"
 
         req = urllib.request.Request(url, data=req_data, headers=headers, method=method)
 

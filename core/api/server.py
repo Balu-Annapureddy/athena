@@ -56,7 +56,11 @@ class AthenaAPIHandler(BaseHTTPRequestHandler):
 
     def do_GET(self) -> None:
         """Wrap request execution in tracing context and latency metrics timer."""
-        if self.authenticator and not self.authenticator.is_exempt(self.path):
+        if not self.authenticator:
+            self._send_error(500, "UNCONFIGURED_AUTHENTICATOR", "API Authenticator is missing or unconfigured.")
+            return
+
+        if not self.authenticator.is_exempt(self.path):
             if not self.authenticator.authenticate(self.headers):
                 self._send_error(401, "UNAUTHORIZED", "API authentication key is invalid or missing.")
                 return
@@ -165,7 +169,11 @@ class AthenaAPIHandler(BaseHTTPRequestHandler):
 
     def do_POST(self) -> None:
         """Wrap POST execution in tracing context and latency metrics timer."""
-        if self.authenticator and not self.authenticator.is_exempt(self.path):
+        if not self.authenticator:
+            self._send_error(500, "UNCONFIGURED_AUTHENTICATOR", "API Authenticator is missing or unconfigured.")
+            return
+
+        if not self.authenticator.is_exempt(self.path):
             if not self.authenticator.authenticate(self.headers):
                 self._send_error(401, "UNAUTHORIZED", "API authentication key is invalid or missing.")
                 return

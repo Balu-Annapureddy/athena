@@ -1,6 +1,7 @@
 """Unit and Integration tests for the Athena API Layer (Sprint 21)."""
 
 import json
+import os
 import socket
 import threading
 import unittest
@@ -100,6 +101,10 @@ class TestAPILayer(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
+        # Save previous key to avoid collision
+        cls._prev_key = os.environ.get("ATHENA_API_KEY")
+        os.environ["ATHENA_API_KEY"] = "integration-test-key-123"
+
         # Create complete API Service with populated mock databases
         cls.now = datetime.now(timezone.utc)
 
@@ -187,14 +192,20 @@ class TestAPILayer(unittest.TestCase):
         cls.server_thread.daemon = True
         cls.server_thread.start()
 
-        # Instantiate SDK Client pointing to local server
-        cls.client = AthenaClient(f"http://127.0.0.1:{cls.port}")
+        # Instantiate SDK Client pointing to local server with test API key
+        cls.client = AthenaClient(f"http://127.0.0.1:{cls.port}", api_key="integration-test-key-123")
 
     @classmethod
     def tearDownClass(cls) -> None:
         # Stop background thread socket
         cls.server.stop()
         cls.server_thread.join(timeout=1.0)
+
+        # Restore previous env var
+        if cls._prev_key is not None:
+            os.environ["ATHENA_API_KEY"] = cls._prev_key
+        elif "ATHENA_API_KEY" in os.environ:
+            del os.environ["ATHENA_API_KEY"]
 
     def test_version_endpoint(self) -> None:
         info = self.client.version()
