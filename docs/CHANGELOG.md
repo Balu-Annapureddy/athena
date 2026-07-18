@@ -12,5 +12,5 @@
 ## [1.0.0] - 2026-07-18
 ### Added
 - **API Key Authentication**: Secure route protection utilizing constant-time comparison (`hmac.compare_digest`), public path exemptions (`/health`, `/version`), and environment dev bypasses.
-- **GitHub Actions CI/CD Pipeline**: Continuous testing runner executing `unittest discover` suite on main pushes and pull requests.
+- **GitHub Actions CI/CD Pipeline**: Continuous testing runner executing `pytest tests/ -q` on main pushes and pull requests. Switched from `unittest discover`, which silently undercounts tests when duplicate filenames exist across packages (e.g. `test_rules.py` appears in 6 packages — `unittest discover` drops some; `pytest` finds all 257).
 - **Observability Operations Context**: Unified logger, metrics counters, tracing spans, and secret loaders tracking performance down namespaced channels.
