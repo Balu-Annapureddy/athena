@@ -1,5 +1,4 @@
-"""Service Layer orchestrating application business logic separate from transport."""
-
+import time
 import logging
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple
@@ -25,7 +24,8 @@ class AthenaAPIService:
         explanation_engine: Any = None,
         explanation_context: Any = None,
         simulation_runner: Any = None,
-        baseline_simulation_context: Any = None
+        baseline_simulation_context: Any = None,
+        operations: Any = None
     ) -> None:
         self.decision_ledger = decision_ledger
         self.thesis_ledger = thesis_ledger
@@ -37,6 +37,7 @@ class AthenaAPIService:
         self.explanation_context = explanation_context
         self.simulation_runner = simulation_runner
         self.baseline_simulation_context = baseline_simulation_context
+        self.operations = operations
 
     def get_version(self) -> VersionInfo:
         """Fetch version and git revision metadata."""
@@ -49,7 +50,7 @@ class AthenaAPIService:
         )
 
     def get_health(self) -> HealthResponse:
-        """Evaluate status of all underlying subsystems."""
+        """Evaluate status of all underlying subsystems, returning metrics and uptime."""
         # Query components state or mock statuses
         cfg_status = "healthy" if self.config_registry is not None else "degraded"
         kg_status = "healthy" if self.knowledge_graph is not None else "degraded"
@@ -61,6 +62,15 @@ class AthenaAPIService:
         if "degraded" in (cfg_status, kg_status, mem_status, sim_status, exp_status):
             overall = "degraded"
 
+        # Expose summary metrics and uptime
+        metrics_dict = {}
+        uptime = 0.0
+        if self.operations:
+            metrics_dict = self.operations.metrics.get_summary()
+            start_time = getattr(self.operations.metrics, "start_time", None)
+            if start_time:
+                uptime = round(time.time() - start_time, 2)
+
         components = SubsystemHealth(
             configuration=cfg_status,
             knowledge=kg_status,
@@ -68,7 +78,12 @@ class AthenaAPIService:
             simulation=sim_status,
             explanation=exp_status
         )
-        return HealthResponse(status=overall, components=components)
+        return HealthResponse(
+            status=overall,
+            uptime_seconds=uptime,
+            metrics=metrics_dict,
+            components=components
+        )
 
     def get_entity(self, entity_id: str) -> Optional[Dict[str, Any]]:
         """Fetch entity concept detail properties from the Knowledge Graph."""

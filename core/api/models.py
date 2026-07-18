@@ -46,6 +46,8 @@ class SubsystemHealth:
 
 @dataclass(frozen=True)
 class HealthResponse:
-    """Global system health evaluation including individual components."""
+    """Global system health evaluation including individual components and metrics."""
     status: str
+    uptime_seconds: float
+    metrics: Dict[str, Any]
     components: SubsystemHealth
