@@ -10,6 +10,7 @@ from typing import Any, Dict, Optional, Tuple
 
 from core.api.models import APIResponse, APIError
 from core.api.services import AthenaAPIService
+from core.api.auth import APIKeyAuthenticator
 from core.operations import OperationsContext
 
 
@@ -18,6 +19,7 @@ class AthenaAPIHandler(BaseHTTPRequestHandler):
 
     service: Optional[AthenaAPIService] = None
     operations: Optional[OperationsContext] = None
+    authenticator: Optional[APIKeyAuthenticator] = None
 
     def log_message(self, format: str, *args: Any) -> None:
         """Override logging to use Python's logging facility instead of sys.stderr."""
@@ -54,6 +56,11 @@ class AthenaAPIHandler(BaseHTTPRequestHandler):
 
     def do_GET(self) -> None:
         """Wrap request execution in tracing context and latency metrics timer."""
+        if self.authenticator and not self.authenticator.is_exempt(self.path):
+            if not self.authenticator.authenticate(self.headers):
+                self._send_error(401, "UNAUTHORIZED", "API authentication key is invalid or missing.")
+                return
+
         if not self.operations:
             self._do_GET_wrapped()
             return
@@ -158,6 +165,11 @@ class AthenaAPIHandler(BaseHTTPRequestHandler):
 
     def do_POST(self) -> None:
         """Wrap POST execution in tracing context and latency metrics timer."""
+        if self.authenticator and not self.authenticator.is_exempt(self.path):
+            if not self.authenticator.authenticate(self.headers):
+                self._send_error(401, "UNAUTHORIZED", "API authentication key is invalid or missing.")
+                return
+
         if not self.operations:
             self._do_POST_wrapped()
             return
@@ -215,14 +227,16 @@ class AthenaRESTServer:
         self.port = port
         self.service = service
         self.operations = operations or OperationsContext.create_default()
+        self.authenticator = APIKeyAuthenticator(self.operations.secrets)
 
         # Connect operations to service
         self.service.operations = self.operations
 
-        # Define custom handler class injecting the service and operations dependencies
+        # Define custom handler class injecting dependencies
         class CustomAPIHandler(AthenaAPIHandler):
             service = self.service
             operations = self.operations
+            authenticator = self.authenticator
 
         self._server = HTTPServer((self.host, self.port), CustomAPIHandler)
 
