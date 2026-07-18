@@ -204,6 +204,8 @@ class TestAPILayer(unittest.TestCase):
     def test_health_subsystems_report(self) -> None:
         health = self.client.health()
         self.assertEqual(health["status"], "healthy")
+        self.assertTrue(health["uptime_seconds"] >= 0.0)
+        self.assertTrue("requests" in health["metrics"])
         self.assertEqual(health["components"]["knowledge"], "healthy")
         self.assertEqual(health["components"]["memory"], "healthy")
 

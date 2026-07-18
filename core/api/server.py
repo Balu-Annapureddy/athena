@@ -1,6 +1,7 @@
 """Zero-dependency HTTP REST Server using built-in http.server module."""
 
 import json
+import time
 import logging
 import urllib.parse
 from http.server import BaseHTTPRequestHandler, HTTPServer
@@ -9,12 +10,14 @@ from typing import Any, Dict, Optional, Tuple
 
 from core.api.models import APIResponse, APIError
 from core.api.services import AthenaAPIService
+from core.operations import OperationsContext
 
 
 class AthenaAPIHandler(BaseHTTPRequestHandler):
     """HTTP Request Handler routing namespaced API endpoints to the AthenaAPIService."""
 
     service: Optional[AthenaAPIService] = None
+    operations: Optional[OperationsContext] = None
 
     def log_message(self, format: str, *args: Any) -> None:
         """Override logging to use Python's logging facility instead of sys.stderr."""
@@ -50,6 +53,18 @@ class AthenaAPIHandler(BaseHTTPRequestHandler):
         return obj
 
     def do_GET(self) -> None:
+        """Wrap request execution in tracing context and latency metrics timer."""
+        if not self.operations:
+            self._do_GET_wrapped()
+            return
+
+        corr_id = self.headers.get("X-Correlation-ID") or self.headers.get("X-Request-ID")
+        self.operations.metrics.increment_counter("athena.api.requests")
+        with self.operations.tracing(correlation_id=corr_id):
+            with self.operations.metrics.timer("athena.api.requests"):
+                self._do_GET_wrapped()
+
+    def _do_GET_wrapped(self) -> None:
         """Route GET requests based on namespaced resource paths."""
         parsed_url = urllib.parse.urlparse(self.path)
         path = parsed_url.path
@@ -142,6 +157,18 @@ class AthenaAPIHandler(BaseHTTPRequestHandler):
             self._send_error(500, "INTERNAL_SERVER_ERROR", str(e))
 
     def do_POST(self) -> None:
+        """Wrap POST execution in tracing context and latency metrics timer."""
+        if not self.operations:
+            self._do_POST_wrapped()
+            return
+
+        corr_id = self.headers.get("X-Correlation-ID") or self.headers.get("X-Request-ID")
+        self.operations.metrics.increment_counter("athena.api.requests")
+        with self.operations.tracing(correlation_id=corr_id):
+            with self.operations.metrics.timer("athena.api.requests"):
+                self._do_POST_wrapped()
+
+    def _do_POST_wrapped(self) -> None:
         """Route POST requests (like triggering simulations)."""
         parsed_url = urllib.parse.urlparse(self.path)
         path = parsed_url.path
@@ -183,20 +210,26 @@ class AthenaAPIHandler(BaseHTTPRequestHandler):
 class AthenaRESTServer:
     """Wrapper encapsulating startup and execution of the built-in HTTP server."""
 
-    def __init__(self, host: str, port: int, service: AthenaAPIService) -> None:
+    def __init__(self, host: str, port: int, service: AthenaAPIService, operations: Optional[OperationsContext] = None) -> None:
         self.host = host
         self.port = port
         self.service = service
+        self.operations = operations or OperationsContext.create_default()
 
-        # Define custom handler class injecting the service instance dependency
+        # Connect operations to service
+        self.service.operations = self.operations
+
+        # Define custom handler class injecting the service and operations dependencies
         class CustomAPIHandler(AthenaAPIHandler):
             service = self.service
+            operations = self.operations
 
         self._server = HTTPServer((self.host, self.port), CustomAPIHandler)
 
     def start(self) -> None:
         """Start serving REST requests synchronously."""
         logging.info(f"Athena REST Server running at http://{self.host}:{self.port}/")
+        
         try:
             self._server.serve_forever()
         except KeyboardInterrupt:
