@@ -46,9 +46,9 @@ Athena is structured across five major evolutionary phases:
 - **Sprint 15 (Config Repository)**: Unified, snapshotted configuration repository supporting replay integrity. `[COMPLETED]`
 - **Sprint 16 (Data Infrastructure)**: Deterministic, retry-aware scheduler, sliding-window rate limiters, caching, event bus, and adapter. `[COMPLETED]`
 - **Sprint 17 (Knowledge Graph)**: Read-only semantic index segregating slow-evolving taxonomies from dynamic real-world instance relationships (suppliers, competitors, peers). `[COMPLETED]`
-- **Sprint 18 (Memory)**: Temporal facts and event sequence storage. `[UP NEXT]`
-- **Sprint 19 (Explanation Engine)**: Narrative generator for provenance graphs.
-- **Sprint 20 (Simulation)**: Stress testing and multi-scenario impact analysis.
+- **Sprint 18 (Memory)**: Temporal facts and event sequence storage. `[COMPLETED]`
+- **Sprint 19 (Explanation Engine)**: Narrative generator for provenance graphs. `[COMPLETED]`
+- **Sprint 20 (Simulation)**: Stress testing and multi-scenario impact analysis. `[UP NEXT]`
 - **Sprint 21 (APIs)**: Python SDK, CLI, REST/GraphQL interfaces.
 - **Sprint 22 (Operations)**: Production logging, secrets, metrics tracking, and tracing.
 
@@ -63,4 +63,4 @@ Athena enforces a strict testing discipline. The entire suite runs deterministic
 python -m unittest discover -s tests -p "test_*.py" -t . -v
 ```
 
-Total Test Cases: **176 tests** (all green, 100% pass rate).
+Total Test Cases: **191 tests** (all green, 100% pass rate).
