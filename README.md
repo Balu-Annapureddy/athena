@@ -53,7 +53,8 @@ Athena is structured across five major evolutionary phases:
 - **Sprint 22 (Operations)**: Production logging, secrets, metrics tracking, and tracing. `[COMPLETED]`
 
 ### Phase 3: Market Intelligence & Trading (Sprints 23–30) — `IN PROGRESS 🟢`
-- **Sprint 23 (Market Data Engine)**: Live and historical data ingestion connectors. `[UP NEXT]`
+- **Sprint 23 (Data Normalization & Replay)**: Declarative normalization boundary (`INormalizer`, `FieldMapping`, `parse_timestamp`), `PayloadRecorder` JSONL fixture writer, and `ReplayConnector` for deterministic pipeline replay. `[COMPLETED]`
+- **Sprint 24 (Live Provider Connector)**: First real HTTP connector wired against a live market data provider. `[UP NEXT]`
 
 ---
 
@@ -62,8 +63,9 @@ Athena is structured across five major evolutionary phases:
 Athena enforces a strict testing discipline. The entire suite runs deterministically:
 
 ```powershell
-# Run the complete test suite
-python -m unittest discover -s tests -p "test_*.py" -t . -v
+# Run the complete test suite (pytest correctly collects all tests across
+# packages, including files with duplicate basenames like test_rules.py)
+pytest tests/ -q
 ```
 
-Total Test Cases: **214 tests** (all green, 100% pass rate).
+Total Test Cases: **257 tests** (all green, 100% pass rate).
