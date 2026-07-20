@@ -208,7 +208,7 @@ class ProvenanceGraphBuilder:
 
         props = {
             "statement": hyp.statement,
-            "target_entity": hyp.target_entity_id
+            "target_entity": getattr(hyp, "target_entity_id", None) or getattr(hyp, "entity_id", "Unknown")
         }
 
         self._nodes[graph_node_id] = ProvenanceNode(
