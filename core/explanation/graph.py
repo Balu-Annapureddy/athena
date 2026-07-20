@@ -57,6 +57,19 @@ class ProvenanceGraphBuilder:
             "parameters": dict(decision.execution_parameters)
         }
         
+        risk_assessment = getattr(decision, "risk_assessment", None)
+        if risk_assessment:
+            props["risk_assessment"] = {
+                "position_size": risk_assessment.position_size,
+                "stop_loss_price": risk_assessment.stop_loss_price,
+                "risk_per_share": risk_assessment.risk_per_share,
+                "total_risk_amount": risk_assessment.total_risk_amount,
+                "reward_to_risk_ratio": risk_assessment.reward_to_risk_ratio,
+                "is_ratio_flagged": risk_assessment.is_ratio_flagged,
+                "entry_price": risk_assessment.entry_price,
+                "target_price": risk_assessment.target_price
+            }
+        
         self._nodes[graph_node_id] = ProvenanceNode(
             node_id=graph_node_id,
             node_type=ProvenanceNodeType.DECISION,

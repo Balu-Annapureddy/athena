@@ -98,7 +98,11 @@ class BaseStrategy(ABC):
         portfolio: PortfolioState,
         dec_policy: DecisionPolicy,
         dec_ctx: DecisionEvaluationContext,
-        source_obs_id: ObservationId
+        source_obs_id: ObservationId,
+        facts: Optional[List[Fact]] = None,
+        target_price: Optional[float] = None,
+        risk_percent: float = 0.01,
+        atr_multiplier: float = 2.0
     ) -> Optional[Tuple[InvestmentThesis, ThesisRecord, Decision, DecisionRecord]]:
         """Orchestrate standard pipeline creation to materialize thesis/decision records."""
         from datetime import datetime, timezone
@@ -225,12 +229,29 @@ class BaseStrategy(ABC):
             scenarios={}
         )
 
+        # Extract entry price and compute ATR from facts list if available
+        entry_price = None
+        atr_value = None
+        if facts:
+            opens, highs, lows, closes, volumes, obs_ids = self._extract_ohlcv(facts)
+            entry_price = closes[-1] if closes else None
+            from core.intelligence.indicators import atr
+            atr_value = atr(highs, lows, closes)
+
         # 5. Assemble Decision via DecisionAssembler
         dec_assembler = DecisionAssembler(
             builder=DecisionCandidateBuilder(rules=[QualityBuyDecisionRule(), RiskSellDecisionRule()])
         )
         decision_results = dec_assembler.assemble_decisions(
-            thesis_record, portfolio, dec_policy, dec_ctx
+            thesis=thesis_record,
+            portfolio=portfolio,
+            policy=dec_policy,
+            context=dec_ctx,
+            entry_price=entry_price,
+            target_price=target_price,
+            atr_value=atr_value,
+            risk_percent=risk_percent,
+            atr_multiplier=atr_multiplier
         )
 
         if not decision_results:
@@ -238,3 +259,4 @@ class BaseStrategy(ABC):
 
         dec_entity, dec_record = decision_results[0]
         return investment_thesis, thesis_record, dec_entity, dec_record
+

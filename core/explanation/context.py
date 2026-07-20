@@ -54,3 +54,7 @@ class IExplanationContext(ABC):
     def get_temporal_events(self, entity_id: str) -> Tuple[Any, ...]:
         """Fetch all temporal events associated with a concept ID."""
         pass
+
+    def get_risk_assessment(self, decision_id: str) -> Optional[Any]:
+        """Fetch a RiskAssessment associated with the given decision_id."""
+        return None

@@ -81,7 +81,8 @@ class RSIMeanReversionStrategy(BaseStrategy):
                     portfolio=portfolio,
                     dec_policy=dec_policy,
                     dec_ctx=dec_ctx,
-                    source_obs_id=obs_ids[-1]
+                    source_obs_id=obs_ids[-1],
+                    facts=facts
                 )
 
         # Bearish Reversal: RSI > 70 + confirming bearish pattern
@@ -101,7 +102,8 @@ class RSIMeanReversionStrategy(BaseStrategy):
                     portfolio=portfolio,
                     dec_policy=dec_policy,
                     dec_ctx=dec_ctx,
-                    source_obs_id=obs_ids[-1]
+                    source_obs_id=obs_ids[-1],
+                    facts=facts
                 )
 
         return None
