@@ -57,7 +57,8 @@ Athena is structured across five major evolutionary phases:
 - **Sprint 24 (Live Provider Connector)**: First real HTTP connector wired against a live market data provider. `[COMPLETED]`
 - **Sprint 25 (Market Intelligence & Technical Indicators)**: Standard deterministic indicators library (SMA, EMA, RSI, MACD, ATR, BB, typical-price VWAP) and IndicatorEngine. `[COMPLETED]`
 - **Sprint 26 (Pattern Recognition)**: Candlestick and chart pattern detection models. `[COMPLETED]`
-- **Sprint 27 (Strategy Engine)**: Decision execution policies and strategy runners. `[UP NEXT]`
+- **Sprint 27 (Strategy Engine)**: Decision execution policies and strategy runners. `[COMPLETED]`
+- **Sprint 28 (Risk Engine)**: Portfolio risk assessment, stop-loss and position sizing logic. `[UP NEXT]`
 
 ---
 
@@ -71,4 +72,4 @@ Athena enforces a strict testing discipline. The entire suite runs deterministic
 pytest tests/ -q
 ```
 
-Total Test Cases: **347 tests** (all green, 100% pass rate).
+Total Test Cases: **355 tests** (all green, 100% pass rate).

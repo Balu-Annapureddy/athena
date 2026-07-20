@@ -47,7 +47,15 @@ class CompanyId(DomainId):
 @dataclass(frozen=True)
 class SecurityId(DomainId):
     """Identifier for Security entities (such as stock symbols/tickers)."""
-    pass
+
+    @classmethod
+    def from_str(cls, val_str: str) -> "SecurityId":
+        """Create a security identifier from its string representation, falling back to UUIDv5 for tickers."""
+        try:
+            return cls(uuid.UUID(val_str))
+        except ValueError:
+            deterministic_uuid = uuid.uuid5(uuid.NAMESPACE_DNS, val_str)
+            return cls(deterministic_uuid)
 
 
 @dataclass(frozen=True)

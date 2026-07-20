@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.5.0] - 2026-07-20
+### Added
+- **Strategy Engine** (`core/strategy/`): Extensible strategy framework based on pluggable `BaseStrategy` policy classes that orchestrate indicators and pattern facts to produce InvestmentThesis and Decision candidates via the standard reasoning builder pipeline.
+- **Starting Strategy Policies**: Implemented 5 key strategies: Golden Cross / Death Cross (Murphy 1999), RSI Mean Reversion with Candlestick Confirmation (Wilder 1978), MACD Signal Cross (Appel 2005), VWAP Bias (Harris 2003), and Breakout with Volume Confirmation (Pring 2014).
+- **Graceful Security Fallback** (`core/domain/common/identifiers.py`): Enhanced `SecurityId.from_str` to automatically fallback to deterministic UUIDv5 namespace hashes for stock ticker symbols (e.g. `RELIANCE.NS`), keeping string tickers compatible with UUID value objects.
+- **Strategy Test Suite** (`tests/strategy/test_strategy.py`): 8 hand-constructed unit tests checking crossover conditions and bounds for each strategy.
+- **ADR-027**: Documents the named policy design, 5 starter strategy definitions, validation status defaults, and pipeline reuse.
+### Fixed
+- **MACD Lag Correctness** (`core/intelligence/indicators.py`): Resolved an off-by-one index duplication error in the fast EMA catch-up loop where the bar at index `slow - 1` was being double-processed.
+- **Candlestick Constants** (`core/patterns/candlestick.py`): Extracted hardcoded Hammer/Shooting Star shadow and body body-ratio limits (10% and 35%) into named constants (`HAMMER_UPPER_SHADOW_MAX_RATIO` / `HAMMER_BODY_MAX_RATIO`) matching the Doji threshold pattern.
+
 ## [1.4.0] - 2026-07-20
 ### Added
 - **Candlestick Shapes Library** (`core/patterns/candlestick.py`): Pure geometric candlestick shape detection functions (`is_doji`, `is_hammer_shape`, `is_shooting_star_shape`, `is_marubozu`, `is_bullish_engulfing`, `is_bearish_engulfing`). Enforces shadow-to-body limits, body-only engulfment, and exposes the Doji threshold as a named, documented constant (`DOJI_BODY_RATIO_THRESHOLD = 0.05`) citing literature variance.

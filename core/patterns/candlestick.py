@@ -11,6 +11,15 @@ from typing import Dict, Tuple
 # of the total range depending on asset class and volatility).
 DOJI_BODY_RATIO_THRESHOLD = 0.05
 
+# Hammer and Shooting Star threshold constants.
+# These values are common conventions (upper/lower shadow <= 10%, body <= 35% of total range),
+# but sources vary on the exact numbers (e.g., some allow up to 15% shadow or 40% body).
+HAMMER_UPPER_SHADOW_MAX_RATIO = 0.10
+HAMMER_BODY_MAX_RATIO = 0.35
+
+SHOOTING_STAR_LOWER_SHADOW_MAX_RATIO = 0.10
+SHOOTING_STAR_BODY_MAX_RATIO = 0.35
+
 
 def is_doji(open_p: float, high: float, low: float, close: float) -> bool:
     """Detect if a candle is a Doji.
@@ -29,9 +38,9 @@ def is_hammer_shape(open_p: float, high: float, low: float, close: float) -> boo
     """Detect if a candle has a Hammer/Hanging Man geometric shape.
 
     Convention:
-      - Small real body near the top of the range (body <= 35% of total range).
+      - Small real body near the top of the range (body <= HAMMER_BODY_MAX_RATIO).
       - Lower shadow at least 2x the body length.
-      - Negligible upper shadow (upper shadow <= 10% of total range).
+      - Negligible upper shadow (upper shadow <= HAMMER_UPPER_SHADOW_MAX_RATIO).
       - Body must be in the upper half of the range.
 
     This function detects the shape only. The trend context determines whether
@@ -56,8 +65,8 @@ def is_hammer_shape(open_p: float, high: float, low: float, close: float) -> boo
 
     return (
         lower_shadow >= 2.0 * body
-        and (upper_shadow / range_val) <= 0.10
-        and (body / range_val) <= 0.35
+        and (upper_shadow / range_val) <= HAMMER_UPPER_SHADOW_MAX_RATIO
+        and (body / range_val) <= HAMMER_BODY_MAX_RATIO
         and body_low >= (low + range_val * 0.5)
     )
 
@@ -90,8 +99,8 @@ def is_shooting_star_shape(open_p: float, high: float, low: float, close: float)
 
     return (
         upper_shadow >= 2.0 * body
-        and (lower_shadow / range_val) <= 0.10
-        and (body / range_val) <= 0.35
+        and (lower_shadow / range_val) <= SHOOTING_STAR_LOWER_SHADOW_MAX_RATIO
+        and (body / range_val) <= SHOOTING_STAR_BODY_MAX_RATIO
         and body_high <= (high - range_val * 0.5)
     )
 
