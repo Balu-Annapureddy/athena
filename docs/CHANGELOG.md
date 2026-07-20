@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.4.0] - 2026-07-20
+### Added
+- **Candlestick Shapes Library** (`core/patterns/candlestick.py`): Pure geometric candlestick shape detection functions (`is_doji`, `is_hammer_shape`, `is_shooting_star_shape`, `is_marubozu`, `is_bullish_engulfing`, `is_bearish_engulfing`). Enforces shadow-to-body limits, body-only engulfment, and exposes the Doji threshold as a named, documented constant (`DOJI_BODY_RATIO_THRESHOLD = 0.05`) citing literature variance.
+- **Pattern Interpretation Engine** (`core/patterns/engine.py`): Decouples pure shape detection from trend interpretation. Consumes price Facts and trend contexts (e.g. SMA indicator) to emit context-labeled pattern Facts (Hammer vs Hanging Man, Shooting Star vs Inverted Hammer) detailing the specific trend context used for explainability. Also directly detects two-candle and three-candle patterns (Bullish/Bearish Engulfing, Morning/Evening Star).
+- **Pattern FactTypes**: Added new pattern-specific enum values to `FactType` in `core/facts/taxonomy.py`.
+- **Candlestick Test Suite** (`tests/patterns/test_candlestick.py`): 9 hand-constructed unit tests validating exact boundary thresholds (e.g., $1.99\times$ vs $2.0\times$ shadow ratios for hammers, $5.0\%$ vs $5.1\%$ doji thresholds) and engine logic.
+- **ADR-026**: Documents shape/interpretation separation, doji threshold caveat, and engulfing conventions.
+
 ## [1.3.0] - 2026-07-20
 ### Added
 - **Technical Indicators Library** (`core/intelligence/indicators.py`): Pure, deterministic calculations for SMA, EMA, Wilder's Smoothing, RSI (Wilder 1978), MACD (Appel 2005), ATR (Wilder 1978), Bollinger Bands (Bollinger 2001), Momentum (Pring 2014), ROC (Pring 2014), Volume Trend, and typical-price weighted VWAP. Pure math only, zero third-party dependencies.
