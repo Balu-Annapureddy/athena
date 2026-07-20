@@ -75,6 +75,12 @@ def main(args: Optional[List[str]] = None) -> int:
     parsed = parser.parse_args(args)
     client = AthenaClient(base_url=parsed.url)
 
+    # Research disclaimer — emitted on every invocation.
+    print(
+        "Athena | For research and educational purposes only. Not investment advice.",
+        file=sys.stderr
+    )
+
     try:
         if parsed.command == "health":
             _print_json(client.health())

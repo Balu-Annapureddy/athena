@@ -67,6 +67,18 @@ class ExplanationEngine:
 
         lines = ["# Athena Explanation Report", ""]
 
+        # 0. Validation status warning — always emitted for UNVALIDATED strategies
+        #    (which is every strategy until Sprint 29 introduces backtesting).
+        validation_status = "UNVALIDATED"
+        if thesis_node:
+            validation_status = thesis_node.properties.get("validation_status", "UNVALIDATED")
+        if validation_status != "BACKTESTED":
+            lines.append(
+                "> **UNVALIDATED STRATEGY**: This decision was produced by rules that have "
+                "not been through backtesting. Do not use for real trading decisions."
+            )
+            lines.append("")
+
         # 1. Executive Summary
         lines.append("## Executive Summary")
         if decision_node:
@@ -81,8 +93,10 @@ class ExplanationEngine:
             sec = thesis_node.properties.get("target_security", "Unknown")
             bias = thesis_node.properties.get("direction", "Unknown")
             conf = thesis_node.properties.get("confidence_score", 0.0)
+            validation = thesis_node.properties.get("validation_status", "UNVALIDATED")
             lines.append(f"- **Target Asset**: `{sec}`")
             lines.append(f"- **Thesis Direction**: `{bias}` (Confidence Score: `{conf:.2f}`)")
+            lines.append(f"- **Validation Status**: `{validation}`")
         lines.append("")
 
         # 2. Logic & Hypotheses

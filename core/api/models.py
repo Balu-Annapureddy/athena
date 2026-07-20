@@ -32,6 +32,7 @@ class VersionInfo:
     build_date: str
     git_commit: str
     schema_version: str
+    disclaimer: str = "For research and educational purposes only. Not investment advice."
 
 
 @dataclass(frozen=True)
@@ -51,3 +52,4 @@ class HealthResponse:
     uptime_seconds: float
     metrics: Dict[str, Any]
     components: SubsystemHealth
+    disclaimer: str = "For research and educational purposes only. Not investment advice."

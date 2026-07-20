@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from dataclasses import dataclass
 from typing import List, Dict
 from core.domain.common import DecisionId, ThesisId
-from core.domain.enums import RecommendationAction
+from core.domain.enums import RecommendationAction, ValidationStatus
 from core.decision_builder.candidate import DecisionCandidate, DecisionRationale
 from core.decision_builder.policies import DecisionAssessment
 
@@ -33,6 +33,7 @@ class DecisionRecord:
     state: DecisionState
     timestamp: datetime
     version: int = 1
+    validation_status: ValidationStatus = ValidationStatus.UNVALIDATED
 
     def __post_init__(self) -> None:
         pass
