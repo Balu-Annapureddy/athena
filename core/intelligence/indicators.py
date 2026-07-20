@@ -244,8 +244,8 @@ def macd(
     ema_fast  = sum(closes[:fast])  / fast
     ema_slow  = sum(closes[:slow])  / slow
 
-    # Advance ema_fast from index fast to slow-1 (catches up to ema_slow start)
-    for price in closes[fast:slow]:
+    # Advance ema_fast from index fast to slow-2 (catches up to ema_slow start at slow-1)
+    for price in closes[fast:slow - 1]:
         ema_fast = price * k_fast + ema_fast * (1.0 - k_fast)
 
     # Now both EMAs are at position slow-1; build the MACD line series
