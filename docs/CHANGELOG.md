@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.3.0] - 2026-07-20
+### Added
+- **Technical Indicators Library** (`core/intelligence/indicators.py`): Pure, deterministic calculations for SMA, EMA, Wilder's Smoothing, RSI (Wilder 1978), MACD (Appel 2005), ATR (Wilder 1978), Bollinger Bands (Bollinger 2001), Momentum (Pring 2014), ROC (Pring 2014), Volume Trend, and typical-price weighted VWAP. Pure math only, zero third-party dependencies.
+- **IndicatorEngine** (`core/intelligence/engine.py`): Extracts aligned high/low/close/volume price series from chronological Fact lists and computes all indicators, returning new Fact objects mapping to the existing domain models.
+- **ValidationStatus Safety Flag** (`core/domain/enums/validation.py`): Enum (`UNVALIDATED` vs `BACKTESTED`) defaulting to `UNVALIDATED` on `ThesisRecord` and `DecisionRecord`. Surfaces a prominent warning block at the top of the `ExplanationReport` if strategy is unvalidated.
+- **Regulatory Disclaimers**: Added standard research and educational disclaimer to REST API responses (`VersionInfo`, `HealthResponse`) and to the CLI header on execution (`stderr`).
+- **Indicator Test Suite** (`tests/intelligence/test_indicators.py`): 34 hand-calculable test assertions ensuring correct calculations and defaults.
+### Fixed
+- `core/explanation/graph.py`: Swapped the lookup order in `_traverse_hypothesis` to check `entity_id` first and fall back to `target_entity_id`, reducing lookup overhead.
+
 ## [1.2.0] - 2026-07-20
 ### Added
 - **YFinanceNormalizer** (`core/data/normalization/yfinance_provider.py`): Real `INormalizer` implementation mapping yfinance `1.5.1` `.history()` row to canonical `PricePayload`. Field mapping table (`Open/High/Low/Close/Volume` → required; `timeframe` → optional default `"1D"`) determined from actual probe of RELIANCE.NS, INFY.NS, TCS.NS on 2026-07-18.

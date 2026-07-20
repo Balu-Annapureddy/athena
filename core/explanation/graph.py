@@ -91,7 +91,12 @@ class ProvenanceGraphBuilder:
             "direction": direction.name if hasattr(direction, "name") else str(direction),
             "confidence_score": confidence.score if confidence else 0.0,
             "assumptions": list(getattr(thesis, "assumptions", [])),
-            "policy_version": policy_ver
+            "policy_version": policy_ver,
+            "validation_status": (
+                getattr(thesis, "validation_status").name
+                if hasattr(getattr(thesis, "validation_status", None), "name")
+                else str(getattr(thesis, "validation_status", "UNVALIDATED"))
+            ),
         }
 
         self._nodes[graph_node_id] = ProvenanceNode(
@@ -208,7 +213,7 @@ class ProvenanceGraphBuilder:
 
         props = {
             "statement": hyp.statement,
-            "target_entity": getattr(hyp, "target_entity_id", None) or getattr(hyp, "entity_id", "Unknown")
+            "target_entity": getattr(hyp, "entity_id", None) or getattr(hyp, "target_entity_id", "Unknown")
         }
 
         self._nodes[graph_node_id] = ProvenanceNode(

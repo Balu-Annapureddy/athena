@@ -55,7 +55,8 @@ Athena is structured across five major evolutionary phases:
 ### Phase 3: Market Intelligence & Trading (Sprints 23–30) — `IN PROGRESS 🟢`
 - **Sprint 23 (Data Normalization & Replay)**: Declarative normalization boundary (`INormalizer`, `FieldMapping`, `parse_timestamp`), `PayloadRecorder` JSONL fixture writer, and `ReplayConnector` for deterministic pipeline replay. `[COMPLETED]`
 - **Sprint 24 (Live Provider Connector)**: First real HTTP connector wired against a live market data provider. `[COMPLETED]`
-- **Sprint 25 (Multi-Ticker Batch & Scheduling)**: Batch fetches, scheduler integration, and rate-limit wiring from Sprint 16 infrastructure. `[UP NEXT]`
+- **Sprint 25 (Market Intelligence & Technical Indicators)**: Standard deterministic indicators library (SMA, EMA, RSI, MACD, ATR, BB, typical-price VWAP) and IndicatorEngine. `[COMPLETED]`
+- **Sprint 26 (Pattern Recognition)**: Candlestick and chart pattern detection models. `[UP NEXT]`
 
 ---
 
@@ -69,4 +70,4 @@ Athena enforces a strict testing discipline. The entire suite runs deterministic
 pytest tests/ -q
 ```
 
-Total Test Cases: **257 tests** (all green, 100% pass rate).
+Total Test Cases: **338 tests** (all green, 100% pass rate).

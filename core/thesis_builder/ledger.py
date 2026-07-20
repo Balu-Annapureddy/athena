@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from dataclasses import dataclass
 from typing import List, Dict
 from core.domain.common import ThesisId, HypothesisId, EvidenceId, InferenceId
-from core.domain.enums import ThesisDirection
+from core.domain.enums import ThesisDirection, ValidationStatus
 from core.domain.value_objects import RiskAssessment, Confidence
 from core.thesis_builder.candidate import ThesisCandidate, TimeHorizon, StrategyStyle
 from core.thesis_builder.assumptions import Assumption, Scenario
@@ -43,6 +43,7 @@ class ThesisRecord:
     state: ThesisState
     timestamp: datetime
     version: int = 1
+    validation_status: ValidationStatus = ValidationStatus.UNVALIDATED
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "supporting_hypothesis_ids", list(self.supporting_hypothesis_ids))
