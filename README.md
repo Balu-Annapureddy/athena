@@ -54,7 +54,8 @@ Athena is structured across five major evolutionary phases:
 
 ### Phase 3: Market Intelligence & Trading (Sprints 23–30) — `IN PROGRESS 🟢`
 - **Sprint 23 (Data Normalization & Replay)**: Declarative normalization boundary (`INormalizer`, `FieldMapping`, `parse_timestamp`), `PayloadRecorder` JSONL fixture writer, and `ReplayConnector` for deterministic pipeline replay. `[COMPLETED]`
-- **Sprint 24 (Live Provider Connector)**: First real HTTP connector wired against a live market data provider. `[UP NEXT]`
+- **Sprint 24 (Live Provider Connector)**: First real HTTP connector wired against a live market data provider. `[COMPLETED]`
+- **Sprint 25 (Multi-Ticker Batch & Scheduling)**: Batch fetches, scheduler integration, and rate-limit wiring from Sprint 16 infrastructure. `[UP NEXT]`
 
 ---
 

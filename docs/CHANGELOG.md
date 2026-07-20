@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.2.0] - 2026-07-20
+### Added
+- **YFinanceNormalizer** (`core/data/normalization/yfinance_provider.py`): Real `INormalizer` implementation mapping yfinance `1.5.1` `.history()` row to canonical `PricePayload`. Field mapping table (`Open/High/Low/Close/Volume` → required; `timeframe` → optional default `"1D"`) determined from actual probe of RELIANCE.NS, INFY.NS, TCS.NS on 2026-07-18.
+- **YFinanceConnector** (`core/data/connectors/yfinance_connector.py`): First real external connector extending `BaseConnector`. Fetches NSE daily OHLCV via yfinance, applies `YFinanceNormalizer`, and records every fetch to JSONL via `PayloadRecorder` — enabling deterministic offline replay from the first call.
+- **yfinance `>=0.2`** added to `pyproject.toml` as the project's first real runtime dependency.
+- **JSONL fixtures** (`fixtures/yfinance/`): Pre-recorded daily bars for RELIANCE.NS, INFY.NS, TCS.NS. All tests use `ReplayConnector` against these fixtures — no test makes a live HTTP call.
+- **`scripts/sprint24_proof.py`**: Standalone end-to-end proof script. Makes exactly one real yfinance call (RELIANCE.NS) and flows the data through the complete reasoning pipeline (ObservationFactory → FactBuilder → EvidenceEngine → HypothesisAssembler → ThesisRecord → DecisionAssembler → ExplanationEngine), printing the full `ExplanationReport`.
+- **ADR-024**: Documents recorder-first pattern rationale, FieldMapping decisions, scope boundaries, and guidance for future connectors.
+### Fixed
+- `core/explanation/graph.py`: Pre-existing `AttributeError` in `_traverse_hypothesis` — `hyp.target_entity_id` referenced a non-existent attribute; `HypothesisRecord` uses `entity_id`. Fixed with `getattr` fallback (backwards-compatible).
+
 ## [1.1.0] - 2026-07-18
 ### Added
 - **Data Normalization Layer** (`core/data/normalization/`): Declarative `INormalizer` interface, `FieldMapping` dataclass, `parse_timestamp` (ISO-8601 + Unix epoch), and `apply_field_map` enforcing raise-on-required / default-on-optional missing-value policy.
