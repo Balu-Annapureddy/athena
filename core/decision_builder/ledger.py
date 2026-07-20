@@ -3,11 +3,12 @@
 from enum import Enum
 from datetime import datetime, timezone
 from dataclasses import dataclass
-from typing import List, Dict
+from typing import List, Dict, Optional
 from core.domain.common import DecisionId, ThesisId
 from core.domain.enums import RecommendationAction, ValidationStatus
 from core.decision_builder.candidate import DecisionCandidate, DecisionRationale
 from core.decision_builder.policies import DecisionAssessment
+from core.risk.engine import RiskAssessment
 
 class DecisionState(Enum):
     """Lifecycle states of a decision recommendation."""
@@ -34,6 +35,9 @@ class DecisionRecord:
     timestamp: datetime
     version: int = 1
     validation_status: ValidationStatus = ValidationStatus.UNVALIDATED
+    entry_price: Optional[float] = None
+    target_price: Optional[float] = None
+    risk_assessment: Optional[RiskAssessment] = None
 
     def __post_init__(self) -> None:
         pass
@@ -73,7 +77,10 @@ class DecisionLedger:
         self,
         candidate: DecisionCandidate,
         assessment: DecisionAssessment,
-        state: DecisionState = DecisionState.PROPOSED
+        state: DecisionState = DecisionState.PROPOSED,
+        entry_price: Optional[float] = None,
+        target_price: Optional[float] = None,
+        risk_assessment: Optional[RiskAssessment] = None
     ) -> DecisionRecord:
         """Record or update a decision record in the append-only ledger."""
         now = datetime.now(timezone.utc)
@@ -99,7 +106,10 @@ class DecisionLedger:
                 policy_version=existing.policy_version,
                 state=DecisionState.SUPERSEDED,
                 timestamp=existing.timestamp,
-                version=existing.version
+                version=existing.version,
+                entry_price=existing.entry_price,
+                target_price=existing.target_price,
+                risk_assessment=existing.risk_assessment
             )
             self._active_records[did] = superseded_record
             self._ledger.append(
@@ -126,7 +136,10 @@ class DecisionLedger:
                 policy_version=candidate.policy_version,
                 state=DecisionState.APPROVED if state == DecisionState.PROPOSED and assessment.policy_result.passed else state,
                 timestamp=now,
-                version=existing.version + 1
+                version=existing.version + 1,
+                entry_price=entry_price,
+                target_price=target_price,
+                risk_assessment=risk_assessment
             )
             event_type = "UPDATE"
         else:
@@ -142,7 +155,10 @@ class DecisionLedger:
                 policy_version=candidate.policy_version,
                 state=state,
                 timestamp=now,
-                version=1
+                version=1,
+                entry_price=entry_price,
+                target_price=target_price,
+                risk_assessment=risk_assessment
             )
             event_type = "CREATE"
 

@@ -79,6 +79,20 @@ class ExplanationEngine:
             )
             lines.append("")
 
+        if decision_node and "risk_assessment" in decision_node.properties:
+            ra = decision_node.properties["risk_assessment"]
+            lines.append("> **RISK ASSESSMENT**:")
+            lines.append(f"> - Position Size: `{ra['position_size']}` shares")
+            lines.append(f"> - Entry Price: `{ra['entry_price']:.2f}`")
+            lines.append(f"> - Stop-Loss Price: `{ra['stop_loss_price']:.2f}`")
+            lines.append(f"> - Risk Per Share: `{ra['risk_per_share']:.2f}`")
+            lines.append(f"> - Total Risk Amount: `{ra['total_risk_amount']:.2f}`")
+            lines.append(f"> - Target Price: `{ra['target_price']:.2f}`")
+            lines.append(f"> - Reward-to-Risk Ratio: `{ra['reward_to_risk_ratio']:.2f}`:1")
+            if ra.get("is_ratio_flagged", False):
+                lines.append("> - **Warning**: Reward-to-risk ratio is below the minimum professional threshold of 1:2.")
+            lines.append("")
+
         # 1. Executive Summary
         lines.append("## Executive Summary")
         if decision_node:

@@ -14,6 +14,21 @@ $$\text{Specification} \longrightarrow \text{Implementation} \longrightarrow \te
 
 ## Sprints
 
+### 🟢 Sprint 28: Risk Engine *(Complete — 362 tests passing)*
+- **Focus**: Position sizing, ATR-based stop-loss, and risk/reward ratio calculations attached to Decisions from the Strategy Engine.
+- **Milestones**:
+  - [x] `RiskEngine.calculate()` with `RiskAssessment` immutable record.
+  - [x] `DEFAULT_TARGET_REWARD_RISK_RATIO = 3.0` named constant (configurable default, not standard).
+  - [x] Professional risk cap: 1% default, hard 2% limit (`ValueError`), 1:2 reward:risk flagging threshold.
+  - [x] ATR-based stop-loss reusing `atr()` from `core/intelligence/indicators.py`.
+  - [x] Pipeline integration: `DecisionAssembler` calls `RiskEngine`, attaches to `Decision` and `DecisionRecord`.
+  - [x] `ExplanationEngine` risk block in markdown report output.
+  - [x] 7 hand-calculated unit tests in `tests/risk/test_risk_engine.py`.
+  - [x] ADR-028 documenting architecture and design rationale.
+- **Gate Criteria**: All 362 tests passing via `pytest tests/ -q`. Risk assessments visible in Explanation Reports.
+
+---
+
 ### 🟢 Sprint 0: Foundation
 - **Focus**: Repository, environment, workflows, standards, and core documentation templates.
 - **Milestones**:

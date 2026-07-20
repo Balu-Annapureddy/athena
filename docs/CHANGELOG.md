@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.6.0] - 2026-07-20
+### Added
+- **Risk Engine** (`core/risk/engine.py`): Position sizing, ATR-based stop-loss, and risk/reward ratio calculations attached to every Decision produced by the Strategy Engine. Enforces a hard professional capital risk cap of 2% (`ValueError` on exceed, no silent clamping) with a 1% default. Flags (does not block) any decision with reward:risk below the commonly-cited 1:2 minimum professional threshold.
+- **`DEFAULT_TARGET_REWARD_RISK_RATIO = 3.0`** (`core/risk/engine.py`): Named, documented constant for the default target price projection when no explicit target is provided. Explicitly documented as a configurable default choice in trend-following practice — distinct from the well-supported 1:2 minimum flagging threshold.
+- **`RiskAssessment` Dataclass** (`core/risk/engine.py`): Immutable record carrying `position_size`, `stop_loss_price`, `risk_per_share`, `total_risk_amount`, `reward_to_risk_ratio`, `is_ratio_flagged`, `entry_price`, and `target_price`.
+- **Decision Entity Risk Fields** (`core/domain/entities/decision.py`): Added optional `entry_price`, `target_price`, and `risk_assessment` properties to the `Decision` entity.
+- **DecisionRecord Risk Fields** (`core/decision_builder/ledger.py`): Added optional `entry_price`, `target_price`, and `risk_assessment` fields to the `DecisionRecord` dataclass for historical audit persistence.
+- **Pipeline Integration** (`core/strategy/base.py`, `core/decision_builder/assembler.py`): `BaseStrategy._create_pipeline_records` now extracts entry price from the latest close and computes ATR via the existing `atr()` function from `core/intelligence/indicators.py` (no duplicate computation). `DecisionAssembler.assemble_decisions` calls `RiskEngine.calculate` during assembly and attaches the result.
+- **Explanation Engine Risk Block** (`core/explanation/engine.py`, `core/explanation/graph.py`): Risk assessment properties are surfaced in the `ExplanationReport` markdown output alongside the existing UNVALIDATED warning, showing position size, entry/stop/target prices, risk amounts, reward:risk ratio, and a low-ratio warning when flagged.
+- **Risk Engine Test Suite** (`tests/risk/test_risk_engine.py`): 7 hand-calculated unit tests verifying long/short scenarios, missing-input refusal, professional limit enforcement, ratio flagging, and the `DEFAULT_TARGET_REWARD_RISK_RATIO` constant value.
+- **ADR-028**: Documents Risk Engine architecture, position sizing formula, ATR-based stop-loss conventions, professional limit enforcement, default target ratio distinction, and pipeline integration.
+
 ## [1.5.0] - 2026-07-20
 ### Added
 - **Strategy Engine** (`core/strategy/`): Extensible strategy framework based on pluggable `BaseStrategy` policy classes that orchestrate indicators and pattern facts to produce InvestmentThesis and Decision candidates via the standard reasoning builder pipeline.
