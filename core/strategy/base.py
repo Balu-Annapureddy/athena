@@ -32,6 +32,16 @@ class BaseStrategy(ABC):
         """Return the strategy version string."""
         pass
 
+    @property
+    def required_lookback_days(self) -> int:
+        """Number of calendar days of trailing history required by this strategy."""
+        return 250
+
+    @property
+    def required_history_bars(self) -> int:
+        """Minimum number of daily price bars required to evaluate the strategy."""
+        return 200
+
     @abstractmethod
     def evaluate(
         self,

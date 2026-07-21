@@ -33,6 +33,16 @@ class GoldenCrossDeathCrossStrategy(BaseStrategy):
     def version(self) -> str:
         return "1.0.0"
 
+    @property
+    def required_lookback_days(self) -> int:
+        # Standard estimate: slow_period trading days converted to calendar days
+        # (approx 1.5 multiplier + safety buffer to cover weekends/holidays).
+        return int(self._slow_period * 1.5) + 10
+
+    @property
+    def required_history_bars(self) -> int:
+        return self._slow_period + 1
+
     def evaluate(
         self,
         facts: List[Fact],

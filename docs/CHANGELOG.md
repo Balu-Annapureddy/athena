@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.8.0] - 2026-07-21
+### Added
+- **Strategy Registry** (`core/portfolio/registry.py`): Light strategy portfolio mapping strategies to `ValidationStatus` (`UNVALIDATED` vs `BACKTESTED`), enabling, and portfolio weights. Enforces safety invariants: `GoldenCrossDeathCrossStrategy` defaults to `UNVALIDATED` since no real-data campaigns are committed.
+- **Daily Signal Runner** (`core/pipeline/daily_runner.py`): Ingests target date, fetches lookback price data over a calculated `strategy.required_lookback_days` window via connector, validates trailing history bar counts against `strategy.required_history_bars` (raises `ValueError` on failure), and performs zero-lookahead strategy evaluations. Skips `UNVALIDATED` strategies by default (configurable bypass).
+- **Signal Report** (`core/pipeline/signal_report.py`): Dataclass encapsulating daily signal outputs (BUY/SELL/HOLD, entry, stop-loss, target, size, validation status, and reasoning).
+- **Paper Trading Ledger** (`core/pipeline/paper_ledger.py`): Local append-only JSONL database tracking open and closed trades. Evaluates open positions daily against new bars, enforcing conservative same-bar stop-loss precedence tie-breakers, and calculates key summary statistics (win rate, average win/loss, PnL).
+- **CLI Signal Script** (`scripts/daily_signal.py`): Runnable CLI script evaluating active strategies, updating the paper ledger, and printing a clean terminal signal table.
+- **Sprint 30 Test Suite** (`tests/portfolio/test_registry.py`, `tests/pipeline/test_daily_runner.py`, `tests/pipeline/test_paper_ledger.py`): 14 unit tests validating registry registration, lookback checks, skipped/unvalidated behaviors, same-bar tie-breakers, and trade/exit ledger logic with mocked 30-bar history.
+- **ADR-030**: Documents live signal pipeline, strategy registry invariants, default configuration rules, and paper trading scope.
+
+## [1.7.0] - 2026-07-21
+### Added
+- **Backtest Engine** (`core/backtest/engine.py`): Walk-forward daily simulation engine with structural lookahead isolation (slicing observations bar-by-bar). Enforces conservative same-bar exit tie-breaker (stop-loss exits first if both touched). Integrates ATR-based stop-loss/target exit levels and position sizing. Marks open positions to market on the final bar.
+- **O(n) Performance Optimization** (`core/backtest/engine.py`): Resolved O(n²) quadratic blowup in backtest loops by pre-computing pattern facts once upfront and look-up via O(1) observation ID dictionaries instead of recompute-on-slice.
+- **Metrics Calculator** (`core/backtest/metrics.py`): pure mathematical helper for total return, win rate, max drawdown, Sharpe ratio, profit factor, average win/loss, and average PnL per trade.
+- **Validation Campaign** (`core/backtest/validation.py`): Quality gate requiring strategies to meet two hard constraints before BACKTESTED promotion: a minimum of 20 total completed trades and a 67% passing run ratio (positive average PnL per trade in at least two-thirds of tested regimes).
+- **Standalone Proof Script** (`scripts/sprint29_proof.py`): Runs validation campaigns with deterministic synthetic price generators in under 4 seconds, using real engine and strategy classes. Enforces UTF-8 reconfigure for Windows cp1252 consoles.
+- **Sprint 29 Test Suite** (`tests/backtest/test_backtest.py`): unit tests verifying metrics calculations, no-lookahead bias, same-bar exits, and validation gates.
+- **ADR-029**: Documents backtesting architecture, lookahead isolation, Wilder's ATR sizing, and campaign promotion thresholds.
+
 ## [1.6.0] - 2026-07-20
 ### Added
 - **Risk Engine** (`core/risk/engine.py`): Position sizing, ATR-based stop-loss, and risk/reward ratio calculations attached to every Decision produced by the Strategy Engine. Enforces a hard professional capital risk cap of 2% (`ValueError` on exceed, no silent clamping) with a 1% default. Flags (does not block) any decision with reward:risk below the commonly-cited 1:2 minimum professional threshold.
