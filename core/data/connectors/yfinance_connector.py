@@ -92,11 +92,21 @@ class YFinanceConnector(BaseConnector):
             NormalizationError: If yfinance returns unexpected field shapes.
             ValueError: If yfinance returns an empty DataFrame (e.g. invalid ticker).
         """
-        period = kwargs.get("period", "2d")
         run_id = f"run-yf-{uuid.uuid4().hex[:8]}"
 
         ticker = yf.Ticker(entity)
-        df = ticker.history(period=period)
+        
+        timeout = kwargs.get("timeout", 10)
+        if "start" in kwargs or "end" in kwargs:
+            df = ticker.history(
+                start=kwargs.get("start"),
+                end=kwargs.get("end"),
+                auto_adjust=True,
+                timeout=timeout
+            )
+        else:
+            period = kwargs.get("period", "2d")
+            df = ticker.history(period=period, auto_adjust=True, timeout=timeout)
 
         if df.empty:
             raise ValueError(
