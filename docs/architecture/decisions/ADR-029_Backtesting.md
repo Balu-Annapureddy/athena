@@ -1,0 +1,46 @@
+# ADR-029: Historical Replay & Backtesting Architecture
+
+**Date:** 2026-07-20  
+**Status:** Accepted  
+**Sprint:** 29 — Historical Replay & Backtesting
+
+---
+
+## Context
+
+To ensure the trading strategies designed in Sprint 27 are historically viable and do not suffer from design flaws or lookahead bias, Athena requires a robust backtesting framework. 
+
+However, running a single backtest on a single asset over a single timeframe runs the risk of overfitting, luck, or regime bias. Promoting strategies to a validated state based on one positive run creates false confidence. Additionally, daily price charts are prone to corporate action distortions (like stock splits or bonus issues), and intraday tick sequence ambiguity can make exit simulations unreliable (e.g. if both stop-loss and target are touched on the same day).
+
+---
+
+## Decision
+
+### 1. Daily Walk-Forward Simulation with Zero Lookahead
+We implement a walk-forward `BacktestEngine` (`core/backtest/engine.py`) that steps daily bar-by-bar.
+*   **Lookahead Isolation:** On day $i$, indicators are computed using close prices up to index $i$, and patterns are generated on price facts up to index $i$. Future data is structurally inaccessible.
+*   **Corporate Actions Adjustment:** We modify `YFinanceConnector` to explicitly enforce `auto_adjust=True` in all `.history()` calls to fetch split and dividend-adjusted price series.
+*   **Tie-Breaker Rule:** If a daily OHLC bar range touches both the stop-loss and the target price on the same day, the simulation always resolves to the stop-loss exit first. This conservative backtesting convention prevents silently inflated performance results.
+
+### 2. Performance Metrics
+We implement `MetricsCalculator` (`core/backtest/metrics.py`) to compute standard metrics with cited formulas:
+*   **Total Return:** \((Ending - Starting) / Starting\)
+*   **Win Rate:** \(Wins / Total\)
+*   **Max Drawdown:** Peak-to-trough maximum percentage drop in portfolio equity series.
+*   **Annualized Sharpe Ratio:** \(\sqrt{252} \times Mean / Std\)
+*   **Profit Factor:** \(Gross Profits / Gross Losses\)
+*   **Average PnL per Trade:** Sum of profits/losses divided by total trades.
+
+### 3. Multi-Regime Validation Campaigns
+We implement `ValidationCampaign` (`core/backtest/validation.py`) to gate strategy promotion:
+*   **Campaign Runs:** Runs the backtest across at least 3 tickers and 2 non-overlapping date-range windows.
+*   **Minimum Trade Gate:** Enforces a hard minimum of 20 total completed trades across the campaign. Campaigns failing this gate remain `UNVALIDATED` to avoid statistical noise.
+*   **Passing Ratio:** Promotes strategy records to `BACKTESTED` only if the campaign has at least a 67% passing run ratio (positive average PnL per trade in at least two-thirds of the tested runs). This ratio is a deliberate design choice to ensure multi-regime robustness.
+
+---
+
+## Consequences
+
+*   Only strategies that pass the strict validation campaign will have their `ThesisRecord` and `DecisionRecord` objects promoted to `BACKTESTED`.
+*   Strategies with positive results in a single run but failing the campaign will remain `UNVALIDATED`.
+*   We reuse all existing indicators, pattern engines, and strategies from previous sprints.

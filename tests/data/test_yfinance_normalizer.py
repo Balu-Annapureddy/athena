@@ -73,16 +73,16 @@ class TestYFinanceNormalizerFieldMapping(unittest.TestCase):
             self.assertEqual(p.verification, VerificationStatus.UNVERIFIED)
 
     def test_reliance_ohlcv_fields_are_positive(self):
-        """Open, High, Low, Close, Volume must all be > 0 for RELIANCE.NS."""
+        """Open, High, Low, Close must be > 0; Volume >= 0 (zero is valid on holidays/halts)."""
         payloads = self._get_payloads("RELIANCE.NS")
         for p in payloads:
             price: PricePayload = p.payload  # type: ignore[assignment]
             self.assertIsInstance(price, PricePayload)
-            self.assertGreater(price.open,   0.0, "open must be > 0")
-            self.assertGreater(price.high,   0.0, "high must be > 0")
-            self.assertGreater(price.low,    0.0, "low must be > 0")
-            self.assertGreater(price.close,  0.0, "close must be > 0")
-            self.assertGreater(price.volume, 0.0, "volume must be > 0")
+            self.assertGreater(price.open,      0.0, "open must be > 0")
+            self.assertGreater(price.high,      0.0, "high must be > 0")
+            self.assertGreater(price.low,       0.0, "low must be > 0")
+            self.assertGreater(price.close,     0.0, "close must be > 0")
+            self.assertGreaterEqual(price.volume, 0.0, "volume must be >= 0")
 
     def test_reliance_high_gte_low(self):
         payloads = self._get_payloads("RELIANCE.NS")
@@ -123,14 +123,15 @@ class TestYFinanceNormalizerFieldMapping(unittest.TestCase):
             self.assertEqual(p.entity, "INFY.NS")
 
     def test_infy_ohlcv_all_positive(self):
+        """OHLC must be > 0; Volume >= 0 (zero is valid on holidays/halts)."""
         payloads = self._get_payloads("INFY.NS")
         for p in payloads:
             price: PricePayload = p.payload  # type: ignore[assignment]
-            self.assertGreater(price.open,   0.0)
-            self.assertGreater(price.high,   0.0)
-            self.assertGreater(price.low,    0.0)
-            self.assertGreater(price.close,  0.0)
-            self.assertGreater(price.volume, 0.0)
+            self.assertGreater(price.open,      0.0)
+            self.assertGreater(price.high,      0.0)
+            self.assertGreater(price.low,       0.0)
+            self.assertGreater(price.close,     0.0)
+            self.assertGreaterEqual(price.volume, 0.0)
 
     def test_tcs_payload_type_is_price(self):
         payloads = self._get_payloads("TCS.NS")
