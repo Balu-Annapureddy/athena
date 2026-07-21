@@ -1,59 +1,105 @@
-"""Sprint 29 Backtest Proof — Standalone Edition.
+"""Sprint 29 Backtest Validation Campaign Proof Script.
 
-Proves the ValidationCampaign logic (multi-regime, 0.67 pass ratio, min 20 trades gate)
-using a self-contained Golden Cross backtester. Runs in under 2 seconds — no network,
-no yfinance, no Athena pipeline overhead.
+Demonstrates that the real BacktestEngine, GoldenCrossDeathCrossStrategy, and
+ValidationCampaign classes work correctly end-to-end using deterministic synthetic
+OHLCV data fed through a MockYFinanceConnector — no live network calls.
 
-Golden Cross rule:
-  - BUY  when fast SMA (50d) crosses ABOVE slow SMA (200d)
-  - SELL/CLOSE when fast SMA crosses BELOW slow SMA (Death Cross)
-  - Risk 1% of account per trade, stop at 2×ATR below entry, target at 3×ATR above entry
-  - Same-bar tie-break: if both stop AND target hit on same bar → exit at stop (conservative)
+Synthetic data: SHA-256 seeded random walk + 50-day sine cycle (guarantees crossover
+signals occur). Same approach used in tests/backtest/test_backtest.py.
+
+Campaign structure: 3 tickers × 2 non-overlapping ~2.5-year windows = 6 runs.
+Gates: min 20 total trades AND min 0.67 pass ratio required for BACKTESTED promotion.
 """
 
 import sys
 import os
 import math
 import hashlib
-from datetime import date, timedelta
-from typing import List, NamedTuple, Optional, Tuple
+from datetime import datetime, timedelta, timezone
+from typing import List
 
+# Fix UnicodeEncodeError on Windows cp1252 consoles (e.g. the → arrow character)
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+
+# Ensure project root is on path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from core.strategy.golden_cross import GoldenCrossDeathCrossStrategy
+from core.backtest.engine import BacktestEngine
+from core.backtest.validation import ValidationCampaign
+from core.data.contract import ConnectorPayload, Provenance, PayloadType, SourceType, VerificationStatus
+from core.data.payloads.price import PricePayload
+
+
 # ---------------------------------------------------------------------------
-# 1. Synthetic price generator (deterministic, same logic as before)
+# Mock connector — no network, no yfinance, filters by entity + date range
 # ---------------------------------------------------------------------------
 
-class Bar(NamedTuple):
-    date: date
-    open: float
-    high: float
-    low: float
-    close: float
-    volume: float
+class MockYFinanceConnector:
+    """Deterministic offline connector for proof and test use.
 
+    Holds a pre-built list of ConnectorPayloads and filters them by entity
+    (ticker symbol) and date range on each fetch_data() call. No network
+    calls are made. Compatible with the BacktestEngine._connector interface.
+    """
+
+    def __init__(self, payloads: List[ConnectorPayload]) -> None:
+        self._payloads = payloads
+
+    def enable(self) -> None:
+        pass  # no-op: satisfies BaseConnector interface
+
+    def fetch_data(self, entity: str, **kwargs) -> List[ConnectorPayload]:
+        """Return payloads for the requested entity filtered by start/end dates."""
+        start_str = kwargs.get("start")
+        end_str   = kwargs.get("end")
+
+        # Filter by entity first
+        result = [p for p in self._payloads if p.entity == entity]
+
+        if start_str:
+            start_dt = datetime.strptime(start_str, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+            result = [p for p in result if p.provenance.publication_timestamp >= start_dt]
+        if end_str:
+            end_dt = datetime.strptime(end_str, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+            result = [p for p in result if p.provenance.publication_timestamp <= end_dt]
+
+        return result
+
+
+# ---------------------------------------------------------------------------
+# Synthetic OHLCV generator — deterministic via SHA-256 seed
+# ---------------------------------------------------------------------------
 
 def _rng(seed: str) -> float:
     """Deterministic pseudo-random float in [0, 1) from a string seed."""
     return int(hashlib.sha256(seed.encode()).hexdigest()[:8], 16) / 0xFFFFFFFF
 
 
-def generate_bars(ticker: str, start: str, end: str) -> List[Bar]:
-    """Generate deterministic weekday OHLCV bars for the given date range."""
-    BASE = {"RELIANCE.NS": 1200.0, "INFY.NS": 1400.0, "TCS.NS": 3000.0}
-    price = BASE.get(ticker, 1000.0)
+def generate_synthetic_payloads(ticker: str, start_str: str, end_str: str) -> List[ConnectorPayload]:
+    """Generate deterministic weekday OHLCV ConnectorPayloads for the given range.
 
-    start_date = date.fromisoformat(start)
-    end_date   = date.fromisoformat(end)
-    bars: List[Bar] = []
+    Uses a SHA-256 seeded random walk with a 50-day sine cycle injected to ensure
+    the price series produces at least one golden cross signal over a 2+ year window.
+    Results are fully deterministic: same (ticker, start, end) → same payloads every run.
+    """
+    BASE_PRICES = {"RELIANCE.NS": 1200.0, "INFY.NS": 1400.0, "TCS.NS": 3000.0}
+    price = BASE_PRICES.get(ticker, 1000.0)
+
+    start_date = datetime.strptime(start_str, "%Y-%m-%d").date()
+    end_date   = datetime.strptime(end_str,   "%Y-%m-%d").date()
+
+    payloads: List[ConnectorPayload] = []
     curr = start_date
+    delta = timedelta(days=1)
 
     while curr <= end_date:
-        if curr.weekday() >= 5:          # skip weekends
-            curr += timedelta(days=1)
+        if curr.weekday() >= 5:  # skip weekends
+            curr += delta
             continue
 
-        ds = curr.isoformat()
+        ds      = curr.isoformat()
         r       = _rng(f"{ticker}:{ds}")
         cycle   = math.sin((curr - start_date).days / 50.0) * 0.02
         price  *= 1.0 + (r - 0.49) * 0.03 + cycle
@@ -64,280 +110,125 @@ def generate_bars(ticker: str, start: str, end: str) -> List[Bar]:
         l = min(o, c) * (1.0 - _rng(f"{ticker}:{ds}:low")  * 0.01)
         v = 500_000.0 + _rng(f"{ticker}:{ds}:vol") * 1_500_000.0
 
-        bars.append(Bar(curr, o, h, l, c, v))
-        curr += timedelta(days=1)
+        pub_dt = datetime(curr.year, curr.month, curr.day, tzinfo=timezone.utc)
 
-    return bars
-
-
-# ---------------------------------------------------------------------------
-# 2. Standalone Golden Cross backtester
-# ---------------------------------------------------------------------------
-
-def _sma(closes: List[float], period: int, idx: int) -> Optional[float]:
-    if idx + 1 < period:
-        return None
-    return sum(closes[idx - period + 1 : idx + 1]) / period
-
-
-def _atr(bars: List[Bar], period: int, idx: int) -> Optional[float]:
-    if idx < 1:
-        return None
-    trs: List[float] = []
-    for j in range(max(1, idx - period + 1), idx + 1):
-        tr = max(
-            bars[j].high - bars[j].low,
-            abs(bars[j].high - bars[j - 1].close),
-            abs(bars[j].low  - bars[j - 1].close),
+        prov = Provenance(
+            connector_name="YFinanceConnector",
+            provider="YahooFinance",
+            retrieval_timestamp=datetime.now(timezone.utc),
+            publication_timestamp=pub_dt,
+            raw_source_id=f"SYNTH_{ticker}_{curr.strftime('%Y%m%d')}",
+            checksum=f"syn_{r:.8f}",
+            connector_version="1.0.0",
+            ingestion_run_id="run-synth-sprint29",
         )
-        trs.append(tr)
-    return sum(trs) / len(trs) if trs else None
+        price_payload = PricePayload(
+            open=o, high=h, low=l, close=c, volume=v, timeframe="1D"
+        )
+        payload = ConnectorPayload(
+            source_id=f"SYNTH_{ticker}_{curr.strftime('%Y%m%d')}",
+            entity=ticker,
+            payload_type=PayloadType.PRICE,
+            payload=price_payload,
+            source_type=SourceType.EXCHANGE,
+            verification=VerificationStatus.UNVERIFIED,
+            provenance=prov,
+        )
+        payloads.append(payload)
+        curr += delta
 
-
-class TradeResult(NamedTuple):
-    ticker: str
-    start: str
-    end: str
-    entry_date: date
-    exit_date: date
-    direction: str
-    entry_price: float
-    exit_price: float
-    shares: int
-    pnl: float
-    exit_reason: str
-
-
-def backtest_golden_cross(
-    ticker: str,
-    start: str,
-    end: str,
-    account_size: float = 1_000_000.0,
-    risk_pct: float = 0.01,
-    fast: int = 50,
-    slow: int = 200,
-    atr_mult_stop: float = 2.0,
-    atr_mult_target: float = 3.0,
-) -> Tuple[List[TradeResult], float]:
-    """Walk-forward Golden Cross backtest. Returns (trades, ending_equity)."""
-    bars   = generate_bars(ticker, start, end)
-    closes = [b.close for b in bars]
-    cash   = account_size
-
-    position: Optional[dict] = None
-    trades: List[TradeResult] = []
-
-    for i, bar in enumerate(bars):
-        fast_sma = _sma(closes, fast, i)
-        slow_sma = _sma(closes, slow, i)
-        prev_fast = _sma(closes, fast, i - 1) if i >= 1 else None
-        prev_slow = _sma(closes, slow, i - 1) if i >= 1 else None
-
-        # --- Exit logic ---
-        if position is not None:
-            sl = position["stop"]
-            tp = position["target"]
-            d  = position["dir"]
-            exit_price  = None
-            exit_reason = ""
-
-            if d == "LONG":
-                # Conservative tie-break: stop wins over target on same bar
-                if bar.low <= sl:
-                    exit_price, exit_reason = sl, "STOP_LOSS"
-                elif bar.high >= tp:
-                    exit_price, exit_reason = tp, "TARGET_PRICE"
-            else:  # SHORT
-                if bar.high >= sl:
-                    exit_price, exit_reason = sl, "STOP_LOSS"
-                elif bar.low <= tp:
-                    exit_price, exit_reason = tp, "TARGET_PRICE"
-
-            # Death cross → force close LONG
-            if exit_price is None and d == "LONG":
-                if (fast_sma and slow_sma and prev_fast and prev_slow
-                        and prev_fast >= prev_slow and fast_sma < slow_sma):
-                    exit_price, exit_reason = bar.close, "SIGNAL_EXIT"
-
-            if exit_price is not None:
-                shares = position["shares"]
-                if d == "LONG":
-                    pnl  = shares * (exit_price - position["entry"])
-                    cash += shares * exit_price
-                else:
-                    pnl  = shares * (position["entry"] - exit_price)
-                    cash += pnl
-
-                trades.append(TradeResult(
-                    ticker=ticker, start=start, end=end,
-                    entry_date=position["entry_date"], exit_date=bar.date,
-                    direction=d,
-                    entry_price=position["entry"], exit_price=exit_price,
-                    shares=shares, pnl=pnl, exit_reason=exit_reason,
-                ))
-                position = None
-
-        # --- Entry logic (only when flat) ---
-        if position is None and fast_sma and slow_sma and prev_fast and prev_slow:
-            golden_cross = prev_fast < prev_slow and fast_sma >= slow_sma
-
-            if golden_cross:
-                atr = _atr(bars, 14, i)
-                if atr and atr > 0:
-                    entry  = bar.close
-                    stop   = entry - atr_mult_stop   * atr
-                    target = entry + atr_mult_target  * atr
-                    risk_per_share = entry - stop
-                    if risk_per_share > 0:
-                        risk_amount = cash * risk_pct
-                        shares = max(1, math.floor(risk_amount / risk_per_share))
-                        cost   = shares * entry
-                        if cost <= cash:
-                            cash -= cost
-                            position = {
-                                "dir": "LONG",
-                                "entry": entry,
-                                "stop": stop,
-                                "target": target,
-                                "shares": shares,
-                                "entry_date": bar.date,
-                            }
-
-    # Force-close any open position at end
-    if position is not None:
-        last = bars[-1]
-        d, shares = position["dir"], position["shares"]
-        if d == "LONG":
-            pnl  = shares * (last.close - position["entry"])
-            cash += shares * last.close
-        else:
-            pnl  = shares * (position["entry"] - last.close)
-            cash += pnl
-        trades.append(TradeResult(
-            ticker=ticker, start=start, end=end,
-            entry_date=position["entry_date"], exit_date=last.date,
-            direction=d,
-            entry_price=position["entry"], exit_price=last.close,
-            shares=shares, pnl=pnl, exit_reason="MARK_TO_MARKET",
-        ))
-
-    return trades, cash
+    return payloads
 
 
 # ---------------------------------------------------------------------------
-# 3. Validation Campaign logic (mirrors core/backtest/validation.py rules)
+# Main proof
 # ---------------------------------------------------------------------------
 
-def run_campaign(
-    tickers: List[str],
-    date_ranges: List[Tuple[str, str]],
-    account_size: float = 1_000_000.0,
-    risk_pct: float = 0.01,
-    min_total_trades: int = 20,
-    min_passing_ratio: float = 0.67,
-) -> None:
+def main() -> None:
     print("=" * 80)
-    print("ATHENA SPRINT 29 — VALIDATION CAMPAIGN PROOF (Standalone)")
+    print("ATHENA SPRINT 29 -- VALIDATION CAMPAIGN PROOF")
     print("=" * 80)
-    print(f"  Tickers    : {tickers}")
-    print(f"  Ranges     : {date_ranges}")
-    print(f"  Min Trades : {min_total_trades}")
-    print(f"  Pass Ratio : {min_passing_ratio} (~2/3)")
     print()
 
-    run_details = []
-    total_trades = 0
-    passing_runs = 0
-    total_runs   = 0
+    tickers = ["RELIANCE.NS", "INFY.NS", "TCS.NS"]
+    date_ranges = [
+        ("2021-01-01", "2023-06-30"),   # window 1: ~2.5 years
+        ("2023-07-01", "2025-12-31"),   # window 2: ~2.5 years, non-overlapping
+    ]
+    min_total_trades = 20
+    min_passing_ratio = 0.67
 
-    print(f"{'Ticker':<13} | {'Range':<27} | {'Trades':>6} | {'Avg PnL':>12} | {'Return':>7} | {'Win%':>5} | Status")
-    print("-" * 90)
-
+    # Build all synthetic payloads upfront
+    print("Building deterministic synthetic OHLCV data...")
+    all_payloads: List[ConnectorPayload] = []
     for ticker in tickers:
         for start, end in date_ranges:
-            trades, ending_equity = backtest_golden_cross(
-                ticker, start, end, account_size, risk_pct
-            )
-            n = len(trades)
-            total_trades += n
-            total_runs   += 1
-
-            if n > 0:
-                avg_pnl     = sum(t.pnl for t in trades) / n
-                win_rate    = sum(1 for t in trades if t.pnl > 0) / n
-                total_ret   = (ending_equity - account_size) / account_size
-            else:
-                avg_pnl = win_rate = total_ret = 0.0
-
-            is_passing = avg_pnl > 0.0
-            if is_passing:
-                passing_runs += 1
-
-            run_details.append(dict(
-                ticker=ticker, start=start, end=end,
-                trade_count=n, avg_pnl=avg_pnl,
-                win_rate=win_rate, total_ret=total_ret,
-                is_passing=is_passing,
-            ))
-
-            status = "PASS" if is_passing else "FAIL"
-            range_str = f"{start} -> {end}"
-            print(
-                f"{ticker:<13} | {range_str:<27} | {n:>6} | "
-                f"Rs.{avg_pnl:>10,.0f} | {total_ret*100:>6.1f}% | "
-                f"{win_rate*100:>4.1f}% | {status}"
-            )
-
-    print("-" * 90)
+            chunk = generate_synthetic_payloads(ticker, start, end)
+            print(f"  {ticker}  [{start} -> {end}]:  {len(chunk)} bars")
+            all_payloads.extend(chunk)
+    print(f"  Total: {len(all_payloads)} bars across {len(tickers)} tickers x {len(date_ranges)} windows")
     print()
 
-    # Apply campaign gates
-    ratio = passing_runs / total_runs if total_runs else 0.0
-    trade_gate_ok = total_trades >= min_total_trades
-    ratio_gate_ok = ratio >= min_passing_ratio
-    passed        = trade_gate_ok and ratio_gate_ok
+    # Wire mock connector into the real BacktestEngine via ValidationCampaign
+    mock_connector = MockYFinanceConnector(all_payloads)
+
+    campaign = ValidationCampaign(
+        tickers=tickers,
+        date_ranges=date_ranges,
+        min_total_trades=min_total_trades,
+        min_passing_ratio=min_passing_ratio,
+    )
+    # Inject mock: replaces the YFinanceConnector created inside BacktestEngine.__init__
+    campaign._engine._connector = mock_connector
+
+    strategy = GoldenCrossDeathCrossStrategy(fast_period=50, slow_period=200)
+
+    print("Running ValidationCampaign through real BacktestEngine + GoldenCrossDeathCrossStrategy...")
+    print(f"  Strategy : GoldenCrossDeathCrossStrategy(fast=50, slow=200)")
+    print(f"  Account  : Rs. 1,000,000")
+    print(f"  Risk/trade: 1%  |  Stop: 2xATR  |  Target: 3xATR")
+    print(f"  Gates    : min {min_total_trades} trades AND >= {min_passing_ratio} pass ratio")
+    print()
+
+    result = campaign.execute(
+        strategy=strategy,
+        account_size=1_000_000.0,
+        risk_percent=0.01,
+    )
+
+    # Per-run results table
+    print("Run Details:")
+    print("-" * 88)
+    print(f"{'Ticker':<13} | {'Window':<27} | {'Trades':>6} | {'Avg PnL':>12} | {'Return':>7} | {'Win%':>5} | Status")
+    print("-" * 88)
+    for run in result.run_details:
+        window   = f"{run['start_date']} -> {run['end_date']}"
+        status   = "PASS" if run["is_passing"] else "FAIL"
+        avg_pnl  = run["avg_pnl_per_trade"]
+        ret_pct  = run["total_return"] * 100
+        win_pct  = run["win_rate"] * 100
+        n        = run["trade_count"]
+        print(
+            f"{run['ticker']:<13} | {window:<27} | {n:>6} | "
+            f"Rs.{avg_pnl:>10,.0f} | {ret_pct:>6.1f}% | {win_pct:>4.1f}% | {status}"
+        )
+    print("-" * 88)
+    print()
+
+    # Campaign summary
+    trade_ok = result.total_trades_count >= result.min_required_trades
+    ratio_ok = result.passing_ratio >= result.required_passing_ratio
 
     print("Campaign Summary:")
-    print(f"  Total trades  : {total_trades}  (gate >= {min_total_trades})  -> {'OK' if trade_gate_ok else 'FAIL'}")
-    print(f"  Passing runs  : {passing_runs}/{total_runs}  ratio={ratio:.2f}  (gate >= {min_passing_ratio})  -> {'OK' if ratio_gate_ok else 'FAIL'}")
+    print(f"  Total trades   : {result.total_trades_count}  (gate >= {result.min_required_trades})  -> {'OK' if trade_ok else 'FAIL'}")
+    print(f"  Passing runs   : {result.passing_runs_count}/{result.total_runs_count}  "
+          f"ratio={result.passing_ratio:.2f}  (gate >= {result.required_passing_ratio:.2f})  -> {'OK' if ratio_ok else 'FAIL'}")
+    print(f"  Promotion      : {'PROMOTED TO BACKTESTED' if result.passed else 'REMAIN UNVALIDATED'}")
     print()
-    if passed:
-        print("  RESULT: PROMOTED TO BACKTESTED")
-        reason = (
-            f"Campaign approved: {passing_runs}/{total_runs} runs passed "
-            f"(ratio {ratio:.2f} >= {min_passing_ratio}) with {total_trades} total trades."
-        )
-    elif not trade_gate_ok:
-        print("  RESULT: REMAIN UNVALIDATED")
-        reason = (
-            f"Campaign rejected: insufficient trade count "
-            f"({total_trades} < {min_total_trades})."
-        )
-    else:
-        print("  RESULT: REMAIN UNVALIDATED")
-        reason = (
-            f"Campaign rejected: passing ratio {ratio:.2f} < {min_passing_ratio} "
-            f"({passing_runs}/{total_runs} runs passed)."
-        )
-
-    print(f"\n  Reasoning: {reason}")
+    print(f"  Reasoning: {result.reason}")
     print()
     print("=" * 80)
 
 
-# ---------------------------------------------------------------------------
-# 4. Entry point
-# ---------------------------------------------------------------------------
-
 if __name__ == "__main__":
-    run_campaign(
-        tickers=["RELIANCE.NS", "INFY.NS", "TCS.NS"],
-        date_ranges=[
-            ("2021-01-01", "2023-06-30"),
-            ("2023-07-01", "2025-12-31"),
-        ],
-        account_size=1_000_000.0,
-        risk_pct=0.01,
-        min_total_trades=20,
-        min_passing_ratio=0.67,
-    )
+    main()

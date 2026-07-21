@@ -91,13 +91,18 @@ class BacktestEngine:
 
         # Pre-compute ALL pattern facts upfront on the full fact set.
         # This avoids the O(n²) blowup of re-running PatternEngine on a growing
-        # slice every bar. No-lookahead is still enforced inside the loop by
-        # filtering facts to allowed_obs_ids (observations[:i+1]) before passing
-        # to strategy.evaluate().
+        # slice every bar. No-lookahead is still enforced by only appending facts
+        # for bar i into the cumulative lists at the start of iteration i.
         pattern_engine = PatternEngine(entity=ticker)
         all_pattern_facts = pattern_engine.compute(all_price_facts)
 
-        # Build a lookup: obs_id_str -> list of pattern facts for that bar
+        # Build per-observation-id fact lookups so the walk-forward loop can
+        # append facts in O(1) per bar instead of filtering O(n) lists every bar.
+        price_facts_by_obs: Dict[str, List] = {}
+        for f in all_price_facts:
+            k = str(f.source_observation_id)
+            price_facts_by_obs.setdefault(k, []).append(f)
+
         pattern_facts_by_obs: Dict[str, List] = {}
         for pf in all_pattern_facts:
             k = str(pf.source_observation_id)
@@ -115,8 +120,18 @@ class BacktestEngine:
 
         dec_policy = DecisionPolicy()
 
+        # Cumulative fact lists grown incrementally — O(1) append per bar.
+        # No-lookahead: facts for bar i are only appended at the start of iteration i.
+        cumulative_price_facts: List = []
+        cumulative_pattern_facts: List = []
+
         # 3. Walk forward day-by-day
         for i in range(num_bars):
+            # Append this bar's facts before strategy evaluation (no future data visible)
+            obs_id_str = str(observations[i].id)
+            cumulative_price_facts.extend(price_facts_by_obs.get(obs_id_str, []))
+            cumulative_pattern_facts.extend(pattern_facts_by_obs.get(obs_id_str, []))
+
             current_payload = payloads[i]
             price = current_payload.payload
             current_date = current_payload.provenance.publication_timestamp
@@ -188,20 +203,10 @@ class BacktestEngine:
 
             # If no active position, run pipeline to check for entry signal
             if active_position is None:
-                # Enforce no-lookahead: only expose facts for observations up to bar i.
-                # Pattern facts were pre-computed once; we filter them here by obs_id.
-                allowed_obs_ids = {str(obs.id) for obs in observations[:i+1]}
-                price_facts_slice = [f for f in all_price_facts if str(f.source_observation_id) in allowed_obs_ids]
+                # No-lookahead guaranteed: cumulative lists only contain facts
+                # up to and including bar i (appended at the top of this iteration).
+                merged_facts = cumulative_price_facts + cumulative_pattern_facts
 
-                # Collect pre-computed pattern facts for bars up to i only
-                pattern_facts = [
-                    pf
-                    for oid in allowed_obs_ids
-                    for pf in pattern_facts_by_obs.get(oid, [])
-                ]
-
-                # Merge facts to evaluate
-                merged_facts = price_facts_slice + pattern_facts
                 
                 # Build simulated portfolio state
                 sim_positions = []
