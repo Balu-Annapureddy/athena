@@ -14,6 +14,36 @@ $$\text{Specification} \longrightarrow \text{Implementation} \longrightarrow \te
 
 ## Sprints
 
+### 🟢 Sprint 30: Live Signal Pipeline & Paper Trading Harness *(Complete — 381 tests passing)*
+- **Focus**: Strategy registry management, daily runner orchestrating technical evaluations, paper trading ledger persistence, and terminal CLI.
+- **Milestones**:
+  - [x] Strategy registry with weight, enabled tracking, and status immutability.
+  - [x] default registry setup explicitly registering Golden Cross as UNVALIDATED (ADR-030).
+  - [x] trailing lookback date window computation and required minimum history check.
+  - [x] daily runner executing strategy rule evaluation with zero-lookahead.
+  - [x] append-only paper ledger JSONL tracking entries, exits, and P&L.
+  - [x] same-bar stop-loss exit precedence tie-breaker for open trades.
+  - [x] daily CLI signals script printing formatted terminal results tables.
+  - [x] 14 unit tests across registry, daily runner, and paper ledger.
+  - [x] ADR-030 documenting pipeline architecture, registry invariants, and paper trading scope.
+
+---
+
+### 🟢 Sprint 29: Historical Replay & Backtesting *(Complete — 367 tests passing)*
+- **Focus**: Walk-forward daily simulation engine, standard performance metrics calculator, and multi-regime validation campaigns.
+- **Milestones**:
+  - [x] `BacktestEngine` stepping bar-by-bar with lookahead isolation.
+  - [x] Conservative same-bar exit tie-breaker (stop-loss exits first).
+  - [x] Wilder's ATR position sizing and stop-loss/target levels.
+  - [x] O(n) incremental fact tracking optimization (avoid O(n^2) re-computations).
+  - [x] `MetricsCalculator` tracking returns, drawdown, Sharpe, and profit factors.
+  - [x] `ValidationCampaign` enforcing trade count (>=20) and pass ratio (>=67%) gates.
+  - [x] Standalone proof script executing campaigns using synthetic data.
+  - [x] 5 unit tests in `tests/backtest/test_backtest.py`.
+  - [x] ADR-029 documenting engine rules, metrics, and validation gates.
+
+---
+
 ### 🟢 Sprint 28: Risk Engine *(Complete — 362 tests passing)*
 - **Focus**: Position sizing, ATR-based stop-loss, and risk/reward ratio calculations attached to Decisions from the Strategy Engine.
 - **Milestones**:
