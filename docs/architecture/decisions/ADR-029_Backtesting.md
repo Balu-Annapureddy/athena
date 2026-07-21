@@ -44,3 +44,28 @@ We implement `ValidationCampaign` (`core/backtest/validation.py`) to gate strate
 *   Only strategies that pass the strict validation campaign will have their `ThesisRecord` and `DecisionRecord` objects promoted to `BACKTESTED`.
 *   Strategies with positive results in a single run but failing the campaign will remain `UNVALIDATED`.
 *   We reuse all existing indicators, pattern engines, and strategies from previous sprints.
+
+---
+
+## Clarification: Synthetic Data and the Sprint 29 Proof Script
+
+The Sprint 29 proof script (`scripts/sprint29_proof.py`) runs a `ValidationCampaign`
+using deterministic SHA-256-seeded synthetic OHLCV data and reports:
+
+> *"Campaign approved. 6/6 runs passed (ratio 1.00 >= 0.67) with 24 total trades. PROMOTED TO BACKTESTED."*
+
+**This result is a mechanism demonstration, not real validation.** It proves that
+`BacktestEngine`, `GoldenCrossDeathCrossStrategy`, and `ValidationCampaign` wire
+together correctly, that both gates (trade count and pass ratio) operate as designed,
+and that the no-lookahead and same-bar tie-break guarantees hold end-to-end.
+
+It does not demonstrate that `GoldenCrossDeathCrossStrategy` has historically positive
+expectancy on real NSE price data. The promotion result should not carry over into any
+default configuration.
+
+**Consequence for Sprint 30 (see ADR-030):** `GoldenCrossDeathCrossStrategy` must be
+registered with `status=ValidationStatus.UNVALIDATED` in `StrategyRegistry.default()`
+until a `ValidationCampaign` against real recorded JSONL fixtures (committed to
+`fixtures/yfinance/`) passes both gates. Promotion to `BACKTESTED` requires a dedicated
+reviewed commit with the real-data campaign output as evidence.
+
