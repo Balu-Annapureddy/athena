@@ -34,7 +34,20 @@ class ValidationCampaign:
       - A strategy must clear a configured proportion of regimes (min_passing_ratio,
         defaulting to 0.67 - meaning roughly two-thirds of tested runs) to be promoted
         to BACKTESTED. This is a design choice to ensure strategy robustness.
+
+    DATA SOURCE REQUIREMENT (see ADR-030):
+      Promotion to BACKTESTED is only meaningful when this campaign is executed against
+      REAL historical market data — either live-fetched via YFinanceConnector over a
+      real date range, or replayed from JSONL fixtures recorded from such a fetch and
+      committed to the repository.
+
+      Running a campaign against synthetic or procedurally generated price data
+      demonstrates that the engine mechanics are correct (gates, no-lookahead,
+      tie-break) but does NOT constitute evidence of real-world strategy viability.
+      A campaign result of "passed" on synthetic data must NOT be used to register a
+      strategy with status=ValidationStatus.BACKTESTED in StrategyRegistry.
     """
+
 
     def __init__(
         self,

@@ -1,14 +1,21 @@
-"""Sprint 29 Backtest Validation Campaign Proof Script.
+"""Sprint 29 Backtest Validation Campaign — Mechanism Demonstration.
 
-Demonstrates that the real BacktestEngine, GoldenCrossDeathCrossStrategy, and
-ValidationCampaign classes work correctly end-to-end using deterministic synthetic
-OHLCV data fed through a MockYFinanceConnector — no live network calls.
+PURPOSE: Proves that BacktestEngine, GoldenCrossDeathCrossStrategy, and
+ValidationCampaign wire together correctly end-to-end. Specifically demonstrates:
+  - No-lookahead guarantee (facts for bar i are structurally inaccessible at bar i-1)
+  - Same-bar stop/target tie-break resolves to stop-loss (conservative convention)
+  - Both campaign gates operate correctly (min trades AND min pass ratio)
+  - MockYFinanceConnector injection works as expected in the engine
 
-Synthetic data: SHA-256 seeded random walk + 50-day sine cycle (guarantees crossover
-signals occur). Same approach used in tests/backtest/test_backtest.py.
+DATA NOTE (see ADR-029, ADR-030):
+  This script uses deterministic SHA-256-seeded SYNTHETIC OHLCV data. The campaign
+  result ("PROMOTED TO BACKTESTED") is a mechanism correctness result, NOT evidence
+  that GoldenCrossDeathCrossStrategy is viable on real NSE market data.
 
-Campaign structure: 3 tickers × 2 non-overlapping ~2.5-year windows = 6 runs.
-Gates: min 20 total trades AND min 0.67 pass ratio required for BACKTESTED promotion.
+  GoldenCrossDeathCrossStrategy MUST remain registered as UNVALIDATED in
+  StrategyRegistry.default() until a ValidationCampaign against real committed
+  JSONL fixtures (recorded via YFinanceConnector over a real date range) passes
+  both gates and is committed to the repository as evidence.
 """
 
 import sys
