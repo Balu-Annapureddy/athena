@@ -144,14 +144,15 @@ class TestYFinanceNormalizerFieldMapping(unittest.TestCase):
             self.assertEqual(p.entity, "TCS.NS")
 
     def test_tcs_ohlcv_all_positive(self):
+        """OHLC must be > 0; Volume >= 0 (zero is valid on holidays/halts)."""
         payloads = self._get_payloads("TCS.NS")
         for p in payloads:
             price: PricePayload = p.payload  # type: ignore[assignment]
-            self.assertGreater(price.open,   0.0)
-            self.assertGreater(price.high,   0.0)
-            self.assertGreater(price.low,    0.0)
-            self.assertGreater(price.close,  0.0)
-            self.assertGreater(price.volume, 0.0)
+            self.assertGreater(price.open,      0.0)
+            self.assertGreater(price.high,      0.0)
+            self.assertGreater(price.low,       0.0)
+            self.assertGreater(price.close,     0.0)
+            self.assertGreaterEqual(price.volume, 0.0)
 
     def test_tcs_close_is_reasonable_range(self):
         """TCS.NS close was ~2269 on 2026-07-17 — sanity-check NSE rupee range."""

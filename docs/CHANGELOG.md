@@ -9,6 +9,8 @@
 - **CLI Signal Script** (`scripts/daily_signal.py`): Runnable CLI script evaluating active strategies, updating the paper ledger, and printing a clean terminal signal table.
 - **Sprint 30 Test Suite** (`tests/portfolio/test_registry.py`, `tests/pipeline/test_daily_runner.py`, `tests/pipeline/test_paper_ledger.py`): 14 unit tests validating registry registration, lookback checks, skipped/unvalidated behaviors, same-bar tie-breakers, and trade/exit ledger logic with mocked 30-bar history.
 - **ADR-030**: Documents live signal pipeline, strategy registry invariants, default configuration rules, and paper trading scope.
+### Fixed
+- **TCS Test volume check** (`tests/data/test_yfinance_normalizer.py`): Updated `test_tcs_ohlcv_all_positive` to use `assertGreaterEqual` for volume checks (matching INFY/RELIANCE), accounting for zero-volume market holiday bars.
 
 ## [1.7.0] - 2026-07-21
 ### Added
