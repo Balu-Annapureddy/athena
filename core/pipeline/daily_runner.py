@@ -1,5 +1,6 @@
 """Daily runner executing daily strategy evaluations."""
 
+from dataclasses import dataclass
 import datetime
 from datetime import timedelta
 from typing import List
@@ -15,6 +16,16 @@ from core.patterns.engine import PatternEngine
 from core.decision_builder.portfolio import PortfolioState
 from core.decision_builder.policies import DecisionPolicy
 from core.decision_builder.context import DecisionEvaluationContext
+
+
+@dataclass(frozen=True)
+class RunnerBatchResult:
+    """Dataclass encapsulating batch execution outcome and aggregate health status."""
+    reports: List[SignalReport]
+    total_tickers: int
+    success_count: int
+    failed_count: int
+    is_degraded: bool
 
 
 class DailySignalRunner:
@@ -132,9 +143,32 @@ class DailySignalRunner:
 
         return reports
 
-    def run(self, tickers: List[str], run_date: datetime.date) -> List[SignalReport]:
-        """Run daily evaluations across multiple tickers."""
-        all_reports = []
-        for ticker in tickers:
-            all_reports.extend(self.run_ticker(ticker, run_date))
-        return all_reports
+    def run(self, tickers: List[str], run_date: datetime.date, verbose: bool = True) -> RunnerBatchResult:
+        """Run daily evaluations across multiple tickers with aggregate health tracking."""
+        all_reports: List[SignalReport] = []
+        success_count = 0
+        failed_count = 0
+        total_tickers = len(tickers)
+
+        for idx, ticker in enumerate(tickers, start=1):
+            if verbose and (idx % 25 == 1 or idx == total_tickers):
+                print(f"  [{idx}/{total_tickers}] Evaluating {ticker}...")
+            try:
+                reports = self.run_ticker(ticker, run_date)
+                all_reports.extend(reports)
+                success_count += 1
+            except Exception as e:
+                failed_count += 1
+                if verbose:
+                    print(f"  [ERROR {idx}/{total_tickers}] {ticker}: {e}")
+
+        fail_ratio = (failed_count / total_tickers) if total_tickers > 0 else 0.0
+        is_degraded = fail_ratio > 0.20
+
+        return RunnerBatchResult(
+            reports=all_reports,
+            total_tickers=total_tickers,
+            success_count=success_count,
+            failed_count=failed_count,
+            is_degraded=is_degraded,
+        )

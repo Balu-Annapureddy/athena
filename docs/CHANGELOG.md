@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.0.0] - 2026-07-22
+### Added
+- **NIFTY 500 Stock Universe** (`core/portfolio/universe.py`): Module loading and caching the official published NIFTY 500 index constituent list from NSE archive endpoints (`nsearchives.nseindia.com`). Formats tickers with `.NS` suffix and caches locally to `data/ind_nifty500list.csv` for offline fallback. Default universe in `daily_signal.py`.
+- **Rate-Limited Batch Execution & Health Tracking** (`core/pipeline/daily_runner.py`): Extended `DailySignalRunner.run()` to evaluate large ticker universes with live progress logging (`[120/500] Evaluating INFY.NS...`), `RateLimiter` sliding window delay between fetches, and `RunnerBatchResult` return tracking `success_count`, `failed_count`, and `is_degraded` (>20% failure threshold).
+- **Telegram Notifications & Alerts** (`core/pipeline/notifier.py`): Dispatches phone alerts via Telegram Bot API. Reads `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` strictly from `os.environ` (never printed or logged). Prints explicit warning to stdout if credentials are missing. Formats signal digest alerts (BUY/SELL), degraded execution alerts (>20% fetch failures), and workflow crash failure alerts.
+- **GitHub Actions Cloud Automation** (`.github/workflows/daily_signal.yml`): Workflow scheduled for Mon-Fri at 11:00 UTC (4:30 PM IST, 1-hour buffer after NSE close) with `workflow_dispatch` manual trigger. Configures `permissions: contents: write`, git identity (`athena-bot`), secret mapping (`TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`), automated paper ledger commit/push back to `main`, and `if: failure()` fallback alert step.
+- **Sprint 32 Test Suite** (`tests/portfolio/test_universe.py`, `tests/pipeline/test_notifier.py`, `tests/pipeline/test_daily_runner.py`): 9 unit tests verifying NIFTY 500 loading/caching, Telegram message formatting, secret token redaction/security, missing credential stdout warnings, and batch run degraded health tracking.
+
 ## [1.9.0] - 2026-07-22
 ### Added
 - **Real Multi-Year Historical Fixtures** (`fixtures/yfinance_historical/`): Recorded and committed 2,223 daily OHLCV bars each for `RELIANCE.NS`, `INFY.NS`, and `TCS.NS` spanning 2017-01-01 to 2025-12-31 via `YFinanceConnector` with recorder-first pattern.

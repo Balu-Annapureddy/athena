@@ -14,6 +14,18 @@ $$\text{Specification} \longrightarrow \text{Implementation} \longrightarrow \te
 
 ## Sprints
 
+### 🟢 Sprint 32: NIFTY 500 Universe & Telegram Cloud Automation *(Complete — 398 tests passing)*
+- **Focus**: Universe expansion to 500 NIFTY constituents, rate-limited batch daily runner, aggregate execution health tracking, Telegram alerts, and GitHub Actions cloud automation.
+- **Milestones**:
+  - [x] Verified and implemented `get_nifty_500_tickers()` loading official published NIFTY 500 list from `nsearchives.nseindia.com` (with `.NS` format and local cache fallback).
+  - [x] Updated `daily_signal.py` CLI to default to `NIFTY_500` universe with optional ticker list override.
+  - [x] Extended `DailySignalRunner.run()` with live progress logging (`[120/500] Evaluating INFY.NS...`), `RateLimiter` sliding window delay, and `RunnerBatchResult` tracking `is_degraded` status (>20% failure threshold).
+  - [x] Built `TelegramNotifier` reading credentials strictly from environment variables (`os.environ`), with explicit stdout warning when missing, zero secret logging, signal digest alerts (BUY/SELL), degraded execution alerts, and crash alerts.
+  - [x] Created GitHub Actions workflow `.github/workflows/daily_signal.yml` scheduled Mon-Fri at 11:00 UTC (4:30 PM IST), `permissions: contents: write`, git identity `athena-bot`, secret mapping, paper trade ledger commit/push, and `if: failure()` Telegram alert step.
+  - [x] Added 9 unit tests in `tests/portfolio/test_universe.py`, `tests/pipeline/test_notifier.py`, `tests/pipeline/test_daily_runner.py` with mocked HTTP calls and token redaction checks (398 tests passing).
+
+---
+
 ### 🟢 Sprint 31: Futures & Options — Data Foundation & Real Strategy Validation *(Complete — 389 tests passing)*
 - **Focus**: Derivatives payload contracts, NSE Option Chain API connector with session cookies and rate-limiting, dynamic expiry parsing, Black-Scholes-Merton option Greeks computation, and real multi-year historical validation campaign execution.
 - **Milestones**:

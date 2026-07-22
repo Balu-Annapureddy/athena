@@ -179,6 +179,28 @@ class TestDailySignalRunner(unittest.TestCase):
         self.assertIsNotNone(reports[0].target_price)
         self.assertIsNotNone(reports[0].position_size)
 
+    def test_runner_batch_run_health_tracking(self) -> None:
+        """Verify runner.run() computes batch success, failure, and degraded status correctly."""
+        registry = StrategyRegistry()
+        strategy = GoldenCrossDeathCrossStrategy(fast_period=5, slow_period=10)
+        registry.register(strategy, status=ValidationStatus.BACKTESTED)
+
+        runner = DailySignalRunner(registry, include_unvalidated=False)
+        payloads = [
+            self._create_bar("RELIANCE.NS", f"2026-07-{(i+1):02d}", 100.0)
+            for i in range(15)
+        ]
+        mock_connector = MockYFinanceConnector(payloads)
+        runner._connector = mock_connector
+
+        # RELIANCE.NS succeeds, UNKNOWN.NS fails
+        res = runner.run(["RELIANCE.NS", "UNKNOWN1.NS", "UNKNOWN2.NS"], date(2026, 7, 15), verbose=False)
+        self.assertEqual(res.total_tickers, 3)
+        self.assertEqual(res.success_count, 1)
+        self.assertEqual(res.failed_count, 2)
+        # Failure rate = 2/3 (66.7%) > 20% -> is_degraded must be True
+        self.assertTrue(res.is_degraded)
+
 
 if __name__ == "__main__":
     unittest.main()
