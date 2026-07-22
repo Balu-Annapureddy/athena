@@ -155,6 +155,22 @@ def _deserialize_connector_payload(data: Dict[str, Any]) -> ConnectorPayload:
             frequency=inner_data["frequency"],
             revision_flag=bool(inner_data.get("revision_flag", False)),
         )
+    elif payload_class == "OptionContractPayload":
+        from core.data.payloads.options import OptionContractPayload
+        inner = OptionContractPayload(
+            strike=float(inner_data["strike"]),
+            expiry_date=str(inner_data["expiry_date"]),
+            option_type=str(inner_data["option_type"]),
+            underlying=str(inner_data["underlying"]),
+            open_interest=int(inner_data["open_interest"]),
+            change_in_open_interest=int(inner_data["change_in_open_interest"]),
+            implied_volatility=float(inner_data["implied_volatility"]),
+            last_price=float(inner_data["last_price"]),
+            bid=float(inner_data["bid"]),
+            ask=float(inner_data["ask"]),
+            volume=int(inner_data["volume"]),
+            underlying_value=float(inner_data["underlying_value"]),
+        )
     else:
         raise ValueError(f"Unknown payload_class in fixture: {payload_class!r}")
 

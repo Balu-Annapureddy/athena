@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.9.0] - 2026-07-22
+### Added
+- **Option Contract Payload** (`core/data/payloads/options.py`): Strongly typed `OptionContractPayload` value object for derivative option contracts carrying strike, expiry, CE/PE option type, underlying symbol, OI, change in OI, IV, last price, bid, ask, volume, and underlying value. Added `PayloadType.OPTIONS` to canonical data contracts.
+- **NSE Option Chain Normalizer** (`core/data/normalization/nse_option_chain_provider.py`): Maps raw nested NSE option chain response records to `OptionContractPayload`. Includes `parse_expiry_date` transformer handling `DD-MMM-YYYY` (e.g. "28-Nov-2025") and ISO formats dynamically. Explicitly documents that Greeks are computed downstream, not fetched.
+- **Black-Scholes-Merton Option Greeks** (`core/derivatives/greeks.py`): Pure stdlib Python implementation of the Black-Scholes-Merton (1973) model. Calculates Delta, Gamma, Theta, Vega, and Rho for Call and Put options with limit-handling for $T \le 0$ and $\sigma \le 0$.
+- **NSE Option Chain Connector** (`core/data/connectors/nse_option_chain_connector.py`): Connector for official NSE option chain API. Uses `requests.Session` cookie initialization (`https://www.nseindia.com/`), throttled via `RateLimiter` (3 requests / 60 seconds policy), and extracts expiries dynamically from `records.expiryDates`. Integrates with `PayloadRecorder` for offline fixture capture.
+- **Sprint 31 Test Suite** (`tests/derivatives/test_greeks.py`, `tests/data/test_nse_option_chain.py`): 8 unit tests verifying BSM Greeks math against exact hand-calculated Hull textbook values, boundary conditions, normalizer field mappings, and rate limiter policy configuration.
+- **ADR-031**: Documents options ingestion, session handling, rate limits, dynamic expiry date resolution, and computed BSM Greeks.
+
 ## [1.8.0] - 2026-07-21
 ### Added
 - **Strategy Registry** (`core/portfolio/registry.py`): Light strategy portfolio mapping strategies to `ValidationStatus` (`UNVALIDATED` vs `BACKTESTED`), enabling, and portfolio weights. Enforces safety invariants: `GoldenCrossDeathCrossStrategy` defaults to `UNVALIDATED` since no real-data campaigns are committed.

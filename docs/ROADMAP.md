@@ -14,6 +14,20 @@ $$\text{Specification} \longrightarrow \text{Implementation} \longrightarrow \te
 
 ## Sprints
 
+### 🟢 Sprint 31: Futures & Options — Data Foundation *(Complete — 389 tests passing)*
+- **Focus**: Derivatives payload contracts, NSE Option Chain API connector with session cookies and rate-limiting, dynamic expiry parsing, and Black-Scholes-Merton option Greeks computation.
+- **Milestones**:
+  - [x] `OptionContractPayload` value object carrying strike, expiry, CE/PE, OI, IV, bid/ask, volume, underlying value.
+  - [x] `PayloadType.OPTIONS` enum and `ConnectorPayload` contract validation.
+  - [x] `NSEOptionChainNormalizer` mapping raw NSE option entries with `parse_expiry_date` transformer handling `DD-MMM-YYYY` dynamically.
+  - [x] `NSEOptionChainConnector` initializing session cookies (`https://www.nseindia.com/`), throttled via `RateLimiter` (3 requests / 60 seconds).
+  - [x] Dynamic expiry resolution from `records.expiryDates` (no hardcoded weekday assumptions).
+  - [x] `core/derivatives/greeks.py` pure stdlib implementation of Black-Scholes-Merton (1973) Delta, Gamma, Theta, Vega, and Rho.
+  - [x] 8 unit tests in `tests/derivatives/test_greeks.py` and `tests/data/test_nse_option_chain.py` verifying Greeks against hand-calculated textbook values to 4 decimal places.
+  - [x] ADR-031 documenting option ingestion, rate-limiting, dynamic expiries, and computed Greeks.
+
+---
+
 ### 🟢 Sprint 30: Live Signal Pipeline & Paper Trading Harness *(Complete — 381 tests passing)*
 - **Focus**: Strategy registry management, daily runner orchestrating technical evaluations, paper trading ledger persistence, and terminal CLI.
 - **Milestones**:
