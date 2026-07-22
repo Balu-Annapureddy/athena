@@ -1,0 +1,58 @@
+name: Athena Daily Signal Automation
+
+on:
+  schedule:
+    # Run at 11:00 UTC (4:30 PM IST) on weekdays (Mon-Fri)
+    - cron: '0 11 * * 1-5'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  run-daily-signals:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+
+      - name: Configure Git identity
+        run: |
+          git config user.name "athena-bot"
+          git config user.email "actions@github.com"
+
+      - name: Run Daily Signal Pipeline
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python scripts/daily_signal.py
+
+      - name: Commit and push updated paper trading ledger
+        run: |
+          git add signals/paper_trades.jsonl
+          git diff --quiet && git diff --staged --quiet || (git commit -m "auto: update paper trading ledger [skip ci]" && git push)
+
+      - name: Send Telegram Failure Alert on Error
+        if: failure()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python -c "
+          import os, sys
+          from core.pipeline.notifier import TelegramNotifier
+          notifier = TelegramNotifier()
+          notifier.send_failure_alert('GitHub Actions workflow execution failed. Check workflow run logs for details.')
+          "
