@@ -120,7 +120,8 @@ class ValidationCampaign:
                     "avg_pnl_per_trade": metrics.avg_pnl_per_trade,
                     "total_return": metrics.total_return,
                     "win_rate": metrics.win_rate,
-                    "is_passing": is_passing
+                    "is_passing": is_passing,
+                    "metrics": metrics,
                 })
 
         passing_ratio = passing_runs / total_runs if total_runs > 0 else 0.0
