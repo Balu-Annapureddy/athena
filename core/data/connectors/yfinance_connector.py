@@ -21,6 +21,8 @@ never yfinance directly.
 """
 
 import hashlib
+import json
+import os
 import uuid
 from datetime import datetime, timezone
 from typing import List
@@ -30,7 +32,7 @@ import yfinance as yf
 from core.data.connectors.base import BaseConnector, Capabilities
 from core.data.contract import ConnectorPayload
 from core.data.normalization.yfinance_provider import YFinanceNormalizer
-from core.infrastructure.recorder import PayloadRecorder
+from core.infrastructure.recorder import PayloadRecorder, _deserialize_connector_payload
 
 
 class YFinanceConnector(BaseConnector):
@@ -92,6 +94,35 @@ class YFinanceConnector(BaseConnector):
             NormalizationError: If yfinance returns unexpected field shapes.
             ValueError: If yfinance returns an empty DataFrame (e.g. invalid ticker).
         """
+        # Check if local fixture file exists for offline replay
+        fixture_path = os.path.join(self._fixture_dir, f"{self.name}_{entity.replace('/', '_')}.jsonl")
+        force_network = kwargs.get("force_network", False)
+
+        if not force_network and os.path.exists(fixture_path) and os.path.getsize(fixture_path) > 0:
+            start_str = kwargs.get("start")
+            end_str = kwargs.get("end")
+            start_dt = datetime.strptime(start_str, "%Y-%m-%d").replace(tzinfo=timezone.utc) if start_str else None
+            end_dt = datetime.strptime(end_str, "%Y-%m-%d").replace(tzinfo=timezone.utc) if end_str else None
+
+            payloads: List[ConnectorPayload] = []
+            with open(fixture_path, "r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if not line:
+                        continue
+                    rec = json.loads(line)
+                    cp = _deserialize_connector_payload(rec["normalized"])
+                    pub_ts = cp.provenance.publication_timestamp
+                    if start_dt and pub_ts < start_dt:
+                        continue
+                    if end_dt and pub_ts > end_dt:
+                        continue
+                    payloads.append(cp)
+
+            if payloads:
+                payloads.sort(key=lambda p: p.provenance.publication_timestamp)
+                return payloads
+
         run_id = f"run-yf-{uuid.uuid4().hex[:8]}"
 
         ticker = yf.Ticker(entity)
@@ -127,7 +158,7 @@ class YFinanceConnector(BaseConnector):
             connector_name=self.name,
         )
 
-        payloads: List[ConnectorPayload] = []
+        payloads = []
 
         for ts, row in df.iterrows():
             # Convert pandas Timestamp (tz=Asia/Kolkata) → ISO-8601 UTC string

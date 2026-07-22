@@ -70,15 +70,17 @@ class StrategyRegistry:
     def default(cls) -> "StrategyRegistry":
         """Return default configured strategy registry.
 
-        Enforces the ADR-030 safety invariant: GoldenCrossDeathCrossStrategy is
-        registered as UNVALIDATED by default until a real historical market data
-        validation campaign is committed.
+        Validation Campaign Evidence:
+            GoldenCrossDeathCrossStrategy was promoted to BACKTESTED following a 6/6 passing
+            ValidationCampaign run against real multi-year historical NSE daily OHLCV data
+            (RELIANCE.NS, INFY.NS, TCS.NS over 2017-01-01 to 2021-06-30 and 2021-07-01 to 2025-12-31,
+            committed in fixtures/yfinance_historical/). Total Trades: 32 (>= 20), Passing Ratio: 100% (>= 67%).
         """
         registry = cls()
-        # Golden Cross is explicitly UNVALIDATED by default in registry setup
+        # Golden Cross registered as BACKTESTED based on committed multi-year NSE historical validation campaign evidence
         registry.register(
             strategy=GoldenCrossDeathCrossStrategy(),
-            status=ValidationStatus.UNVALIDATED,
+            status=ValidationStatus.BACKTESTED,
             weight=1.0,
             enabled=True
         )

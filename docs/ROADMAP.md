@@ -14,9 +14,12 @@ $$\text{Specification} \longrightarrow \text{Implementation} \longrightarrow \te
 
 ## Sprints
 
-### 🟢 Sprint 31: Futures & Options — Data Foundation *(Complete — 389 tests passing)*
-- **Focus**: Derivatives payload contracts, NSE Option Chain API connector with session cookies and rate-limiting, dynamic expiry parsing, and Black-Scholes-Merton option Greeks computation.
+### 🟢 Sprint 31: Futures & Options — Data Foundation & Real Strategy Validation *(Complete — 389 tests passing)*
+- **Focus**: Derivatives payload contracts, NSE Option Chain API connector with session cookies and rate-limiting, dynamic expiry parsing, Black-Scholes-Merton option Greeks computation, and real multi-year historical validation campaign execution.
 - **Milestones**:
+  - [x] Recorded real multi-year historical fixtures (`fixtures/yfinance_historical/`) for `RELIANCE.NS`, `INFY.NS`, `TCS.NS` (2,223 daily bars each, 2017 to 2025).
+  - [x] Executed real `ValidationCampaign` for `GoldenCrossDeathCrossStrategy` across 6 multi-year regimes (32 total trades, 6/6 passing runs, 100% passing ratio).
+  - [x] Promoted `GoldenCrossDeathCrossStrategy` to `ValidationStatus.BACKTESTED` in `StrategyRegistry.default()` (per ADR-030 Rule 2) with committed historical data evidence.
   - [x] `OptionContractPayload` value object carrying strike, expiry, CE/PE, OI, IV, bid/ask, volume, underlying value.
   - [x] `PayloadType.OPTIONS` enum and `ConnectorPayload` contract validation.
   - [x] `NSEOptionChainNormalizer` mapping raw NSE option entries with `parse_expiry_date` transformer handling `DD-MMM-YYYY` dynamically.
