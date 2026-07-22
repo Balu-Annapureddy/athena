@@ -13,6 +13,7 @@ class PayloadType(Enum):
     FUNDAMENTAL = "FUNDAMENTAL"
     NEWS = "NEWS"
     ECONOMIC = "ECONOMIC"
+    OPTIONS = "OPTIONS"
 
 
 class SourceType(Enum):
@@ -77,6 +78,8 @@ class ConnectorPayload:
         validate_non_empty_string(self.source_id, "source_id")
         validate_non_empty_string(self.entity, "entity")
         
+        from core.data.payloads.options import OptionContractPayload
+
         # Cross-validate that the payload type matches the concrete value object class
         if self.payload_type == PayloadType.PRICE and not isinstance(self.payload, PricePayload):
             raise DomainValidationError("PayloadType.PRICE payload must be an instance of PricePayload")
@@ -86,3 +89,5 @@ class ConnectorPayload:
             raise DomainValidationError("PayloadType.NEWS payload must be an instance of NewsPayload")
         elif self.payload_type == PayloadType.ECONOMIC and not isinstance(self.payload, EconomicPayload):
             raise DomainValidationError("PayloadType.ECONOMIC payload must be an instance of EconomicPayload")
+        elif self.payload_type == PayloadType.OPTIONS and not isinstance(self.payload, OptionContractPayload):
+            raise DomainValidationError("PayloadType.OPTIONS payload must be an instance of OptionContractPayload")
