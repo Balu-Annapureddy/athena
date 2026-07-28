@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.1.0] - 2026-07-26
+### Fixed
+- **RiskSellDecisionRule Position Check** (`core/decision_builder/rules.py`): Updated `RiskSellDecisionRule.assemble()` to inspect `PortfolioState` positions for an open position (`quantity > 0`) in the target security before proposing a `SELL` action. Prevents misleading live liquidation alerts when no position is held.
+- **RecommendationAction.AVOID Enum** (`core/domain/enums/action.py`): Added `AVOID = "AVOID"` to `RecommendationAction`. When a bearish or invalidated thesis occurs for a security with no open paper position, `RiskSellDecisionRule` emits `RecommendationAction.AVOID` with informational explanation `"Bearish signal — no position currently held, this is informational, not a liquidation order."`
+- **Daily Signal Concurrency Control** (`.github/workflows/daily_signal.yml`): Added `concurrency: { group: daily-signal, cancel-in-progress: false }` to prevent duplicate overlapping runs when manually or schedule triggered.
+- **Sprint 29 Validation Audit**: Verified that the committed 32-trade historical validation campaign for `GoldenCrossDeathCrossStrategy` (commit 7432da2) executed exactly 16 LONG and 16 SHORT trades (50/50 split), confirming Death Cross / SELL-side signals were fully exercised and tested in the campaign.
+### Added
+- **Unit Tests** (`tests/decision_builder/test_rules.py`): Added unit tests for `RiskSellDecisionRule` verifying `SELL` emission with liquidation wording when a position is held and `AVOID` emission with informational wording when no position is held.
+
 ## [2.0.0] - 2026-07-22
 ### Added
 - **NIFTY 500 Stock Universe** (`core/portfolio/universe.py`): Module loading and caching the official published NIFTY 500 index constituent list from NSE archive endpoints (`nsearchives.nseindia.com`). Formats tickers with `.NS` suffix and caches locally to `data/ind_nifty500list.csv` for offline fallback. Default universe in `daily_signal.py`.

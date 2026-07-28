@@ -113,16 +113,32 @@ class RiskSellDecisionRule(DecisionCandidateRule):
         if not self.can_assemble(thesis, portfolio, policy):
             return []
 
+        has_position = (
+            portfolio is not None
+            and portfolio.positions is not None
+            and any(
+                pos.security_id == thesis.target_security_id and pos.quantity > 0
+                for pos in portfolio.positions
+            )
+        )
+
+        if has_position:
+            proposed_action = RecommendationAction.SELL
+            explanation = "Thesis is bearish or invalidated — propose SELL/liquidate position."
+        else:
+            proposed_action = RecommendationAction.AVOID
+            explanation = "Bearish signal — no position currently held, this is informational, not a liquidation order."
+
         rationale = DecisionRationale(
             supporting_thesis_ids=[thesis.id],
             policy_constraints=[],
             rejected_alternatives=["HOLD", "NO_ACTION"],
-            explanation="Thesis is bearish or invalidated — propose SELL/liquidate position."
+            explanation=explanation
         )
 
         return [self._make_candidate(
             thesis_id=thesis.id,
-            proposed_action=RecommendationAction.SELL,
+            proposed_action=proposed_action,
             target_weight=0.0,
             rationale=rationale,
             policy=policy

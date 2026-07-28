@@ -81,7 +81,11 @@ class TelegramNotifier:
 
         for r in active_reports:
             emoji = "🟢" if r.action == RecommendationAction.BUY else "🔴"
-            lines.append(f"{emoji} *{r.action.value}*: `{r.ticker}` ({r.strategy_name})")
+            horizon_tag = (
+                "⚡ [INTRADAY]" if getattr(r, "trade_horizon", "SHORT_TERM") == "INTRADAY"
+                else ("📈 [LONG-TERM TREND]" if getattr(r, "trade_horizon", "SHORT_TERM") == "LONG_TERM" else "🎯 [SHORT-TERM SWING]")
+            )
+            lines.append(f"{emoji} *{r.action.value}* {horizon_tag}: `{r.ticker}` ({r.strategy_name})")
             if r.entry_price is not None:
                 lines.append(f"• Entry  : ₹{r.entry_price:,.2f}")
             if r.stop_loss_price is not None:

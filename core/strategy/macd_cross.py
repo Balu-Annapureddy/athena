@@ -34,6 +34,11 @@ class MACDSignalCrossStrategy(BaseStrategy):
     def version(self) -> str:
         return "1.0.0"
 
+    @property
+    def required_history_bars(self) -> int:
+        # MACD(12,26,9): needs slow+signal bars to warm up EMA
+        return self._slow + self._signal + 5
+
     def evaluate(
         self,
         facts: List[Fact],

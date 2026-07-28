@@ -9,6 +9,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: daily-signal
+  cancel-in-progress: false
+
 jobs:
   run-daily-signals:
     runs-on: ubuntu-latest

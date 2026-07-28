@@ -70,7 +70,7 @@ class BaseStrategy(ABC):
         """
         from core.facts.taxonomy import FactType
 
-        bar_map = {}
+        bar_map: Dict = {}
         bar_order = []
         obs_ids = []
 
@@ -98,6 +98,8 @@ class BaseStrategy(ABC):
         volumes = [bar_map[oid].get(FactType.PRICE_VOLUME.value, 0.0) for oid in bar_order]
 
         return opens, highs, lows, closes, volumes, obs_ids
+
+
 
     def _create_pipeline_records(
         self,

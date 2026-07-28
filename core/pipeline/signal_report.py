@@ -19,4 +19,5 @@ class SignalReport:
     target_price: Optional[float] = None
     position_size: Optional[int] = None
     validation_status: ValidationStatus = ValidationStatus.UNVALIDATED
+    trade_horizon: str = "SHORT_TERM"
     reasoning: str = ""

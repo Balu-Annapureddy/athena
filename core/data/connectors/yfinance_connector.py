@@ -94,15 +94,16 @@ class YFinanceConnector(BaseConnector):
             NormalizationError: If yfinance returns unexpected field shapes.
             ValueError: If yfinance returns an empty DataFrame (e.g. invalid ticker).
         """
-        # Check if local fixture file exists for offline replay
-        fixture_path = os.path.join(self._fixture_dir, f"{self.name}_{entity.replace('/', '_')}.jsonl")
+        interval = kwargs.get("interval", "1d")
+        interval_suffix = f"_{interval}" if interval != "1d" else ""
+        fixture_path = os.path.join(self._fixture_dir, f"{self.name}_{entity.replace('/', '_')}{interval_suffix}.jsonl")
         force_network = kwargs.get("force_network", False)
 
         if not force_network and os.path.exists(fixture_path) and os.path.getsize(fixture_path) > 0:
             start_str = kwargs.get("start")
             end_str = kwargs.get("end")
-            start_dt = datetime.strptime(start_str, "%Y-%m-%d").replace(tzinfo=timezone.utc) if start_str else None
-            end_dt = datetime.strptime(end_str, "%Y-%m-%d").replace(tzinfo=timezone.utc) if end_str else None
+            start_dt = datetime.strptime(start_str, "%Y-%m-%d").replace(tzinfo=timezone.utc) if start_str and len(start_str) == 10 else None
+            end_dt = datetime.strptime(end_str, "%Y-%m-%d").replace(tzinfo=timezone.utc) if end_str and len(end_str) == 10 else None
 
             payloads: List[ConnectorPayload] = []
             with open(fixture_path, "r", encoding="utf-8") as f:
@@ -119,25 +120,29 @@ class YFinanceConnector(BaseConnector):
                         continue
                     payloads.append(cp)
 
-            if payloads:
-                payloads.sort(key=lambda p: p.provenance.publication_timestamp)
-                return payloads
+            # Always return from fixture — never fall through to live network
+            payloads.sort(key=lambda p: p.provenance.publication_timestamp)
+            return payloads
 
         run_id = f"run-yf-{uuid.uuid4().hex[:8]}"
 
         ticker = yf.Ticker(entity)
         
-        timeout = kwargs.get("timeout", 10)
-        if "start" in kwargs or "end" in kwargs:
+        timeout = kwargs.get("timeout", 15)
+        start_str = kwargs.get("start", "")
+        end_str = kwargs.get("end", "")
+        use_date_range = len(start_str) == 10 and len(end_str) == 10
+        if use_date_range:
             df = ticker.history(
-                start=kwargs.get("start"),
-                end=kwargs.get("end"),
+                start=start_str,
+                end=end_str,
+                interval=interval,
                 auto_adjust=True,
                 timeout=timeout
             )
         else:
             period = kwargs.get("period", "2d")
-            df = ticker.history(period=period, auto_adjust=True, timeout=timeout)
+            df = ticker.history(period=period, interval=interval, auto_adjust=True, timeout=timeout)
 
         if df.empty:
             raise ValueError(
@@ -158,6 +163,10 @@ class YFinanceConnector(BaseConnector):
             connector_name=self.name,
         )
 
+        # Use an interval-suffixed entity name so sub-daily fixtures get their
+        # own file (e.g. RELIANCE.NS_15m) and don't overwrite the daily one.
+        record_entity = f"{entity}{interval_suffix}" if interval_suffix else entity
+
         payloads = []
 
         for ts, row in df.iterrows():
@@ -168,7 +177,7 @@ class YFinanceConnector(BaseConnector):
             # Build raw dict matching the format YFinanceNormalizer expects
             raw = {
                 "__timestamp__": ts_iso,
-                "__timeframe__": "1D",
+                "__timeframe__": interval.upper(),
                 "Open":          row["Open"],
                 "High":          row["High"],
                 "Low":           row["Low"],
@@ -179,7 +188,7 @@ class YFinanceConnector(BaseConnector):
             }
 
             normalized = self._normalizer.normalize(raw, provider_metadata)
-            recorder.record(entity=entity, raw=raw, normalized=normalized)
+            recorder.record(entity=record_entity, raw=raw, normalized=normalized)
             payloads.append(normalized)
 
         return payloads

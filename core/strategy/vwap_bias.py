@@ -29,6 +29,11 @@ class VWAPBiasStrategy(BaseStrategy):
     def version(self) -> str:
         return "1.0.0"
 
+    @property
+    def required_history_bars(self) -> int:
+        # VWAP crossover only needs current and previous bar
+        return 10
+
     def evaluate(
         self,
         facts: List[Fact],

@@ -142,13 +142,28 @@ class TestGoldenCrossDeathCross(BaseStrategyTest):
             facts.append(self._make_price_fact("PRICE_LOW", c, obs_ids[i]))
 
         strategy = GoldenCrossDeathCrossStrategy(fast_period=2, slow_period=4)
+        
+        # 1. No position held -> emits AVOID (informational bearish signal)
         result = strategy.evaluate(facts, self.portfolio, self.policy, self.ctx)
-
         self.assertIsNotNone(result)
         thesis, thesis_rec, decision, decision_rec = result
         self.assertEqual(thesis.thesis_direction, ThesisDirection.BEARISH)
-        self.assertEqual(decision.action, RecommendationAction.SELL)
+        self.assertEqual(decision.action, RecommendationAction.AVOID)
         self.assertEqual(thesis_rec.validation_status, ValidationStatus.UNVALIDATED)
+
+        # 2. Position held -> emits SELL (liquidation order)
+        from core.decision_builder.portfolio import Position
+        pos = Position(security_id="RELIANCE.NS", quantity=10.0, average_cost=100.0, market_value=1000.0, allocation=0.01)
+        portfolio_with_pos = PortfolioState(cash_available=500_000.0, total_value=1_000_000.0, positions=[pos])
+        ctx_with_pos = DecisionEvaluationContext(
+            current_time=datetime.now(timezone.utc),
+            active_policy=self.policy,
+            portfolio=portfolio_with_pos
+        )
+        result_with_pos = strategy.evaluate(facts, portfolio_with_pos, self.policy, ctx_with_pos)
+        self.assertIsNotNone(result_with_pos)
+        _, _, decision_held, _ = result_with_pos
+        self.assertEqual(decision_held.action, RecommendationAction.SELL)
 
     def test_golden_cross_no_signal_without_cross(self):
         """No Golden Cross signal is generated when fast SMA stays below slow SMA."""

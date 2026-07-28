@@ -34,6 +34,11 @@ class BreakoutVolumeConfirmationStrategy(BaseStrategy):
     def version(self) -> str:
         return "1.0.0"
 
+    @property
+    def required_history_bars(self) -> int:
+        # Needs lookback_period bars for high/low channel + 1 for current bar
+        return self._lookback_period + 5
+
     def evaluate(
         self,
         facts: List[Fact],

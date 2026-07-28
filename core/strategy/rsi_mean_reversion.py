@@ -38,6 +38,11 @@ class RSIMeanReversionStrategy(BaseStrategy):
     def version(self) -> str:
         return "1.0.0"
 
+    @property
+    def required_history_bars(self) -> int:
+        # RSI(14) needs 14+1 bars; add small buffer for candlestick pattern lookback.
+        return self._rsi_period + 10
+
     def evaluate(
         self,
         facts: List[Fact],

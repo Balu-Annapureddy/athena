@@ -4,9 +4,14 @@ Guarantees no lookahead bias by slicing data and derived pattern facts bar-by-ba
 """
 
 import math
+from collections import deque
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Deque, Dict, List, Optional, Tuple
+
+# Maximum number of recent bars' facts passed to strategy.evaluate() per bar.
+# Covers the longest indicator lookback (GoldenCross 200-SMA) with headroom.
+_STRATEGY_WINDOW = 300
 
 from core.data.connectors.yfinance_connector import YFinanceConnector
 from core.data.factory import ObservationFactory
@@ -52,29 +57,15 @@ class BacktestEngine:
         end_date: str,
         account_size: float,
         risk_percent: float = 0.01,
-        atr_multiplier: float = 2.0
+        atr_multiplier: float = 2.0,
+        interval: str = "1d",
+        **kwargs
     ) -> Dict[str, Any]:
-        """Run walk-forward daily backtest for a strategy on a ticker.
-
-        Args:
-            strategy: Pluggable strategy instance inheriting from BaseStrategy.
-            ticker: NSE ticker symbol (e.g. "RELIANCE.NS").
-            start_date: Start date string (YYYY-MM-DD).
-            end_date: End date string (YYYY-MM-DD).
-            account_size: Starting capital.
-            risk_percent: Maximum capital risk percent per trade (defaults to 1%).
-            atr_multiplier: ATR stop loss multiplier.
-
-        Returns:
-            Dictionary containing:
-                - "metrics": BacktestMetrics
-                - "trades": List[TradeRecord]
-                - "equity_curve": List[float]
-                - "thesis_records": List[ThesisRecord]
-                - "decision_records": List[DecisionRecord]
-        """
-        # 1. Fetch daily data for full range
-        payloads = self._connector.fetch_data(ticker, start=start_date, end=end_date, timeout=1)
+        """Run walk-forward backtest for a strategy on a ticker."""
+        # 1. Fetch data for full range
+        fetch_kwargs = {"start": start_date, "end": end_date, "interval": interval, "timeout": 1}
+        fetch_kwargs.update(kwargs)
+        payloads = self._connector.fetch_data(ticker, **fetch_kwargs)
         if not payloads:
             raise ValueError(f"No price data returned for ticker {ticker} in range {start_date} to {end_date}")
 
@@ -120,17 +111,25 @@ class BacktestEngine:
 
         dec_policy = DecisionPolicy()
 
-        # Cumulative fact lists grown incrementally — O(1) append per bar.
+        # Rolling window of recent facts — bounded to strategy's required_history_bars + buffer.
+        # Using strategy.required_history_bars keeps window small for short-lookback strategies
+        # (RSI: 15 bars, MACD: 35 bars) and correct for long-lookback ones (GoldenCross: 201).
         # No-lookahead: facts for bar i are only appended at the start of iteration i.
-        cumulative_price_facts: List = []
-        cumulative_pattern_facts: List = []
+        strategy_window = getattr(strategy, 'required_history_bars', _STRATEGY_WINDOW) + 5
+        facts_window: Deque = deque()
 
         # 3. Walk forward day-by-day
         for i in range(num_bars):
             # Append this bar's facts before strategy evaluation (no future data visible)
             obs_id_str = str(observations[i].id)
-            cumulative_price_facts.extend(price_facts_by_obs.get(obs_id_str, []))
-            cumulative_pattern_facts.extend(pattern_facts_by_obs.get(obs_id_str, []))
+            bar_facts = (
+                price_facts_by_obs.get(obs_id_str, [])
+                + pattern_facts_by_obs.get(obs_id_str, [])
+            )
+            facts_window.append(bar_facts)
+            # Evict bars older than strategy_window
+            if len(facts_window) > strategy_window:
+                facts_window.popleft()
 
             current_payload = payloads[i]
             price = current_payload.payload
@@ -203,9 +202,8 @@ class BacktestEngine:
 
             # If no active position, run pipeline to check for entry signal
             if active_position is None:
-                # No-lookahead guaranteed: cumulative lists only contain facts
+                # No-lookahead guaranteed: cumulative_facts only contains facts
                 # up to and including bar i (appended at the top of this iteration).
-                merged_facts = cumulative_price_facts + cumulative_pattern_facts
 
                 
                 # Build simulated portfolio state
@@ -220,9 +218,13 @@ class BacktestEngine:
                     existing_records=[]
                 )
                 
+                # Flatten recent window into a flat list for strategy evaluation.
+                # This is O(window_size) not O(total_bars), keeping the loop linear.
+                window_facts = [f for bar in facts_window for f in bar]
+
                 # Evaluate strategy rules
                 result = strategy.evaluate(
-                    facts=merged_facts,
+                    facts=window_facts,
                     portfolio=sim_portfolio,
                     dec_policy=dec_policy,
                     dec_ctx=dec_ctx
@@ -235,42 +237,50 @@ class BacktestEngine:
                     thesis_records.append(thesis_rec)
                     decision_records.append(decision_rec)
                     
-                    # Check if action triggers buy/sell
+                    # Determine entry direction from thesis direction, not decision action.
+                    # RiskSellDecisionRule returns AVOID (not SELL) when no position is held —
+                    # correct for production but would suppress all SHORT entries in backtest.
+                    # The thesis direction is the authoritative signal for backtest entry.
+                    from core.domain.enums import ThesisDirection
+                    thesis_dir = getattr(thesis_rec, "thesis_direction", None)
+                    is_bullish = thesis_dir == ThesisDirection.BULLISH
+                    is_bearish = thesis_dir == ThesisDirection.BEARISH
+
+                    # Also accept BUY/SELL action as override (for strategies that set it explicitly)
                     action = decision.action
-                    if action in (RecommendationAction.BUY, RecommendationAction.SELL):
+                    if action == RecommendationAction.BUY:
+                        is_bullish = True
+                    elif action == RecommendationAction.SELL:
+                        is_bearish = True
+
+                    if is_bullish or is_bearish:
                         risk_assessment = getattr(decision, "risk_assessment", None)
                         if risk_assessment is not None and risk_assessment.position_size > 0:
-                            # Verify capital
                             entry_price = price.close
                             shares = risk_assessment.position_size
-                            
+
                             # Clamp position size to cash availability
                             required_cash = shares * entry_price
-                            if action == RecommendationAction.BUY:
-                                if required_cash > cash:
-                                    shares = math.floor(cash / entry_price)
-                            else:  # SELL (SHORT)
-                                # Conservatively check if short entry value is within cash limits
-                                if required_cash > cash:
-                                    shares = math.floor(cash / entry_price)
-                            
+                            if required_cash > cash:
+                                shares = math.floor(cash / entry_price)
+
                             if shares > 0:
                                 active_position = {
-                                    "direction": "LONG" if action == RecommendationAction.BUY else "SHORT",
+                                    "direction": "LONG" if is_bullish else "SHORT",
                                     "entry_price": entry_price,
                                     "shares": shares,
                                     "stop_loss_price": risk_assessment.stop_loss_price,
                                     "target_price": risk_assessment.target_price,
                                     "entry_date": current_date
                                 }
-                                if action == RecommendationAction.BUY:
+                                if is_bullish:
                                     cash -= shares * entry_price
-                                
+
                                 # Update current equity reflecting the newly opened position
-                                if action == RecommendationAction.BUY:
+                                if is_bullish:
                                     current_equity = cash + shares * price.close
                                 else:
-                                    current_equity = cash  # PnL is 0 at entry
+                                    current_equity = cash  # PnL is 0 at entry for SHORT
 
             equity_curve.append(current_equity)
 

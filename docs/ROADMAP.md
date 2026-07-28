@@ -14,6 +14,17 @@ $$\text{Specification} \longrightarrow \text{Implementation} \longrightarrow \te
 
 ## Sprints
 
+### 🟢 Sprint 33: Portfolio-Aware Risk Rules & Workflow Concurrency *(Complete — 400 tests passing)*
+- **Focus**: Resolving live alert position-awareness defect in `RiskSellDecisionRule`, adding `RecommendationAction.AVOID` enum, workflow concurrency lock, and audit of Sprint 29 validation trade logs.
+- **Milestones**:
+  - [x] Added `AVOID = "AVOID"` to `RecommendationAction` in `core/domain/enums/action.py`.
+  - [x] Updated `RiskSellDecisionRule.assemble()` to check `PortfolioState` for active position (`quantity > 0`). Emits `SELL` ("liquidate position") when position held; emits `AVOID` ("bearish signal — no position currently held, this is informational, not a liquidation order") when no position held.
+  - [x] Audited Sprint 29 `ValidationCampaign` for `GoldenCrossDeathCrossStrategy`: verified exact 16 LONG / 16 SHORT trade split across 6 regimes (50/50 split), confirming short-side signals were fully tested.
+  - [x] Added `concurrency: { group: daily-signal, cancel-in-progress: false }` to `.github/workflows/daily_signal.yml`.
+  - [x] Added unit tests in `tests/decision_builder/test_rules.py` verifying `SELL` and `AVOID` behaviors (400 tests passing).
+
+---
+
 ### 🟢 Sprint 32: NIFTY 500 Universe & Telegram Cloud Automation *(Complete — 398 tests passing)*
 - **Focus**: Universe expansion to 500 NIFTY constituents, rate-limited batch daily runner, aggregate execution health tracking, Telegram alerts, and GitHub Actions cloud automation.
 - **Milestones**:

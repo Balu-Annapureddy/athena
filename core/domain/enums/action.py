@@ -9,6 +9,7 @@ class RecommendationAction(Enum):
     HOLD = "HOLD"
     REDUCE = "REDUCE"
     SELL = "SELL"
+    AVOID = "AVOID"
     WATCHLIST = "WATCHLIST"
     NO_ACTION = "NO_ACTION"
 
