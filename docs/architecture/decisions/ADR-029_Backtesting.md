@@ -47,6 +47,30 @@ We implement `ValidationCampaign` (`core/backtest/validation.py`) to gate strate
 
 ---
 
+## 4. Transaction Cost Model (Added Sprint ~)
+
+Gross Profit Factor (PF) alone is insufficient for promotion decisions on NSE equity strategies.
+A 1.14 gross PF on 2-ATR stop / 6-ATR target trades can easily be wiped out by exchange costs.
+We implement `TransactionCostModel` (`core/backtest/engine.py`) with the following components:
+
+| Component | Rate | Notes |
+|---|---|---|
+| **Brokerage** | 0.03% per side, capped at Rs 20/order | Zerodha flat-fee model |
+| **STT** | 0.1% on sell side (delivery) | Finance Act schedule |
+| **Exchange Txn Charges** | 0.00322% per side | NSE equity segment |
+| **GST** | 18% on (brokerage + exchange charges) | Applied per order |
+| **SEBI Turnover Fee** | 0.0001% per side | Rs 10/crore |
+| **Slippage** | 8 bps per side | Conservative daily-bar assumption |
+
+**Promotion gate change:** `ValidationCampaign` now evaluates the passing gate on
+**net-of-cost `avg_pnl_per_trade`** (not gross). Both gross and net metrics are stored in
+`run_details` for comparison. The `BacktestEngine` constructor accepts an optional
+`cost_model: TransactionCostModel` parameter; `ZERO_COST_MODEL` is provided for
+legacy/gross-only runs.
+
+**Consequence:** Any strategy with gross PF ≥ 1.0 but net-of-cost PF < 1.0 will now
+correctly **fail** the validation campaign and remain `UNVALIDATED`.
+
 ## Clarification: Synthetic Data and the Sprint 29 Proof Script
 
 The Sprint 29 proof script (`scripts/sprint29_proof.py`) runs a `ValidationCampaign`

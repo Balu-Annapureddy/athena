@@ -48,6 +48,13 @@ class BollingerResult(NamedTuple):
     lower: float   # Middle − num_std × σ
 
 
+class ADXResult(NamedTuple):
+    """Outputs of ADX (Average Directional Index) calculation."""
+    adx: float       # ADX trend strength (0-100)
+    plus_di: float   # +DI Positive Directional Indicator
+    minus_di: float  # -DI Negative Directional Indicator
+
+
 # ---------------------------------------------------------------------------
 # Primitives
 # ---------------------------------------------------------------------------
@@ -523,3 +530,118 @@ def volume_trend(volumes: Sequence[float], period: int = 20) -> Optional[float]:
         return None
     current_vol = volumes[-1]
     return (current_vol - vol_sma) / vol_sma * 100.0
+
+
+def adx(
+    highs: Sequence[float],
+    lows: Sequence[float],
+    closes: Sequence[float],
+    period: int = 14,
+) -> Optional[ADXResult]:
+    """Average Directional Index (ADX) — Welles Wilder's trend strength indicator.
+
+    Convention: J. Welles Wilder Jr., *New Concepts in Technical Trading Systems*,
+    1978, Chapter 4. Calculates ADX, +DI, and -DI over *period* bars (default 14).
+
+    An ADX value >= 20-25 indicates a strong trending market (bullish or bearish).
+    An ADX value < 20 indicates a choppy, range-bound, or non-trending market.
+
+    Args:
+        highs:  High prices, chronological order.
+        lows:   Low prices, chronological order.
+        closes: Closing prices, chronological order.
+        period: ADX period, default 14.
+
+    Returns:
+        ADXResult(adx, plus_di, minus_di) or None if len < 2 * period.
+    """
+    n = len(highs)
+    if n < 2 * period or len(lows) != n or len(closes) != n:
+        return None
+
+    tr_list = []
+    plus_dm_list = []
+    minus_dm_list = []
+
+    for i in range(1, n):
+        h_diff = highs[i] - highs[i - 1]
+        l_diff = lows[i - 1] - lows[i]
+
+        p_dm = h_diff if (h_diff > l_diff and h_diff > 0) else 0.0
+        m_dm = l_diff if (l_diff > h_diff and l_diff > 0) else 0.0
+
+        tr = max(
+            highs[i] - lows[i],
+            abs(highs[i] - closes[i - 1]),
+            abs(lows[i] - closes[i - 1]),
+        )
+
+        tr_list.append(tr)
+        plus_dm_list.append(p_dm)
+        minus_dm_list.append(m_dm)
+
+    if len(tr_list) < 2 * period - 1:
+        return None
+
+    tr_smooth = sum(tr_list[:period])
+    plus_dm_smooth = sum(plus_dm_list[:period])
+    minus_dm_smooth = sum(minus_dm_list[:period])
+
+    dx_list = []
+
+    def _calc_dx(p_s: float, m_s: float, tr_s: float):
+        if tr_s == 0.0:
+            return 0.0, 0.0, 0.0
+        p_di = 100.0 * (p_s / tr_s)
+        m_di = 100.0 * (m_s / tr_s)
+        di_sum = p_di + m_di
+        if di_sum == 0.0:
+            return 0.0, p_di, m_di
+        return 100.0 * (abs(p_di - m_di) / di_sum), p_di, m_di
+
+    dx, p_di, m_di = _calc_dx(plus_dm_smooth, minus_dm_smooth, tr_smooth)
+    dx_list.append(dx)
+
+    for i in range(period, len(tr_list)):
+        tr_smooth = tr_smooth - (tr_smooth / period) + tr_list[i]
+        plus_dm_smooth = plus_dm_smooth - (plus_dm_smooth / period) + plus_dm_list[i]
+        minus_dm_smooth = minus_dm_smooth - (minus_dm_smooth / period) + minus_dm_list[i]
+        dx, p_di, m_di = _calc_dx(plus_dm_smooth, minus_dm_smooth, tr_smooth)
+        dx_list.append(dx)
+
+    if len(dx_list) < period:
+        return None
+
+    adx_val = sum(dx_list[:period]) / period
+    for i in range(period, len(dx_list)):
+        adx_val = (adx_val * (period - 1) + dx_list[i]) / period
+
+    return ADXResult(adx=adx_val, plus_di=p_di, minus_di=m_di)
+
+
+def efficiency_ratio(closes: Sequence[float], period: int = 21) -> Optional[float]:
+    """Kaufman Efficiency Ratio (ER) — measures trend efficiency vs noise.
+
+    Convention: Perry J. Kaufman, *Trading Systems and Methods*, 5th ed.,
+    Wiley, 2013, Chapter 8.
+    Formula:
+        Directional Move = |Close[t] - Close[t - period]|
+        Volatility       = sum(|Close[i] - Close[i-1]| for i in last `period` bars)
+        Efficiency Ratio = Directional Move / Volatility
+
+    Returns:
+        Float in range [0.0, 1.0] where 1.0 is pure linear trend and 0.0 is pure noise,
+        or None if len(closes) <= period or Volatility == 0.
+    """
+    if period < 1 or len(closes) <= period:
+        return None
+
+    window = closes[-(period + 1):]
+    directional_move = abs(window[-1] - window[0])
+    volatility = sum(abs(window[i] - window[i - 1]) for i in range(1, len(window)))
+
+    if volatility == 0.0:
+        return 0.0
+
+    return directional_move / volatility
+

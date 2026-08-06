@@ -1,16 +1,40 @@
 # Changelog
 
-## [2.1.0] - 2026-07-26
-### Fixed
-- **RiskSellDecisionRule Position Check** (`core/decision_builder/rules.py`): Updated `RiskSellDecisionRule.assemble()` to inspect `PortfolioState` positions for an open position (`quantity > 0`) in the target security before proposing a `SELL` action. Prevents misleading live liquidation alerts when no position is held.
-- **RecommendationAction.AVOID Enum** (`core/domain/enums/action.py`): Added `AVOID = "AVOID"` to `RecommendationAction`. When a bearish or invalidated thesis occurs for a security with no open paper position, `RiskSellDecisionRule` emits `RecommendationAction.AVOID` with informational explanation `"Bearish signal — no position currently held, this is informational, not a liquidation order."`
-- **Daily Signal Concurrency Control** (`.github/workflows/daily_signal.yml`): Added `concurrency: { group: daily-signal, cancel-in-progress: false }` to prevent duplicate overlapping runs when manually or schedule triggered.
-- **Sprint 29 Validation Audit**: Verified that the committed 32-trade historical validation campaign for `GoldenCrossDeathCrossStrategy` (commit 7432da2) executed exactly 16 LONG and 16 SHORT trades (50/50 split), confirming Death Cross / SELL-side signals were fully exercised and tested in the campaign.
+## [2.3.0] - 2026-08-06
 ### Added
-- **Unit Tests** (`tests/decision_builder/test_rules.py`): Added unit tests for `RiskSellDecisionRule` verifying `SELL` emission with liquidation wording when a position is held and `AVOID` emission with informational wording when no position is held.
+- **Wilder's ADX Indicator** (`core/intelligence/indicators.py`): Welles Wilder's Average Directional Index (ADX) trend strength indicator returning `ADXResult(adx, plus_di, minus_di)`. Mathematically verified against Wilder's 14-period formulation. Exported via `core.intelligence`.
+- **Regime-Filtered Strategy** (`core/strategy/regime_filtered_golden_cross.py`): `RegimeFilteredGoldenCrossStrategy` combining 50/200-day moving average crossover signals with Wilder's ADX regime filter (`min_adx_threshold=20.0`). Suppresses crossover entries during range-bound / non-trending markets to eliminate whipsaw losses.
+- **Sprint 36 Unit Test Suite** (`tests/intelligence/test_indicators.py`, `tests/strategy/test_regime_filtered_golden_cross.py`): Unit tests verifying ADX mathematical bounds, flat series suppression, strong trend output, and regime-filtered crossover suppression. Total test suite expanded to **416 passing tests**.
+- **CLI Strategy Parameter** (`scripts/run_real_validation_campaign.py`): Added `--strategy {golden_cross,regime_filtered}` option allowing validation campaign runs across both strategies.
 
-## [2.0.0] - 2026-07-22
+## [2.2.0] - 2026-08-06
 ### Added
+- **Signal Deduplicator** (`core/pipeline/signal_deduplicator.py`): Append-only `sent_signals.jsonl` tracking active trends to suppress redundant daily notifications. Generates human-readable Trade IDs (e.g. `#T080612`). Clears active status on direction reversal or after 30 calendar days.
+- **Personal Trade Journal & CLI** (`core/portfolio/trade_journal.py`, `scripts/journal.py`): Append-only `trade_journal.jsonl` tracking suggestion lifecycle (`PENDING` → `TAKEN` → `CLOSED_WIN`/`CLOSED_LOSS` or `EXPIRED`). CLI supporting `python scripts/journal.py bought -t T080612 --entry 1845 --qty 27` and `exit -t T080612 -p 1990`.
+- **Composite Confidence Score & Quality Badge** (`core/pipeline/daily_runner.py`, `core/pipeline/signal_report.py`): Computes 0–95% composite confidence score from validation status (BACKTESTED base 50%), reward:risk ratio (≥3.0: +20%, ≥2.0: +10%), pattern confirmation (+15%), and 200-day trend alignment (+10%). Assigns `HIGH` (≥70%), `MEDIUM` (≥50%), or `LOW` quality badges.
+- **Telegram Morning Brief & Trade Check-In** (`core/pipeline/notifier.py`): Formats rich Markdown cards per qualifying signal containing Trade ID `#T1207`, entry, stop, target, R:R ratio, position size, capital estimate, confidence %, quality stars, detailed rationale, risk notes, and user reply prompt. On non-trading/weekend days or 0-signal days, sends trade check-in updates for active/pending trades.
+- **Multi-Year Nifty 50 Fixtures (2010–2025)** (`scripts/record_historical_fixtures.py`): Downloads and commits 16 years (~4,000 daily bars per stock) for all 50 Nifty 50 constituents. Idempotent skipping for recorded fixtures with rate-limiting.
+- **Strict Out-of-Sample Validation Campaign** (`scripts/run_real_validation_campaign.py`): Runs validation campaigns across 3 training windows (2010–2015, 2016–2020, 2021–2022) with strict gates (`min_total_trades=100`, `min_passing_ratio=0.70`), followed by evaluation against the reserved out-of-sample window (2023–2025).
+- **Sprint 35 Test Suite** (`tests/pipeline/test_dedup_and_journal.py`): Unit tests covering signal deduplication, Trade ID assignment, auto-expiry, trade journal recording, and PnL calculation.
+### Changed
+- `.github/workflows/daily_signal.yml`: Scheduled to run daily at 03:00 UTC (8:30 AM IST) with `SCHEDULED_DATE` injection for accurate date resolution.
+
+## [2.1.0] - 2026-08-06
+### Added
+- **Transaction Cost Model** (`core/backtest/engine.py`): Implements `TransactionCostModel` dataclass modelling all Indian equity market costs — Zerodha-style brokerage (0.03% capped at Rs 20/order), STT (0.1% on delivery sell), NSE exchange transaction charges (0.00322%), GST (18% on brokerage + exchange), SEBI turnover fee (0.0001%), and 8 bps per-side slippage. Provides `cost_for_trade(entry_value, exit_value, is_long)` returning `(entry_cost, exit_cost, total_cost)`. Also provides `ZERO_COST_MODEL` singleton for gross-only runs.
+- **Net-of-Cost Backtest Engine** (`core/backtest/engine.py`): `BacktestEngine` now accepts `cost_model: Optional[TransactionCostModel]`. All trade entry and exit cash accounting deducts real transaction costs. `run_backtest()` now returns both `"metrics"` (net-of-cost) and `"gross_metrics"` (before costs) alongside `"total_costs"` for easy comparison. `TradeRecord` gains `net_pnl` and `total_costs` fields.
+- **Net-of-Cost Validation Gate** (`core/backtest/validation.py`): `ValidationCampaign` now accepts `cost_model: Optional[TransactionCostModel]` and threads it through to `BacktestEngine`. The passing gate evaluates `avg_pnl_per_trade` on **net-of-cost** metrics; gross metrics are stored alongside for reference. `run_details` now includes `"gross_metrics"` and `"total_costs"` keys.
+- **Transaction Cost Unit Tests** (`tests/backtest/test_cost_model.py`): 8 unit tests covering: `ZERO_COST_MODEL` produces zero, STT directionality (sell side only), brokerage cap at Rs 20/order, full round-trip sanity, symmetric slippage, zero notional safety, and custom STT rate override.
+- **NSE Holiday Calendar** (`scripts/daily_signal.py`): Module-level `_NSE_HOLIDAYS` frozenset covering 2025-2027 official NSE trading holidays. `is_nse_trading_day(date)` helper combining weekend check + holiday lookup. Daily pipeline exits cleanly (code 0) with `[SKIP]` message on holidays/weekends. `--force` flag allows override.
+- **`.env.example`**: Template listing `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `ATHENA_API_KEY`, `ATHENA_AUTH_BYPASS` with instructions and sources. Prevents setup from requiring codebase spelunking.
+- **`requirements.txt`**: Reproducible `pip freeze` lockfile pinning all transitive dependencies to the exact versions used in the development environment.
+- **Gross vs. Net Validation Campaign Report** (`scripts/run_real_validation_campaign.py`): Now prints two side-by-side tables (gross PF and net-of-cost PF per run) and the total round-trip costs paid across all campaign runs. Cost model spec printed at campaign start.
+- **ADR-029 update**: Documented `TransactionCostModel` component table, promotion gate change, and `ZERO_COST_MODEL` backward compatibility.
+### Changed
+- `pyproject.toml`: Explicitly pins `requests>=2.28.0` as a declared dependency (was an undeclared transitive of yfinance).
+- `README.md`: Added Setup section explaining `.env.example` usage; added Scheduling section explaining 4:30 PM IST rationale (EOD bar after NSE close) and documenting the NSE holiday skip behaviour.
+- `scripts/daily_signal.py`: Removed duplicate `if __name__ == "__main__"` block.
+
 - **NIFTY 500 Stock Universe** (`core/portfolio/universe.py`): Module loading and caching the official published NIFTY 500 index constituent list from NSE archive endpoints (`nsearchives.nseindia.com`). Formats tickers with `.NS` suffix and caches locally to `data/ind_nifty500list.csv` for offline fallback. Default universe in `daily_signal.py`.
 - **Rate-Limited Batch Execution & Health Tracking** (`core/pipeline/daily_runner.py`): Extended `DailySignalRunner.run()` to evaluate large ticker universes with live progress logging (`[120/500] Evaluating INFY.NS...`), `RateLimiter` sliding window delay between fetches, and `RunnerBatchResult` return tracking `success_count`, `failed_count`, and `is_degraded` (>20% failure threshold).
 - **Telegram Notifications & Alerts** (`core/pipeline/notifier.py`): Dispatches phone alerts via Telegram Bot API. Reads `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` strictly from `os.environ` (never printed or logged). Prints explicit warning to stdout if credentials are missing. Formats signal digest alerts (BUY/SELL), degraded execution alerts (>20% fetch failures), and workflow crash failure alerts.

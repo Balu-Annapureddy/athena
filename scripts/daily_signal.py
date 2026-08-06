@@ -14,6 +14,68 @@ from core.portfolio.universe import NIFTY_500
 from core.pipeline.daily_runner import DailySignalRunner
 from core.pipeline.paper_ledger import PaperLedger
 from core.pipeline.notifier import TelegramNotifier
+from core.pipeline.signal_deduplicator import SignalDeduplicator
+from core.portfolio.trade_journal import TradeJournal
+
+
+# ── NSE Trading Holiday Calendar ──────────────────────────────────────────────
+# Official NSE equity segment trading holidays (source: NSE India circular).
+# Weekends (Sat/Sun) are handled separately below.
+# Update this set each year when NSE publishes the next year's holiday schedule.
+_NSE_HOLIDAYS: frozenset[datetime.date] = frozenset({
+    # 2025 NSE Holidays
+    datetime.date(2025, 1, 26),   # Republic Day
+    datetime.date(2025, 2, 26),   # Mahashivratri
+    datetime.date(2025, 3, 14),   # Holi
+    datetime.date(2025, 3, 31),   # Id-Ul-Fitr (Ramzan Id)
+    datetime.date(2025, 4, 10),   # Shri Ram Navami
+    datetime.date(2025, 4, 14),   # Dr. Baba Saheb Ambedkar Jayanti
+    datetime.date(2025, 4, 18),   # Good Friday
+    datetime.date(2025, 5, 1),    # Maharashtra Day
+    datetime.date(2025, 8, 15),   # Independence Day
+    datetime.date(2025, 8, 27),   # Ganesh Chaturthi
+    datetime.date(2025, 10, 2),   # Mahatma Gandhi Jayanti
+    datetime.date(2025, 10, 2),   # Dussehra (same day — only one entry needed)
+    datetime.date(2025, 10, 20),  # Diwali Laxmi Pujan
+    datetime.date(2025, 10, 21),  # Diwali-Balipratipada
+    datetime.date(2025, 11, 5),   # Prakash Gurpurb Sri Guru Nanak Dev Ji
+    datetime.date(2025, 12, 25),  # Christmas
+    # 2026 NSE Holidays
+    datetime.date(2026, 1, 26),   # Republic Day
+    datetime.date(2026, 2, 26),   # Mahashivratri
+    datetime.date(2026, 3, 20),   # Holi
+    datetime.date(2026, 3, 30),   # Id-Ul-Fitr (Ramzan Id)
+    datetime.date(2026, 4, 2),    # Ugadi / Gudi Padwa
+    datetime.date(2026, 4, 3),    # Good Friday
+    datetime.date(2026, 4, 14),   # Dr. Baba Saheb Ambedkar Jayanti
+    datetime.date(2026, 5, 1),    # Maharashtra Day
+    datetime.date(2026, 8, 15),   # Independence Day
+    datetime.date(2026, 9, 17),   # Ganesh Chaturthi
+    datetime.date(2026, 10, 2),   # Mahatma Gandhi Jayanti
+    datetime.date(2026, 10, 22),  # Diwali Laxmi Pujan
+    datetime.date(2026, 10, 23),  # Diwali-Balipratipada
+    datetime.date(2026, 11, 3),   # Dussehra
+    datetime.date(2026, 11, 25),  # Prakash Gurpurb Sri Guru Nanak Dev Ji
+    datetime.date(2026, 12, 25),  # Christmas
+    # 2027 NSE Holidays (preliminary — update when NSE publishes official list)
+    datetime.date(2027, 1, 26),   # Republic Day
+    datetime.date(2027, 8, 15),   # Independence Day
+    datetime.date(2027, 10, 2),   # Mahatma Gandhi Jayanti
+    datetime.date(2027, 12, 25),  # Christmas
+})
+
+
+def is_nse_trading_day(date: datetime.date) -> bool:
+    """Return True if `date` is an NSE equity segment trading day.
+
+    A trading day is any weekday (Mon–Fri) that is not in the official
+    NSE holiday calendar.  The check is intentionally conservative:
+    an unknown date is treated as a trading day (the pipeline will still
+    log a clean error if yfinance returns no data).
+    """
+    if date.weekday() >= 5:  # Saturday=5, Sunday=6
+        return False
+    return date not in _NSE_HOLIDAYS
 
 
 def main() -> None:
@@ -54,18 +116,58 @@ def main() -> None:
         default="fixtures/yfinance",
         help="Directory containing local data fixtures"
     )
+    parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Run even on weekends / NSE trading holidays (overrides holiday guard)"
+    )
 
     args = parser.parse_args()
 
-    # Parse date
+    # Parse date (prefer SCHEDULED_DATE env var if set by GitHub Actions schedule)
+    sched_env = os.environ.get("SCHEDULED_DATE", "").strip()
     if args.date:
         try:
             run_date = datetime.datetime.strptime(args.date, "%Y-%m-%d").date()
         except ValueError:
             print(f"Error: Invalid date format '{args.date}'. Expected YYYY-MM-DD.")
             sys.exit(1)
+    elif sched_env:
+        try:
+            run_date = datetime.datetime.strptime(sched_env, "%Y-%m-%d").date()
+        except ValueError:
+            run_date = datetime.date.today()
     else:
         run_date = datetime.date.today()
+
+    # Initialize ledgers & deduplicator
+    registry = StrategyRegistry.default()
+    runner = DailySignalRunner(
+        registry=registry,
+        include_unvalidated=args.include_unvalidated,
+        fixture_dir=args.fixture_dir
+    )
+    ledger = PaperLedger(ledger_path=args.ledger_path)
+    deduplicator = SignalDeduplicator()
+    journal = TradeJournal()
+    notifier = TelegramNotifier()
+
+    # ── Non-Trading Day (Weekend / Holiday) Check-In Mode ─────────────────────
+    is_trading = is_nse_trading_day(run_date)
+    if not is_trading and not args.force:
+        day_name = run_date.strftime("%A")
+        reason = "weekend" if run_date.weekday() >= 5 else "NSE trading holiday"
+        print(f"[CHECK-IN MODE] {run_date} is a {reason} ({day_name}). Market is closed.")
+        print("Checking trade journal for open check-ins and expiries...")
+
+        checkins = journal.check_expiries_and_due_checkins(run_date)
+        has_updates = any(len(v) > 0 for v in checkins.values())
+        if has_updates:
+            print(f"  Found updates: {sum(len(v) for v in checkins.values())} trade item(s) due.")
+            notifier.send_trade_checkin(checkins, run_date)
+        else:
+            print("  No pending trade check-ins or expiries due today.")
+        sys.exit(0)
 
     if args.tickers:
         tickers = [t.strip() for t in args.tickers.split(",") if t.strip()]
@@ -80,16 +182,6 @@ def main() -> None:
     print(f"  Include unvalidated : {args.include_unvalidated}")
     print(f"  Ledger path         : {args.ledger_path}")
     print()
-
-    # Initialize components
-    registry = StrategyRegistry.default()
-    runner = DailySignalRunner(
-        registry=registry,
-        include_unvalidated=args.include_unvalidated,
-        fixture_dir=args.fixture_dir
-    )
-    ledger = PaperLedger(ledger_path=args.ledger_path)
-    notifier = TelegramNotifier()
 
     try:
         # 1. Update existing open trades first using today's price bar
@@ -119,39 +211,45 @@ def main() -> None:
         print(f"  - Batch Degraded Status   : {'⚠️ DEGRADED (>20% failures)' if batch_result.is_degraded else '✅ HEALTHY'}")
         print()
 
-        # 3. Record active signals in ledger
-        active_reports = []
-        for report in reports:
-            if report.action in (RecommendationAction.BUY, RecommendationAction.SELL):
-                ledger.record_signal(report)
-                active_reports.append(report)
+        # 3. Filter duplicates and register active signals
+        raw_active = [r for r in reports if r.action in (RecommendationAction.BUY, RecommendationAction.SELL)]
+        filtered_active, suppressed_count = deduplicator.filter_and_register_signals(raw_active, run_date)
+
+        for report in filtered_active:
+            ledger.record_signal(report)
+            journal.register_suggestion(report)
+
+        active_map = {r.ticker: r for r in filtered_active}
 
         # 4. Print formatted signals table
         print("Signal Report:")
-        print("-" * 105)
-        print(f"{'Strategy':<20} | {'Ticker':<12} | {'Action':<6} | {'Entry':>10} | {'Stop':>10} | {'Target':>10} | {'Size':>6} | {'Validation':<11}")
-        print("-" * 105)
+        print("-" * 115)
+        print(f"{'Trade ID':<10} | {'Strategy':<20} | {'Ticker':<12} | {'Action':<6} | {'Entry':>10} | {'Stop':>10} | {'Target':>10} | {'Conf%':>6} | {'Quality':<7}")
+        print("-" * 115)
         
-        for r in reports:
-            # Print only active BUY/SELL signals in summary table when running large universe
-            if len(tickers) > 10 and r.action == RecommendationAction.HOLD:
+        for r_orig in reports:
+            if len(tickers) > 10 and r_orig.action == RecommendationAction.HOLD:
                 continue
 
+            r = active_map.get(r_orig.ticker, r_orig)
+            trade_id = r.trade_id or "—"
             entry = f"{r.entry_price:>10,.2f}" if r.entry_price else f"{'—':>10}"
             stop = f"{r.stop_loss_price:>10,.2f}" if r.stop_loss_price else f"{'—':>10}"
             target = f"{r.target_price:>10,.2f}" if r.target_price else f"{'—':>10}"
-            size = f"{r.position_size:>6}" if r.position_size else f"{'—':>6}"
+            conf = f"{r.confidence_score:>5.0f}%" if r.confidence_score else f"{'—':>6}"
             print(
+                f"{trade_id:<10} | "
                 f"{r.strategy_name:<20} | "
                 f"{r.ticker:<12} | "
                 f"{r.action.value:<6} | "
                 f"{entry} | "
                 f"{stop} | "
                 f"{target} | "
-                f"{size} | "
-                f"{r.validation_status.value:<11}"
+                f"{conf} | "
+                f"{r.signal_quality:<7}"
             )
-        print("-" * 105)
+        print("-" * 115)
+        print(f"  Active New Signals: {len(filtered_active)} | Suppressed Redundant Signals: {suppressed_count}")
         print()
 
         # 5. Display ledger performance stats
@@ -164,10 +262,17 @@ def main() -> None:
         print(f"  Average Loss       : Rs. {stats['avg_loss']:,.2f}")
         print("=" * 95)
 
-        # 6. Telegram Notifications Dispatch
-        if active_reports:
-            print("Sending Telegram signal alerts...")
-            notifier.send_signal_alert(active_reports)
+        # 6. Telegram Morning Brief Dispatch
+        if filtered_active:
+            print("Sending Telegram Morning Brief for new active signals...")
+            notifier.send_morning_brief(
+                filtered_active,
+                total_tickers=len(tickers),
+                run_date=run_date,
+                suppressed_count=suppressed_count
+            )
+        else:
+            print("No new qualifying signals to notify today.")
 
         if batch_result.is_degraded:
             print("Sending Telegram degraded execution alert...")
@@ -182,9 +287,6 @@ def main() -> None:
         notifier.send_failure_alert(str(e), run_date_str=run_date.isoformat())
         sys.exit(1)
 
-
-if __name__ == "__main__":
-    main()
 
 
 if __name__ == "__main__":

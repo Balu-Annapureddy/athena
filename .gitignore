@@ -37,3 +37,9 @@ env/
 .pytest_cache/
 .coverage
 htmlcov/
+
+# Local cache fixtures
+fixtures/yfinance/*.jsonl
+fixtures/yfinance_historical/*.jsonl
+
+

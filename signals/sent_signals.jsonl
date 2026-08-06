@@ -1,0 +1,6 @@
+{"trade_id": "T080515", "ticker": "CHOICEIN.NS", "strategy_name": "GoldenCrossDeathCrossStrategy", "direction": "BUY", "signal_date": "2026-08-05", "status": "ACTIVE"}
+{"trade_id": "T080577", "ticker": "KALYANKJIL.NS", "strategy_name": "GoldenCrossDeathCrossStrategy", "direction": "BUY", "signal_date": "2026-08-05", "status": "ACTIVE"}
+{"trade_id": "T080592", "ticker": "NTPC.NS", "strategy_name": "GoldenCrossDeathCrossStrategy", "direction": "SELL", "signal_date": "2026-08-05", "status": "ACTIVE"}
+{"trade_id": "T080546", "ticker": "PAYTM.NS", "strategy_name": "GoldenCrossDeathCrossStrategy", "direction": "BUY", "signal_date": "2026-08-05", "status": "ACTIVE"}
+{"trade_id": "T080570", "ticker": "TVSMOTOR.NS", "strategy_name": "GoldenCrossDeathCrossStrategy", "direction": "BUY", "signal_date": "2026-08-05", "status": "ACTIVE"}
+{"trade_id": "T080543", "ticker": "TMPV.NS", "strategy_name": "GoldenCrossDeathCrossStrategy", "direction": "SELL", "signal_date": "2026-08-05", "status": "ACTIVE"}

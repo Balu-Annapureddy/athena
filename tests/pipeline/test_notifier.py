@@ -44,6 +44,8 @@ class TestTelegramNotifier(unittest.TestCase):
                 position_size=14,
                 validation_status=ValidationStatus.BACKTESTED,
                 reasoning="Golden Cross 50-SMA crossed above 200-SMA",
+                confidence_score=75.0,
+                reward_to_risk=3.0,
             ),
             SignalReport(
                 run_date=datetime.date(2026, 7, 22),

@@ -6,10 +6,10 @@ to prevent false-positive strategy promotions.
 
 import dataclasses
 from dataclasses import dataclass
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 from core.domain.enums import ValidationStatus
-from core.backtest.engine import BacktestEngine
+from core.backtest.engine import BacktestEngine, TransactionCostModel
 
 
 @dataclass(frozen=True)
@@ -55,7 +55,8 @@ class ValidationCampaign:
         date_ranges: List[Tuple[str, str]],
         min_total_trades: int = 20,
         min_passing_ratio: float = 0.67,
-        fixture_dir: str = "fixtures/yfinance"
+        fixture_dir: str = "fixtures/yfinance",
+        cost_model: Optional[TransactionCostModel] = None,
     ) -> None:
         """Initialize the ValidationCampaign.
 
@@ -65,12 +66,15 @@ class ValidationCampaign:
             min_total_trades: Minimum cumulative trades across all runs. Defaults to 20.
             min_passing_ratio: Required ratio of positive runs. Defaults to 0.67 (2/3).
             fixture_dir: Directory for offline payload replay data.
+            cost_model: Transaction cost model applied to every backtest run.
+                        Defaults to the standard Indian-market model.
+                        Pass ZERO_COST_MODEL for gross-only (legacy) runs.
         """
         self._tickers = tickers
         self._date_ranges = date_ranges
         self._min_total_trades = min_total_trades
         self._min_passing_ratio = min_passing_ratio
-        self._engine = BacktestEngine(fixture_dir=fixture_dir)
+        self._engine = BacktestEngine(fixture_dir=fixture_dir, cost_model=cost_model)
 
     def execute(self, strategy: Any, account_size: float, risk_percent: float = 0.01) -> CampaignResult:
         """Run the validation campaign by executing backtests over all regimes.
@@ -87,42 +91,67 @@ class ValidationCampaign:
         total_trades = 0
         passing_runs = 0
         total_runs = 0
-
+        total_expected = len(self._tickers) * len(self._date_ranges)
         # Execute backtest runs for every ticker and date range combination
         for ticker in self._tickers:
             for start_date, end_date in self._date_ranges:
-                res = self._engine.run_backtest(
-                    strategy=strategy,
-                    ticker=ticker,
-                    start_date=start_date,
-                    end_date=end_date,
-                    account_size=account_size,
-                    risk_percent=risk_percent
-                )
-                
-                metrics = res["metrics"]
-                trades = res["trades"]
-                
-                run_trade_count = metrics.total_trades
-                total_trades += run_trade_count
                 total_runs += 1
-                
-                # A run passes if the average PnL per trade is positive
-                is_passing = metrics.avg_pnl_per_trade > 0.0
-                if is_passing:
-                    passing_runs += 1
+                if total_expected > 5:
+                    print(f"  [{total_runs}/{total_expected}] Backtesting {ticker} ({start_date} to {end_date})...", flush=True)
 
-                run_details.append({
-                    "ticker": ticker,
-                    "start_date": start_date,
-                    "end_date": end_date,
-                    "trade_count": run_trade_count,
-                    "avg_pnl_per_trade": metrics.avg_pnl_per_trade,
-                    "total_return": metrics.total_return,
-                    "win_rate": metrics.win_rate,
-                    "is_passing": is_passing,
-                    "metrics": metrics,
-                })
+                try:
+                    res = self._engine.run_backtest(
+                        strategy=strategy,
+                        ticker=ticker,
+                        start_date=start_date,
+                        end_date=end_date,
+                        account_size=account_size,
+                        risk_percent=risk_percent
+                    )
+                    
+                    metrics       = res["metrics"]
+                    gross_metrics = res.get("gross_metrics", metrics)  # gross provided by cost-aware engine
+                    trades        = res["trades"]
+                    total_costs   = res.get("total_costs", 0.0)
+
+                    run_trade_count = metrics.total_trades
+                    total_trades += run_trade_count
+
+                    # Passing gate uses net-of-cost avg PnL per trade
+                    is_passing = metrics.avg_pnl_per_trade > 0.0
+                    if is_passing:
+                        passing_runs += 1
+
+                    run_details.append({
+                        "ticker": ticker,
+                        "start_date": start_date,
+                        "end_date": end_date,
+                        "trade_count": run_trade_count,
+                        "avg_pnl_per_trade": metrics.avg_pnl_per_trade,
+                        "total_return": metrics.total_return,
+                        "win_rate": metrics.win_rate,
+                        "max_drawdown": metrics.max_drawdown,
+                        "sharpe_ratio": metrics.sharpe_ratio,
+                        "profit_factor": metrics.profit_factor,
+                        "is_passing": is_passing,
+                        "gross_metrics": gross_metrics,
+                        "total_costs": total_costs,
+                    })
+                except Exception as err:
+                    run_details.append({
+                        "ticker": ticker,
+                        "start_date": start_date,
+                        "end_date": end_date,
+                        "trade_count": 0,
+                        "avg_pnl_per_trade": 0.0,
+                        "total_return": 0.0,
+                        "win_rate": 0.0,
+                        "max_drawdown": 0.0,
+                        "sharpe_ratio": 0.0,
+                        "profit_factor": 0.0,
+                        "is_passing": False,
+                        "error": str(err)
+                    })
 
         passing_ratio = passing_runs / total_runs if total_runs > 0 else 0.0
 

@@ -108,16 +108,39 @@ class DailySignalRunner:
                 stop_loss_price = None
                 target_price = None
                 position_size = None
-                if getattr(decision_rec, "risk_assessment", None) is not None:
-                    stop_loss_price = decision_rec.risk_assessment.stop_loss_price
-                    target_price = decision_rec.risk_assessment.target_price
-                    position_size = decision_rec.risk_assessment.position_size
+                reward_to_risk = None
+                risk_ass = getattr(decision_rec, "risk_assessment", None)
+                if risk_ass is not None:
+                    stop_loss_price = risk_ass.stop_loss_price
+                    target_price = risk_ass.target_price
+                    position_size = risk_ass.position_size
+                    reward_to_risk = risk_ass.reward_to_risk_ratio
 
                 reasoning = ""
                 if decision_rec.rationale:
                     reasoning = getattr(decision_rec.rationale, "explanation", "")
                 if not reasoning and thesis_rec:
                     reasoning = f"{thesis_rec.rule_name} direction: {thesis_rec.thesis_direction.value}"
+
+                # Calculate composite confidence score (0 to 95%)
+                base_score = 50.0 if status == ValidationStatus.BACKTESTED else 25.0
+                rr_boost = 0.0
+                if reward_to_risk is not None:
+                    if reward_to_risk >= 3.0:
+                        rr_boost = 20.0
+                    elif reward_to_risk >= 2.0:
+                        rr_boost = 10.0
+
+                pattern_boost = 15.0 if len(all_pattern_facts) > 0 else 0.0
+                trend_boost = 10.0  # Golden cross strategy already verifies trend alignment
+
+                confidence = min(95.0, base_score + rr_boost + pattern_boost + trend_boost)
+                if confidence >= 70.0:
+                    quality = "HIGH"
+                elif confidence >= 50.0:
+                    quality = "MEDIUM"
+                else:
+                    quality = "LOW"
 
                 reports.append(SignalReport(
                     run_date=run_date,
@@ -129,7 +152,10 @@ class DailySignalRunner:
                     target_price=target_price,
                     position_size=position_size,
                     validation_status=status,
-                    reasoning=reasoning
+                    reasoning=reasoning,
+                    confidence_score=confidence,
+                    reward_to_risk=reward_to_risk,
+                    signal_quality=quality
                 ))
             else:
                 reports.append(SignalReport(

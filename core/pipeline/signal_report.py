@@ -21,3 +21,8 @@ class SignalReport:
     validation_status: ValidationStatus = ValidationStatus.UNVALIDATED
     trade_horizon: str = "SHORT_TERM"
     reasoning: str = ""
+    trade_id: Optional[str] = None
+    confidence_score: float = 0.0  # 0.0 to 100.0%
+    reward_to_risk: Optional[float] = None
+    signal_quality: str = "MEDIUM"  # "HIGH", "MEDIUM", "LOW"
+    atr_value: Optional[float] = None

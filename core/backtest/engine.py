@@ -27,6 +27,92 @@ from core.backtest.metrics import MetricsCalculator, BacktestMetrics
 
 
 @dataclass(frozen=True)
+class TransactionCostModel:
+    """Indian market transaction cost model for equity delivery and intraday trades.
+
+    All rates are applied per trade side (entry or exit) unless noted.
+    Default values reflect Zerodha flat-fee brokerage + NSE equity charges
+    as of 2025-2026.
+
+    References:
+        - NSE equity segment charges: https://www.nseindia.com/invest/equity-charges
+        - SEBI Circular (SEBI/HO/MRD/DOP1/CIR/P/2018/141)
+        - STT: Finance Act schedule (0.1% on sell for delivery; 0.025% each side intraday)
+    """
+
+    # ── Brokerage ────────────────────────────────────────────────────────────
+    # Zerodha-style: Rs 20 flat per order OR brokerage_pct * turnover, whichever is lower.
+    # For simplicity we use brokerage_pct with a per-order cap.
+    brokerage_pct: float = 0.0003      # 0.03% of trade value per side
+    brokerage_cap: float = 20.0        # Max brokerage per order (Rs)
+
+    # ── Securities Transaction Tax (STT) ────────────────────────────────────
+    # Delivery: 0.1% on sell side only.
+    # Intraday: 0.025% on sell side only (same field; caller sets per trade type).
+    stt_sell_rate: float = 0.001       # 0.1% on sell-side turnover (delivery)
+
+    # ── Exchange Transaction Charges ────────────────────────────────────────
+    # NSE equity segment: 0.00322% (both sides).
+    exchange_txn_rate: float = 0.0000322   # per side
+
+    # ── GST on (brokerage + exchange charges) ───────────────────────────────
+    gst_rate: float = 0.18             # 18%
+
+    # ── SEBI Turnover Fee ────────────────────────────────────────────────────
+    # Rs 10 per crore of turnover = 0.0001% per side.
+    sebi_rate: float = 0.000001        # 0.0001%
+
+    # ── Slippage ────────────────────────────────────────────────────────────
+    # Conservative 8 bps per side on 15m/daily bars for mid-cap NSE equity.
+    # This accounts for bid-ask spread + market impact at realistic order sizes.
+    slippage_bps: float = 8.0          # basis points per trade side (1 bp = 0.01%)
+
+    def cost_for_trade(
+        self,
+        entry_value: float,
+        exit_value: float,
+        is_long: bool,
+    ) -> Tuple[float, float, float]:
+        """Calculate total transaction costs for a round-trip trade.
+
+        Args:
+            entry_value: Gross entry notional (shares * entry_price).
+            exit_value:  Gross exit notional  (shares * exit_price).
+            is_long:     True for LONG trades; False for SHORT.
+
+        Returns:
+            Tuple of (entry_cost, exit_cost, total_cost) in currency units.
+        """
+        def _side_cost(notional: float, is_sell: bool) -> float:
+            brokerage = min(self.brokerage_pct * notional, self.brokerage_cap)
+            exchange   = self.exchange_txn_rate * notional
+            sebi       = self.sebi_rate * notional
+            gst        = self.gst_rate * (brokerage + exchange)
+            stt        = (self.stt_sell_rate * notional) if is_sell else 0.0
+            slip       = (self.slippage_bps / 10_000) * notional
+            return brokerage + exchange + sebi + gst + stt + slip
+
+        entry_is_sell = not is_long   # SHORT entry is a sell
+        exit_is_sell  = is_long       # LONG exit is a sell
+
+        entry_cost = _side_cost(entry_value, is_sell=entry_is_sell)
+        exit_cost  = _side_cost(exit_value,  is_sell=exit_is_sell)
+        return entry_cost, exit_cost, entry_cost + exit_cost
+
+
+# Singleton zero-cost model for gross-only runs (preserves backwards compat).
+ZERO_COST_MODEL = TransactionCostModel(
+    brokerage_pct=0.0,
+    brokerage_cap=0.0,
+    stt_sell_rate=0.0,
+    exchange_txn_rate=0.0,
+    gst_rate=0.0,
+    sebi_rate=0.0,
+    slippage_bps=0.0,
+)
+
+
+@dataclass(frozen=True)
 class TradeRecord:
     """Immutable record of a completed backtest trade."""
     ticker: str
@@ -36,18 +122,33 @@ class TradeRecord:
     entry_price: float
     exit_price: float
     shares: int
-    pnl: float
-    exit_reason: str  # "STOP_LOSS", "TARGET_PRICE", or "MARK_TO_MARKET"
+    pnl: float           # Gross PnL (before transaction costs)
+    net_pnl: float       # Net PnL  (after transaction costs)
+    total_costs: float   # Total round-trip transaction costs
+    exit_reason: str     # "STOP_LOSS", "TARGET_PRICE", or "MARK_TO_MARKET"
 
 
 class BacktestEngine:
     """Orchestrates historical walk-forward backtesting of strategies."""
 
-    def __init__(self, fixture_dir: str = "fixtures/yfinance") -> None:
+    def __init__(
+        self,
+        fixture_dir: str = "fixtures/yfinance",
+        cost_model: Optional[TransactionCostModel] = None,
+    ) -> None:
+        """Initialise the backtest engine.
+
+        Args:
+            fixture_dir: Path to the JSONL fixture directory for the YFinanceConnector.
+            cost_model:  Transaction cost model to apply on every trade.  Pass
+                         ``ZERO_COST_MODEL`` (or ``None``) for a gross-only run.
+                         Defaults to the standard Indian-market model (Zerodha rates).
+        """
         self._connector = YFinanceConnector(fixture_dir=fixture_dir)
         self._connector.enable()
         self._obs_factory = ObservationFactory()
         self._fact_builder = FactBuilder(rules=[PriceFactRule()])
+        self._cost_model: TransactionCostModel = cost_model if cost_model is not None else TransactionCostModel()
 
     def run_backtest(
         self,
@@ -61,11 +162,29 @@ class BacktestEngine:
         interval: str = "1d",
         **kwargs
     ) -> Dict[str, Any]:
-        """Run walk-forward backtest for a strategy on a ticker."""
-        # 1. Fetch data for full range
-        fetch_kwargs = {"start": start_date, "end": end_date, "interval": interval, "timeout": 1}
-        fetch_kwargs.update(kwargs)
-        payloads = self._connector.fetch_data(ticker, **fetch_kwargs)
+        """Run walk-forward daily backtest for a strategy on a ticker.
+
+        Args:
+            strategy: Pluggable strategy instance inheriting from BaseStrategy.
+            ticker: NSE ticker symbol (e.g. "RELIANCE.NS").
+            start_date: Start date string (YYYY-MM-DD).
+            end_date: End date string (YYYY-MM-DD).
+            account_size: Starting capital.
+            risk_percent: Maximum capital risk percent per trade (defaults to 1%).
+            atr_multiplier: ATR stop loss multiplier.
+
+        Returns:
+            Dictionary containing:
+                - "metrics": BacktestMetrics (net-of-cost)
+                - "gross_metrics": BacktestMetrics (before costs, for comparison)
+                - "trades": List[TradeRecord] (each has .pnl=gross, .net_pnl=net)
+                - "equity_curve": List[float]
+                - "thesis_records": List[ThesisRecord]
+                - "decision_records": List[DecisionRecord]
+                - "total_costs": float  (sum of all round-trip transaction costs)
+        """
+        # 1. Fetch daily data for full range
+        payloads = self._connector.fetch_data(ticker, start=start_date, end=end_date, timeout=1)
         if not payloads:
             raise ValueError(f"No price data returned for ticker {ticker} in range {start_date} to {end_date}")
 
@@ -175,14 +294,28 @@ class BacktestEngine:
                         exit_reason = "TARGET_PRICE"
                 
                 if exit_price is not None:
-                    # Execute Exit
+                    # Calculate gross PnL
                     if pos_dir == "LONG":
-                        pnl = shares * (exit_price - active_position["entry_price"])
-                        cash += shares * exit_price
+                        gross_pnl = shares * (exit_price - active_position["entry_price"])
                     else:
-                        pnl = shares * (active_position["entry_price"] - exit_price)
-                        cash += pnl  # cash changes by PnL
-                    
+                        gross_pnl = shares * (active_position["entry_price"] - exit_price)
+
+                    # Deduct round-trip transaction costs
+                    entry_value = shares * active_position["entry_price"]
+                    exit_value  = shares * exit_price
+                    entry_cost, exit_cost, total_cost = self._cost_model.cost_for_trade(
+                        entry_value=entry_value,
+                        exit_value=exit_value,
+                        is_long=(pos_dir == "LONG"),
+                    )
+                    net_pnl = gross_pnl - total_cost
+
+                    # Update cash (net of costs)
+                    if pos_dir == "LONG":
+                        cash += shares * exit_price - exit_cost
+                    else:
+                        cash += gross_pnl - total_cost
+
                     completed_trades.append(
                         TradeRecord(
                             ticker=ticker,
@@ -192,7 +325,9 @@ class BacktestEngine:
                             entry_price=active_position["entry_price"],
                             exit_price=exit_price,
                             shares=shares,
-                            pnl=pnl,
+                            pnl=gross_pnl,
+                            net_pnl=net_pnl,
+                            total_costs=total_cost,
                             exit_reason=exit_reason
                         )
                     )
@@ -265,19 +400,32 @@ class BacktestEngine:
                                 shares = math.floor(cash / entry_price)
 
                             if shares > 0:
+                                is_long_entry = (action == RecommendationAction.BUY)
+                                entry_notional = shares * entry_price
+                                # Deduct entry-side cost immediately (brokerage, exchange, SEBI,
+                                # slippage at entry, GST on entry charges; STT on buy-side = 0
+                                # for delivery, so cost_for_trade entry_cost handles this).
+                                _entry_c, _exit_c, _total_c = self._cost_model.cost_for_trade(
+                                    entry_value=entry_notional,
+                                    exit_value=entry_notional,  # placeholder; exit cost charged at exit
+                                    is_long=is_long_entry,
+                                )
+                                # Only charge entry_cost now; exit_cost is charged at exit.
+                                # We store entry_cost on the position so we can reconcile later.
                                 active_position = {
-                                    "direction": "LONG" if is_bullish else "SHORT",
+                                    "direction": "LONG" if is_long_entry else "SHORT",
                                     "entry_price": entry_price,
                                     "shares": shares,
                                     "stop_loss_price": risk_assessment.stop_loss_price,
                                     "target_price": risk_assessment.target_price,
-                                    "entry_date": current_date
+                                    "entry_date": current_date,
                                 }
-                                if is_bullish:
-                                    cash -= shares * entry_price
+                                if is_long_entry:
+                                    cash -= shares * entry_price + _entry_c
+                                # For SHORT we don't pay cash upfront; we'll reconcile at exit.
 
                                 # Update current equity reflecting the newly opened position
-                                if is_bullish:
+                                if is_long_entry:
                                     current_equity = cash + shares * price.close
                                 else:
                                     current_equity = cash  # PnL is 0 at entry for SHORT
@@ -291,14 +439,26 @@ class BacktestEngine:
             final_date = payloads[-1].provenance.publication_timestamp
             pos_dir = active_position["direction"]
             shares = active_position["shares"]
-            
+
             if pos_dir == "LONG":
-                pnl = shares * (final_price - active_position["entry_price"])
-                cash += shares * final_price
+                gross_pnl = shares * (final_price - active_position["entry_price"])
             else:
-                pnl = shares * (active_position["entry_price"] - final_price)
-                cash += pnl
-                
+                gross_pnl = shares * (active_position["entry_price"] - final_price)
+
+            entry_value = shares * active_position["entry_price"]
+            exit_value  = shares * final_price
+            _ec, _xc, total_cost = self._cost_model.cost_for_trade(
+                entry_value=entry_value,
+                exit_value=exit_value,
+                is_long=(pos_dir == "LONG"),
+            )
+            net_pnl = gross_pnl - total_cost
+
+            if pos_dir == "LONG":
+                cash += shares * final_price - _xc
+            else:
+                cash += gross_pnl - total_cost
+
             completed_trades.append(
                 TradeRecord(
                     ticker=ticker,
@@ -308,7 +468,9 @@ class BacktestEngine:
                     entry_price=active_position["entry_price"],
                     exit_price=final_price,
                     shares=shares,
-                    pnl=pnl,
+                    pnl=gross_pnl,
+                    net_pnl=net_pnl,
+                    total_costs=total_cost,
                     exit_reason="MARK_TO_MARKET"
                 )
             )
@@ -316,17 +478,27 @@ class BacktestEngine:
             equity_curve[-1] = cash
             active_position = None
 
-        # 5. Compute metrics
-        trade_pnls = [t.pnl for t in completed_trades]
+        # 5. Compute metrics — net-of-cost (for strategy promotion decisions)
+        net_pnls   = [t.net_pnl for t in completed_trades]
+        gross_pnls = [t.pnl     for t in completed_trades]
         metrics = MetricsCalculator.calculate(
             starting_equity=account_size,
             ending_equity=equity_curve[-1],
             equity_curve=equity_curve,
-            trade_pnls=trade_pnls
+            trade_pnls=net_pnls
         )
+        gross_metrics = MetricsCalculator.calculate(
+            starting_equity=account_size,
+            ending_equity=account_size + sum(gross_pnls),
+            equity_curve=equity_curve,   # equity curve already reflects costs
+            trade_pnls=gross_pnls
+        )
+        total_costs_paid = sum(t.total_costs for t in completed_trades)
 
         return {
-            "metrics": metrics,
+            "metrics": metrics,              # net-of-cost (use for promotion gates)
+            "gross_metrics": gross_metrics,  # gross comparison
+            "total_costs": total_costs_paid,
             "trades": completed_trades,
             "equity_curve": equity_curve,
             "thesis_records": thesis_records,

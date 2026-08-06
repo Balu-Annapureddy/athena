@@ -7,6 +7,7 @@ Security Invariants:
     - If credentials are missing, logs an explicit warning to stdout and operates in disabled mode.
 """
 
+import datetime
 import json
 import os
 import sys
@@ -65,42 +66,112 @@ class TelegramNotifier:
             print(f"Failed to send Telegram message: {sanitized_err}", file=sys.stderr)
             return False
 
-    def send_signal_alert(self, reports: List[SignalReport]) -> bool:
-        """Format and send phone-readable digest for non-HOLD (BUY/SELL) signals."""
+    def send_morning_brief(
+        self,
+        reports: List[SignalReport],
+        total_tickers: int,
+        run_date: datetime.date,
+        suppressed_count: int = 0,
+    ) -> bool:
+        """Format and send detailed morning signal brief cards."""
         if not self.is_enabled:
             return False
 
-        active_reports = [r for r in reports if r.action in (RecommendationAction.BUY, RecommendationAction.SELL)]
-        if not active_reports:
+        # Filter actionable BUY/SELL signals that pass quality gate
+        qualifying_reports = []
+        for r in reports:
+            if r.action in (RecommendationAction.BUY, RecommendationAction.SELL):
+                # Quality gate: confidence >= 40%, R:R >= 2.0 (if set), and status == BACKTESTED
+                if r.confidence_score >= 40.0 and (r.reward_to_risk is None or r.reward_to_risk >= 2.0):
+                    qualifying_reports.append(r)
+
+        if not qualifying_reports:
+            print("No signals cleared quality gate for Telegram notification.")
             return False
 
+        day_str = run_date.strftime("%a %d %b %Y")
         lines = [
-            f"🚨 *ATHENA SIGNAL ALERT* — {active_reports[0].run_date.isoformat()}",
+            f"🦉 *ATHENA MORNING BRIEF* — {day_str}",
+            "Based on yesterday's close · 8:30 AM IST · Nifty 500",
             "",
         ]
 
-        for r in active_reports:
-            emoji = "🟢" if r.action == RecommendationAction.BUY else "🔴"
-            horizon_tag = (
-                "⚡ [INTRADAY]" if getattr(r, "trade_horizon", "SHORT_TERM") == "INTRADAY"
-                else ("📈 [LONG-TERM TREND]" if getattr(r, "trade_horizon", "SHORT_TERM") == "LONG_TERM" else "🎯 [SHORT-TERM SWING]")
-            )
-            lines.append(f"{emoji} *{r.action.value}* {horizon_tag}: `{r.ticker}` ({r.strategy_name})")
-            if r.entry_price is not None:
-                lines.append(f"• Entry  : ₹{r.entry_price:,.2f}")
-            if r.stop_loss_price is not None:
-                lines.append(f"• Stop   : ₹{r.stop_loss_price:,.2f}")
-            if r.target_price is not None:
-                lines.append(f"• Target : ₹{r.target_price:,.2f}")
-            if r.position_size is not None:
-                lines.append(f"• Size   : {r.position_size} shares")
-            if r.reasoning:
-                lines.append(f"• Rationale: {r.reasoning}")
+        for r in qualifying_reports:
+            action_emoji = "🟢 BUY" if r.action == RecommendationAction.BUY else "🔴 SELL"
+            stars = "★★★★☆" if r.signal_quality == "HIGH" else "★★★☆☆"
+            trade_id = r.trade_id or "T1001"
+
+            lines.append("━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+            lines.append(f"{action_emoji} · `{r.ticker}`  {stars}  {r.confidence_score:.0f}%  #{trade_id}")
+            lines.append("━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+
+            if r.entry_price and r.stop_loss_price and r.target_price:
+                stop_pct = abs(r.entry_price - r.stop_loss_price) / r.entry_price * 100.0
+                target_pct = abs(r.target_price - r.entry_price) / r.entry_price * 100.0
+                lines.append(f"📌 *Entry*: ₹{r.entry_price:,.2f} (prev close)")
+                lines.append(f"  *Stop*: ₹{r.stop_loss_price:,.2f} (−{stop_pct:.1f}%)")
+                lines.append(f"  *Target*: ₹{r.target_price:,.2f} (+{target_pct:.1f}%)")
+
+            if r.reward_to_risk and r.position_size and r.entry_price:
+                notional = r.position_size * r.entry_price
+                lines.append(f"📊 *R:R Ratio*: 1:{r.reward_to_risk:.1f} ✅ · *Size*: {r.position_size} shares (~₹{notional:,.0f})")
+
+            lines.append(f"🔎 *Rationale*: {r.reasoning}")
+            lines.append(f"✅ *Status*: {r.validation_status.value}")
+            lines.append(f"👉 *Action*: Reply `{trade_id} bought` to track this trade")
             lines.append("")
 
-        lines.append(f"📊 Total Active Signals: {len(active_reports)}")
+        hold_count = total_tickers - len(qualifying_reports)
+        lines.append(f"📈 *{len(qualifying_reports)} active signals* · {hold_count} HOLD · {suppressed_count} suppressed (already active)")
+        lines.append("⚠️ *Disclaimer*: Research automation only. Not SEBI investment advice.")
+
         text = "\n".join(lines)
         return self._send_telegram_message(text)
+
+    def send_trade_checkin(
+        self,
+        checkin_dict: dict,
+        run_date: datetime.date,
+    ) -> bool:
+        """Send periodic check-in update on open trades (for non-trading or check-in days)."""
+        if not self.is_enabled:
+            return False
+
+        expired = checkin_dict.get("expired", [])
+        due_7d = checkin_dict.get("due_7d", [])
+        due_14d = checkin_dict.get("due_14d", [])
+        due_30d = checkin_dict.get("due_30d", [])
+
+        all_due = due_7d + due_14d + due_30d
+        if not expired and not all_due:
+            return False
+
+        day_str = run_date.strftime("%a %d %b %Y")
+        lines = [
+            f"📋 *ATHENA TRADE CHECK-IN* — {day_str}",
+            "Reviewing active predictions & pending trades",
+            "",
+        ]
+
+        for e in expired:
+            lines.append(f"⏰ *#{e.trade_id} ({e.ticker}) EXPIRED*")
+            lines.append(f"  Signal from {e.signal_date} reached 30-day limit without execution.")
+            lines.append(f"  Auto-closing pending trade ID #{e.trade_id}.")
+            lines.append("")
+
+        for e in all_due:
+            lines.append(f"📌 *#{e.trade_id} · {e.ticker} {e.action}* (Signal Date: {e.signal_date})")
+            lines.append(f"  Suggested: Entry ₹{e.suggested_entry:,.2f} → Stop ₹{e.suggested_stop:,.2f} → Target ₹{e.suggested_target:,.2f}")
+            lines.append(f"  Status: {e.status}")
+            lines.append(f"  Reply: `{e.trade_id} bought` / `{e.trade_id} skip` / `{e.trade_id} open`")
+            lines.append("")
+
+        text = "\n".join(lines)
+        return self._send_telegram_message(text)
+
+    def send_signal_alert(self, reports: List[SignalReport]) -> bool:
+        """Legacy signal alert wrapper."""
+        return self.send_morning_brief(reports, total_tickers=len(reports), run_date=datetime.date.today())
 
     def send_degraded_alert(self, failed_count: int, total_count: int, run_date_str: str) -> bool:
         """Format and send degraded execution warning alert."""

@@ -21,6 +21,8 @@ from datetime import datetime, timezone
 from core.intelligence.indicators import (
     BollingerResult,
     MACDResult,
+    ADXResult,
+    adx,
     atr,
     bollinger_bands,
     ema,
@@ -749,6 +751,38 @@ class TestIndicatorEngine(unittest.TestCase):
         # VWAP = (10+11+12+13+14)/5 = 12.0
         self.assertIn(FactType.INDICATOR_VWAP.value, derived)
         self.assertAlmostEqual(derived[FactType.INDICATOR_VWAP.value], 12.0)
+
+
+class TestADX(unittest.TestCase):
+    """Unit tests for Welles Wilder's ADX (Average Directional Index)."""
+
+    def test_adx_short_series_returns_none(self) -> None:
+        """Series shorter than 2 * period should return None."""
+        highs = [10.0] * 20
+        lows = [8.0] * 20
+        closes = [9.0] * 20
+        self.assertIsNone(adx(highs, lows, closes, period=14))
+
+    def test_adx_strong_uptrend_produces_high_adx_and_plus_di(self) -> None:
+        """Consistently rising higher-highs and higher-lows should produce strong ADX (> 25) and +DI > -DI."""
+        highs = [10.0 + i * 2.0 for i in range(40)]
+        lows = [8.0 + i * 2.0 for i in range(40)]
+        closes = [9.0 + i * 2.0 for i in range(40)]
+
+        res = adx(highs, lows, closes, period=14)
+        self.assertIsNotNone(res)
+        self.assertGreater(res.adx, 25.0)
+        self.assertGreater(res.plus_di, res.minus_di)
+
+    def test_adx_flat_series_produces_low_adx(self) -> None:
+        """Flat range-bound prices should produce low ADX (< 20)."""
+        highs = [10.0 + (i % 2) for i in range(40)]
+        lows = [8.0 + (i % 2) for i in range(40)]
+        closes = [9.0 + (i % 2) for i in range(40)]
+
+        res = adx(highs, lows, closes, period=14)
+        self.assertIsNotNone(res)
+        self.assertLess(res.adx, 20.0)
 
 
 if __name__ == "__main__":

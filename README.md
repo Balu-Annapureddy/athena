@@ -109,21 +109,53 @@ Athena enforces a strict testing discipline. The entire suite runs deterministic
 pytest tests/ -q
 ```
 
-**Total Test Cases: 400 tests** (all green, 100% pass rate).
+Total Test Cases: **416 tests** (all green, 100% pass rate).
 
 ---
 
-## 🤖 Telegram Signal Bot
+## ⚙️ Setup
 
-The live signal bot runs daily at 09:30 IST via GitHub Actions and sends formatted alerts:
+All runtime credentials are read from environment variables. Copy `.env.example` to `.env` and fill in your values:
 
-```
-📊 ATHENA SIGNAL — RELIANCE.NS
-⚡ [INTRADAY]
-Direction : LONG
-Entry     : ₹1,432.50
-Stop Loss : ₹1,408.15
-Target    : ₹1,480.90
+```powershell
+Copy-Item .env.example .env
+# then edit .env with your credentials
 ```
 
-Signal types: **⚡ Intraday** (15m bars), **🎯 Short-Term Swing** (1h bars), **📈 Long-Term Trend** (1d bars).
+Required variables:
+
+| Variable | Purpose |
+|---|---|
+| `TELEGRAM_BOT_TOKEN` | Telegram Bot API token (from @BotFather) |
+| `TELEGRAM_CHAT_ID` | Telegram chat/group ID for signal alerts |
+| `ATHENA_API_KEY` | Bearer token for the Athena REST API |
+| `ATHENA_AUTH_BYPASS` | Set `true` only in local dev/CI to skip auth |
+
+For GitHub Actions, add each value under **Settings → Secrets and variables → Actions**.
+
+---
+
+## 🕓 Daily Signal Automation & Trade Journal
+
+The GitHub Actions workflow ([`.github/workflows/daily_signal.yml`](.github/workflows/daily_signal.yml)) runs **daily at 03:00 UTC (8:30 AM IST)**.
+
+**8:30 AM IST Morning Brief:**  
+Signals are generated from yesterday's completed EOD price bar before market open (9:15 AM IST). Telegram notifications feature rich Markdown cards with Trade IDs (e.g. `#T1207`), entry, stop-loss, target prices, R:R ratios, composite confidence scores, and quality badges.
+
+**Weekend & Holiday Mode:**  
+On weekends and exchange holidays, Athena runs in silent check-in mode — analyzing open trades and sending status check-in summaries without issuing redundant new signals.
+
+**Personal Trade Journal CLI:**  
+Track your paper trading execution against Athena's recommendations using Trade IDs:
+
+```powershell
+# Mark trade T1207 as taken
+python scripts/journal.py bought --trade-id T1207 --entry 1845.00 --qty 27
+
+# Record trade exit
+python scripts/journal.py exit --trade-id T1207 --price 1990.00
+
+# View open active positions
+python scripts/journal.py list
+```
+

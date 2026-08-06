@@ -6,6 +6,8 @@ from typing import Dict, List, Optional, Tuple
 from core.domain.enums import ValidationStatus
 from core.strategy.base import BaseStrategy
 from core.strategy.golden_cross import GoldenCrossDeathCrossStrategy
+from core.strategy.regime_filtered_golden_cross import RegimeFilteredGoldenCrossStrategy
+from core.strategy.atr_trailing_golden_cross import ATRTrailingGoldenCrossStrategy
 
 
 class StrategyRegistry:
@@ -81,6 +83,18 @@ class StrategyRegistry:
         registry.register(
             strategy=GoldenCrossDeathCrossStrategy(),
             status=ValidationStatus.BACKTESTED,
+            weight=1.0,
+            enabled=True
+        )
+        registry.register(
+            strategy=RegimeFilteredGoldenCrossStrategy(),
+            status=ValidationStatus.UNVALIDATED,
+            weight=1.0,
+            enabled=True
+        )
+        registry.register(
+            strategy=ATRTrailingGoldenCrossStrategy(),
+            status=ValidationStatus.UNVALIDATED,
             weight=1.0,
             enabled=True
         )

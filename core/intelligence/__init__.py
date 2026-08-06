@@ -12,14 +12,17 @@ from core.intelligence.indicators import (
     momentum,
     rate_of_change,
     volume_trend,
+    adx,
+    efficiency_ratio,
     MACDResult,
     BollingerResult,
+    ADXResult,
 )
 from core.intelligence.engine import IndicatorEngine
 
 __all__ = [
     "sma", "ema", "wilder_smooth", "rsi", "macd", "atr",
     "bollinger_bands", "vwap", "momentum", "rate_of_change", "volume_trend",
-    "MACDResult", "BollingerResult",
+    "adx", "efficiency_ratio", "MACDResult", "BollingerResult", "ADXResult",
     "IndicatorEngine",
 ]

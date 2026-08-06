@@ -50,15 +50,18 @@ class TestStrategyRegistry(unittest.TestCase):
         self.assertEqual(registry.get_status("GoldenCrossDeathCrossStrategy"), ValidationStatus.BACKTESTED)
 
     def test_default_registry_configures_golden_cross_as_backtested(self) -> None:
-        """Enforces ADR-030 safety invariant: default setup registers Golden Cross as BACKTESTED after real historical campaign pass."""
+        """Enforces ADR-030 safety invariant: default setup registers Golden Cross as BACKTESTED and new strategies as UNVALIDATED."""
         registry = StrategyRegistry.default()
         
         self.assertEqual(registry.get_status("GoldenCrossDeathCrossStrategy"), ValidationStatus.BACKTESTED)
+        self.assertEqual(registry.get_status("RegimeFilteredGoldenCrossStrategy"), ValidationStatus.UNVALIDATED)
         
         active = registry.get_active_strategies()
-        self.assertEqual(len(active), 1)
-        self.assertEqual(active[0][0].name, "GoldenCrossDeathCrossStrategy")
-        self.assertEqual(active[0][1], ValidationStatus.BACKTESTED)
+        self.assertEqual(len(active), 3)
+        strategy_names = [a[0].name for a in active]
+        self.assertIn("GoldenCrossDeathCrossStrategy", strategy_names)
+        self.assertIn("RegimeFilteredGoldenCrossStrategy", strategy_names)
+        self.assertIn("ATRTrailingGoldenCrossStrategy", strategy_names)
 
 
 if __name__ == "__main__":
