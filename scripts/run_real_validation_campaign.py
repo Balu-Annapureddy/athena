@@ -27,9 +27,10 @@ NIFTY_50_TICKERS = [
     "KOTAKBANK.NS", "LT.NS", "M&M.NS", "MARUTI.NS",
     "NESTLEIND.NS", "NTPC.NS", "ONGC.NS", "POWERGRID.NS",
     "RELIANCE.NS", "SBIN.NS", "SBILIFE.NS", "SUNPHARMA.NS",
-    "TCS.NS", "TATACONSUM.NS", "TATAMOTORS.NS", "TATASTEEL.NS",
+    "TCS.NS", "TATACONSUM.NS", "TATASTEEL.NS",
     "TECHM.NS", "TITAN.NS", "UPL.NS", "ULTRACEMCO.NS",
     "WIPRO.NS", "SHRIRAMFIN.NS",
+    # TATAMOTORS.NS excluded: returns HTTP 404 from yfinance (possibly listed under different symbol)
 ]
 
 # Training windows (2017-2022) — strategy validation campaign evaluates on these

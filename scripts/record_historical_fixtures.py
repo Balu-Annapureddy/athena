@@ -21,12 +21,12 @@ NIFTY_50_TICKERS = [
     "KOTAKBANK.NS", "LT.NS", "M&M.NS", "MARUTI.NS",
     "NESTLEIND.NS", "NTPC.NS", "ONGC.NS", "POWERGRID.NS",
     "RELIANCE.NS", "SBIN.NS", "SBILIFE.NS", "SUNPHARMA.NS",
-    "TCS.NS", "TATACONSUM.NS", "TATAMOTORS.NS", "TATASTEEL.NS",
+    "TCS.NS", "TATACONSUM.NS", "TATASTEEL.NS",
     "TECHM.NS", "TITAN.NS", "UPL.NS", "ULTRACEMCO.NS",
     "WIPRO.NS", "SHRIRAMFIN.NS",
 ]
-START_DATE = "2010-01-01"
-END_DATE = "2025-12-31"
+START_DATE = "2016-01-01"
+END_DATE = "2026-08-01"
 FIXTURE_DIR = "fixtures/yfinance_historical"
 
 
@@ -61,7 +61,7 @@ def main() -> None:
                     dt = r.get("raw", {}).get("__timestamp__", "")[:10]
                     if dt:
                         min_dt = min(min_dt, dt)
-            if lines_count >= 3500 and min_dt <= "2010-06-01":
+            if lines_count >= 2000 and min_dt <= "2017-06-01":
                 print(f"  [{idx}/{total}] {ticker} already has {lines_count} bars from {min_dt}. Skipping.")
                 continue
             elif ticker in ("HDFCLIFE.NS", "SBILIFE.NS") and lines_count >= 2000:
@@ -70,9 +70,9 @@ def main() -> None:
 
         print(f"  [{idx}/{total}] Fetching and recording {ticker}...")
         try:
-            payloads = connector.fetch_data(ticker, start=START_DATE, end=END_DATE, timeout=20)
+            payloads = connector.fetch_data(ticker, start="2010-01-01", end="2026-08-01", force_network=True, timeout=20)
             print(f"       -> Successfully recorded {len(payloads)} daily bars for {ticker}.")
-            time.sleep(1.5)  # Rate limiter courtesy pause
+            time.sleep(1.0)  # Rate limiter courtesy pause
         except Exception as e:
             print(f"       -> ERROR recording {ticker}: {e}")
 

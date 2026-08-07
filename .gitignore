@@ -40,6 +40,6 @@ htmlcov/
 
 # Local cache fixtures
 fixtures/yfinance/*.jsonl
-fixtures/yfinance_historical/*.jsonl
+
 
 
