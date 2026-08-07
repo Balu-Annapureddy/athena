@@ -57,17 +57,24 @@ def _print_run_table(label: str, run_details: list, use_gross: bool = False) -> 
           f"{'Return %':<10} | {'Max DD %':<9} | {'Sharpe':<7} | {pf_label:<8} | {'Avg PnL':>10}")
     print("-" * 115)
     for detail in run_details[:30]:  # Cap output table lines for terminal clarity
-        m = detail.get(key)
         ticker = detail.get("ticker", "")
         window = f"{detail.get('start_date')} to {detail.get('end_date')}"
-        if m:
-            print(
-                f"{ticker:<12} | {window:<23} | {m.total_trades:<6} | {m.win_rate*100:>7.1f}% | "
-                f"{m.total_return*100:>9.2f}% | {m.max_drawdown*100:>8.2f}% | {m.sharpe_ratio:>7.2f} | "
-                f"{m.profit_factor:>8.2f} | INR {m.avg_pnl_per_trade:>8.2f}"
-            )
+        if "error" in detail:
+            print(f"{ticker:<12} | {window:<23} | ERROR: {detail['error']}")
         else:
-            print(f"{ticker:<12} | {window:<23} | ERROR: {detail.get('error')}")
+            m = detail.get(key)
+            trades_cnt = m.total_trades if m else detail.get("trade_count", 0)
+            win_r = m.win_rate if m else detail.get("win_rate", 0.0)
+            ret = m.total_return if m else detail.get("total_return", 0.0)
+            mdd = m.max_drawdown if m else detail.get("max_drawdown", 0.0)
+            sr = m.sharpe_ratio if m else detail.get("sharpe_ratio", 0.0)
+            pf = m.profit_factor if m else detail.get("profit_factor", 0.0)
+            avg_p = m.avg_pnl_per_trade if m else detail.get("avg_pnl_per_trade", 0.0)
+            print(
+                f"{ticker:<12} | {window:<23} | {trades_cnt:<6} | {win_r*100:>7.1f}% | "
+                f"{ret*100:>9.2f}% | {mdd*100:>8.2f}% | {sr:>7.2f} | "
+                f"{pf:>8.2f} | INR {avg_p:>8.2f}"
+            )
     if len(run_details) > 30:
         print(f"... ({len(run_details) - 30} additional run rows omitted for brevity)")
     print("-" * 115)

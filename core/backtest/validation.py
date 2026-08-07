@@ -134,10 +134,14 @@ class ValidationCampaign:
                         "sharpe_ratio": metrics.sharpe_ratio,
                         "profit_factor": metrics.profit_factor,
                         "is_passing": is_passing,
+                        "metrics": metrics,
                         "gross_metrics": gross_metrics,
                         "total_costs": total_costs,
                     })
                 except Exception as err:
+                    import traceback
+                    tb_text = traceback.format_exc()
+                    print(f"    -> ERROR backtesting {ticker} ({start_date} to {end_date}):\n{tb_text}", flush=True)
                     run_details.append({
                         "ticker": ticker,
                         "start_date": start_date,
@@ -150,7 +154,7 @@ class ValidationCampaign:
                         "sharpe_ratio": 0.0,
                         "profit_factor": 0.0,
                         "is_passing": False,
-                        "error": str(err)
+                        "error": tb_text or str(err) or repr(err)
                     })
 
         passing_ratio = passing_runs / total_runs if total_runs > 0 else 0.0
