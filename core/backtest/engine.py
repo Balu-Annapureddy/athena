@@ -189,8 +189,8 @@ class BacktestEngine:
                 - "decision_records": List[DecisionRecord]
                 - "total_costs": float  (sum of all round-trip transaction costs)
         """
-        # 1. Fetch daily data for full range
-        payloads = self._connector.fetch_data(ticker, start=start_date, end=end_date, timeout=1)
+        # 1. Fetch data for full range (supports 1d, 15m, 1h, etc.)
+        payloads = self._connector.fetch_data(ticker, start=start_date, end=end_date, interval=interval, timeout=1)
         if not payloads:
             raise ValueError(f"No price data returned for ticker {ticker} in range {start_date} to {end_date}")
 

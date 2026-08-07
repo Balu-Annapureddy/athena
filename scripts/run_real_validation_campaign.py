@@ -85,13 +85,15 @@ import argparse
 
 from core.strategy.regime_filtered_golden_cross import RegimeFilteredGoldenCrossStrategy
 from core.strategy.atr_trailing_golden_cross import ATRTrailingGoldenCrossStrategy
+from core.strategy.rsi_mean_reversion import RSIMeanReversionStrategy
+from core.strategy.breakout_volume import BreakoutVolumeConfirmationStrategy
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Athena Validation Campaign Runner")
     parser.add_argument(
         "--strategy",
-        choices=["golden_cross", "regime_filtered", "atr_trailing"],
+        choices=["golden_cross", "regime_filtered", "atr_trailing", "rsi_mean_reversion", "breakout_volume"],
         default="atr_trailing",
         help="Strategy to evaluate (default: atr_trailing)",
     )
@@ -115,6 +117,10 @@ def main() -> None:
         strategy = ATRTrailingGoldenCrossStrategy(fast_period=50, slow_period=200, adx_period=14, min_adx_threshold=20.0, atr_multiplier=2.5)
     elif args.strategy == "regime_filtered":
         strategy = RegimeFilteredGoldenCrossStrategy(fast_period=50, slow_period=200, adx_period=14, min_adx_threshold=20.0)
+    elif args.strategy == "rsi_mean_reversion":
+        strategy = RSIMeanReversionStrategy(rsi_period=14)
+    elif args.strategy == "breakout_volume":
+        strategy = BreakoutVolumeConfirmationStrategy(lookback_period=20, volume_trend_threshold=50.0)
     else:
         strategy = GoldenCrossDeathCrossStrategy(fast_period=50, slow_period=200)
 
