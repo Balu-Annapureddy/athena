@@ -5,6 +5,7 @@ Sweeps 20 parameter combinations over the 44-ticker daily training campaign
 by passing ratio descending.
 """
 
+import argparse
 import os
 import sys
 import time
@@ -34,8 +35,9 @@ NIFTY_50_TICKERS = [
 TRAINING_DATE_RANGES = [("2017-01-01", "2020-12-31"), ("2021-01-01", "2022-12-31")]
 ACCOUNT_SIZE = 100_000.0
 
-LOOKBACK_GRID = [10, 15, 20, 25, 30]
-VOL_GRID = [25.0, 50.0, 75.0, 100.0]
+DEFAULT_LOOKBACK_GRID = [15, 20, 25]
+DEFAULT_VOL_GRID = [100.0, 125.0, 150.0, 175.0, 200.0]
+
 
 
 def get_available_tickers():
@@ -52,6 +54,14 @@ def get_available_tickers():
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(description="Run parameter sweep for BreakoutVolumeConfirmationStrategy.")
+    parser.add_argument("--lookbacks", type=int, nargs="+", default=DEFAULT_LOOKBACK_GRID, help="List of lookback periods to test.")
+    parser.add_argument("--vol-thresholds", type=float, nargs="+", default=DEFAULT_VOL_GRID, help="List of volume trend thresholds to test.")
+    args = parser.parse_args()
+
+    lookback_grid = args.lookbacks
+    vol_grid = args.vol_thresholds
+
     available_tickers = get_available_tickers()
 
     print("=" * 115)
@@ -60,7 +70,7 @@ def main() -> None:
     print(f"Data Source       : {FIXTURE_DIR}")
     print(f"Tickers Available : {len(available_tickers)} / {len(NIFTY_50_TICKERS)} Nifty 50 constituents")
     print(f"Training Windows  : {TRAINING_DATE_RANGES}")
-    print(f"Grid Dimensions   : lookback {LOOKBACK_GRID} x volume_threshold {VOL_GRID} (20 combinations)")
+    print(f"Grid Dimensions   : lookback {lookback_grid} x volume_threshold {vol_grid} ({len(lookback_grid) * len(vol_grid)} combinations)")
     print(f"Total Runs / Grid : {len(available_tickers) * len(TRAINING_DATE_RANGES)} backtests per combination")
     print("=" * 115)
     print()
@@ -74,13 +84,13 @@ def main() -> None:
     )
 
     sweep_results = []
-    combo_count = len(LOOKBACK_GRID) * len(VOL_GRID)
+    combo_count = len(lookback_grid) * len(vol_grid)
     idx = 0
 
     start_time = time.time()
 
-    for lb in LOOKBACK_GRID:
-        for vol in VOL_GRID:
+    for lb in lookback_grid:
+        for vol in vol_grid:
             idx += 1
             combo_label = f"lookback={lb}, vol_thresh={vol}"
             print(f"[{idx:2d}/{combo_count}] Evaluating {combo_label}...", flush=True)
@@ -98,7 +108,6 @@ def main() -> None:
                 )
 
             # Collect trades and aggregate net metrics
-            all_trades = []
             w1_passing = 0
             w1_total = 0
             w2_passing = 0
@@ -122,11 +131,7 @@ def main() -> None:
             total_runs = res.total_runs_count
             passing_ratio = res.passing_ratio
 
-            # Calculate overall net Profit Factor across all trades in campaign
-            gross_wins = 0.0
-            gross_losses = 0.0
             total_net_pnl = 0.0
-
             for detail in res.run_details:
                 if "metrics" in detail:
                     m = detail["metrics"]
@@ -134,16 +139,16 @@ def main() -> None:
 
             avg_net_pnl = total_net_pnl / total_trades if total_trades > 0 else 0.0
 
-            # Compute campaign-wide net Profit Factor
-            for detail in res.run_details:
-                if "metrics" in detail:
-                    # Collect from metrics object if available
-                    m = detail["metrics"]
-                    # We can use total_return or sum gross wins/losses
-                    pass
-
             w1_ratio = (w1_passing / w1_total * 100) if w1_total > 0 else 0.0
             w2_ratio = (w2_passing / w2_total * 100) if w2_total > 0 else 0.0
+
+            # Determine explicit status: check if failed due to trades vs ratio
+            if total_trades < 100:
+                gate_status = "FAILED (LOW TRADES)"
+            elif res.passed:
+                gate_status = "PASSED"
+            else:
+                gate_status = "FAILED"
 
             sweep_results.append({
                 "lookback": lb,
@@ -156,6 +161,7 @@ def main() -> None:
                 "w1_ratio": w1_ratio,
                 "w2_ratio": w2_ratio,
                 "passed_gate": res.passed,
+                "gate_status": gate_status,
             })
 
     elapsed = time.time() - start_time
@@ -164,21 +170,21 @@ def main() -> None:
     # Sort results by passing ratio descending, then by avg_net_pnl descending
     sweep_results.sort(key=lambda r: (r["passing_ratio"], r["avg_net_pnl"]), reverse=True)
 
-    print("=" * 115)
+    print("=" * 125)
     print("PARAM GRID SWEEP RESULTS — BreakoutVolumeConfirmationStrategy (Sorted by Passing Ratio)")
-    print("=" * 115)
+    print("=" * 125)
     print(f"{'Rank':<5} | {'Lookback':<9} | {'Vol Thresh':<10} | {'Trades':<7} | {'Pass Runs':<10} | {'Pass Ratio':<11} | {'Avg Net PnL':<13} | {'2017-20 Pass %':<15} | {'2021-22 Pass %':<15} | {'Gate Status'}")
-    print("-" * 115)
+    print("-" * 125)
 
     for rank, r in enumerate(sweep_results, start=1):
-        status = "PASSED" if r["passed_gate"] else "FAILED"
         print(
             f"{rank:<5} | {r['lookback']:<9} | {r['vol_thresh']:<10.1f} | {r['total_trades']:<7} | "
             f"{r['passing_runs']:>2}/{r['total_runs']:<7} | {r['passing_ratio']*100:>9.1f}% | "
-            f"INR {r['avg_net_pnl']:>9.2f} | {r['w1_ratio']:>13.1f}% | {r['w2_ratio']:>13.1f}% | {status}"
+            f"INR {r['avg_net_pnl']:>9.2f} | {r['w1_ratio']:>13.1f}% | {r['w2_ratio']:>13.1f}% | {r['gate_status']}"
         )
-    print("=" * 115)
+    print("=" * 125)
 
 
 if __name__ == "__main__":
     main()
+
