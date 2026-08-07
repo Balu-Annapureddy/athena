@@ -46,13 +46,26 @@ def main() -> None:
 
     total = len(NIFTY_50_TICKERS)
     for idx, ticker in enumerate(NIFTY_50_TICKERS, start=1):
-        # Check if fixture file already recorded with sufficient bars
+        # Check if fixture file already recorded with 2010 start coverage
         fixture_file = os.path.join(FIXTURE_DIR, f"YFinanceConnector_{ticker}.jsonl")
         if os.path.exists(fixture_file):
+            min_dt = "9999"
+            lines_count = 0
             with open(fixture_file, "r", encoding="utf-8") as f:
-                lines_count = sum(1 for _ in f)
-            if lines_count >= 3500:
-                print(f"  [{idx}/{total}] {ticker} already has {lines_count} bars recorded. Skipping.")
+                for line in f:
+                    if not line.strip():
+                        continue
+                    lines_count += 1
+                    import json
+                    r = json.loads(line)
+                    dt = r.get("raw", {}).get("__timestamp__", "")[:10]
+                    if dt:
+                        min_dt = min(min_dt, dt)
+            if lines_count >= 3500 and min_dt <= "2010-06-01":
+                print(f"  [{idx}/{total}] {ticker} already has {lines_count} bars from {min_dt}. Skipping.")
+                continue
+            elif ticker in ("HDFCLIFE.NS", "SBILIFE.NS") and lines_count >= 2000:
+                print(f"  [{idx}/{total}] {ticker} (IPO 2017) already has {lines_count} bars. Skipping.")
                 continue
 
         print(f"  [{idx}/{total}] Fetching and recording {ticker}...")

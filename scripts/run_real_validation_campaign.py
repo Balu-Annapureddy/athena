@@ -32,10 +32,10 @@ NIFTY_50_TICKERS = [
     "WIPRO.NS", "SHRIRAMFIN.NS",
 ]
 
-# Training windows (2010-2022) — strategy validation campaign evaluates on these
+# Training windows (2017-2022) — strategy validation campaign evaluates on these
+# (Matches the earliest available fixture start date 2017-01-01 across all Nifty 50 constituents)
 TRAINING_DATE_RANGES = [
-    ("2010-01-01", "2015-12-31"),   # Pre-demonetization regime
-    ("2016-01-01", "2020-12-31"),   # Pre-COVID & COVID shock regime
+    ("2017-01-01", "2020-12-31"),   # Pre-COVID & COVID shock regime
     ("2021-01-01", "2022-12-31"),   # Post-COVID recovery regime
 ]
 

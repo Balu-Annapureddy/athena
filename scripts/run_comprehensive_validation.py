@@ -135,8 +135,8 @@ def run_multi_timeframe_validation() -> Dict[str, Any]:
             except Exception as e:
                 pass
 
-        # Compute aggregate metrics for this strategy/timeframe
-        trade_pnls = [t.pnl for t in st_trades]
+        # Compute aggregate NET-OF-COST metrics for this strategy/timeframe
+        trade_pnls = [t.net_pnl for t in st_trades]
         wins = [p for p in trade_pnls if p > 0]
         losses = [p for p in trade_pnls if p < 0]
 
@@ -178,10 +178,10 @@ def run_multi_timeframe_validation() -> Dict[str, Any]:
         )
 
     # Print Summary Table
-    print("PER-STRATEGY & TIMEFRAME AGGREGATE SUMMARY:")
+    print("PER-STRATEGY & TIMEFRAME AGGREGATE SUMMARY (NET-OF-COST):")
     print("-" * 125)
     print(
-        f"{'Strategy Name':<35} | {'TF':<4} | {'Horizon':<22} | {'Trades':<7} | {'L/S':<8} | {'Win %':<7} | {'Profit Factor':<13} | {'Avg PnL':<10}"
+        f"{'Strategy Name':<35} | {'TF':<4} | {'Horizon':<22} | {'Trades':<7} | {'L/S':<8} | {'Win %':<7} | {'Net PF':<13} | {'Net Avg PnL':<12}"
     )
     print("-" * 125)
 
@@ -189,26 +189,26 @@ def run_multi_timeframe_validation() -> Dict[str, Any]:
         ls_str = f"{s.long_trades}/{s.short_trades}"
         pf_str = f"{s.profit_factor:.2f}" if s.profit_factor < 100 else "INF"
         print(
-            f"{s.strategy_name:<35} | {s.timeframe:<4} | {s.trade_horizon:<22} | {s.total_trades:<7} | {ls_str:<8} | {s.win_rate*100:>6.1f}% | {pf_str:>13} | INR {s.avg_pnl:>8.2f}"
+            f"{s.strategy_name:<35} | {s.timeframe:<4} | {s.trade_horizon:<22} | {s.total_trades:<7} | {ls_str:<8} | {s.win_rate*100:>6.1f}% | {pf_str:>13} | INR {s.avg_pnl:>10.2f}"
         )
 
     print("-" * 125)
     print()
 
-    # Grand Total Metrics
-    all_pnls = [t.pnl for t in grand_total_trades]
+    # Grand Total Metrics (Net of Cost)
+    all_pnls = [t.net_pnl for t in grand_total_trades]
     all_wins = [p for p in all_pnls if p > 0]
     all_losses = [p for p in all_pnls if p < 0]
     grand_win_rate = len(all_wins) / len(all_pnls) if all_pnls else 0.0
     grand_profit_factor = (sum(all_wins) / abs(sum(all_losses))) if all_losses else 0.0
 
-    print("OVERALL CAMPAIGN METRICS:")
+    print("OVERALL CAMPAIGN METRICS (NET-OF-COST — Zerodha Rates + STT + Stamp Duty + 8 bps Slippage):")
     print(f"  - Total Backtest Runs Executed : {total_runs_count}")
     print(f"  - Total Trades Count           : {len(grand_total_trades)} (Required: >= 200)")
     print(f"  - LONG Trades                  : {sum(s.long_trades for s in all_strategy_summaries)}")
     print(f"  - SHORT Trades                 : {sum(s.short_trades for s in all_strategy_summaries)}")
-    print(f"  - Overall Win Rate             : {grand_win_rate*100:.1f}%")
-    print(f"  - Overall Profit Factor        : {grand_profit_factor:.2f}")
+    print(f"  - Overall Net Win Rate         : {grand_win_rate*100:.1f}%")
+    print(f"  - Overall Net Profit Factor    : {grand_profit_factor:.2f}")
     print(f"  - Strict Validation Gate       : {'PASSED' if len(grand_total_trades) >= 200 and grand_profit_factor > 1.0 else 'FAILED'}")
     print("=" * 115)
 
@@ -229,26 +229,28 @@ def main() -> None:
     # Write Markdown Report to docs/comprehensive_backtest_report.md
     report_path = os.path.join("docs", "comprehensive_backtest_report.md")
     with open(report_path, "w", encoding="utf-8") as f:
-        f.write("# Athena Multi-Timeframe Quantitative Validation Report\n\n")
-        f.write(f"**Execution Date**: 2026-07-26  \n")
+        f.write("# Athena Multi-Timeframe Quantitative Validation Report (Net-of-Cost)\n\n")
+        f.write(f"**Execution Date**: 2026-08-07  \n")
         f.write(f"**Historical Fixture Coverage**: 15 Core NIFTY Tickers (15m, 1h, 1d)  \n")
+        f.write(f"**Transaction Cost Model**: Zerodha Delivery Rates (0.03% capped at ₹20) + STT (0.1% sell) + Stamp Duty (0.015% buy) + Exchange Fees + 8 bps Slippage  \n")
         f.write(f"**Total Backtest Runs**: {results['total_runs']}  \n")
         f.write(f"**Total Executed Trades**: {results['total_trades']}  \n\n")
 
-        f.write("## Overall Campaign Performance\n\n")
+        f.write("## Overall Campaign Net-of-Cost Performance\n\n")
         f.write(f"- **Total Trades**: {results['total_trades']}\n")
-        f.write(f"- **Overall Win Rate**: {results['win_rate']*100:.1f}%\n")
-        f.write(f"- **Profit Factor**: {results['profit_factor']:.2f}\n")
+        f.write(f"- **Overall Net Win Rate**: {results['win_rate']*100:.1f}%\n")
+        f.write(f"- **Net Profit Factor**: {results['profit_factor']:.2f}\n")
         f.write(f"- **Validation Gate Status**: {'PASSED' if results['total_trades'] >= 200 and results['profit_factor'] > 1.0 else 'FAILED'}\n\n")
 
-        f.write("## Per-Strategy & Timeframe Metrics Summary\n\n")
-        f.write("| Strategy Name | Timeframe | Trade Horizon | Total Trades | LONG / SHORT | Win Rate | Profit Factor | Avg PnL (INR) |\n")
+        f.write("## Per-Strategy & Timeframe Metrics Summary (Net-of-Cost)\n\n")
+        f.write("| Strategy Name | Timeframe | Trade Horizon | Total Trades | LONG / SHORT | Net Win Rate | Net Profit Factor | Net Avg PnL (INR) |\n")
         f.write("| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |\n")
         for s in results["strategy_summaries"]:
             pf_val = f"{s.profit_factor:.2f}" if s.profit_factor < 100 else "INF"
             f.write(
                 f"| `{s.strategy_name}` | `{s.timeframe}` | {s.trade_horizon} | {s.total_trades} | {s.long_trades}/{s.short_trades} | {s.win_rate*100:.1f}% | {pf_val} | INR {s.avg_pnl:.2f} |\n"
             )
+        f.write("\n")
         f.write("\n")
 
     print(f"\nReport saved to {report_path}.")

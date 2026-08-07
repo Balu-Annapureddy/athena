@@ -74,7 +74,7 @@ Athena is structured across five major evolutionary phases:
 - **Sprint 31 (Futures & Options)**: OptionContractPayload, NSEOptionChainConnector, Black-Scholes-Merton Greeks. `[COMPLETED]`
 - **Sprint 32 (Telegram Signal Bot)**: Live Telegram notifications with trade horizon tags (⚡ Intraday / 🎯 Short-Term / 📈 Long-Term). `[COMPLETED]`
 - **Sprint 33 (Position-Aware Risk Rules)**: `RiskSellDecisionRule` position check — SELL on liquidation, AVOID when no position. `[COMPLETED]`
-- **Sprint 34 (Multi-Timeframe Validation)**: 2,078 trades across 15 NIFTY stocks × 3 timeframes × 5 strategies. PF 1.14, gate PASSED. `[COMPLETED]`
+- **Sprint 34 (Multi-Timeframe Validation)**: 4,755 backtested trades across 15 NIFTY stocks × 3 timeframes × 5 strategies. Net-of-cost PF 0.83 (Gross PF 1.14). Proves baseline strategies fail net of costs, driving asset-regime matching & discovery. `[COMPLETED]`
 
 ### Phase 4: Expansion (Sprints 35+) — `PLANNED 📋`
 - **Sprint 35**: Expand to 50 stocks (top NSE constituents by liquidity + sector diversity)
@@ -84,19 +84,22 @@ Athena is structured across five major evolutionary phases:
 
 ---
 
-## 📊 Quantitative Validation Results (Sprint 34)
+## 📊 Quantitative Validation Results (Sprint 34 — Net-of-Cost Baseline)
 
-Backtested across **15 core NIFTY stocks**, **5 strategy engines**, **3 timeframes** (15m / 1h / 1d), using real historical fixtures (2024–2025 sub-daily, 2017–2025 daily):
+Backtested across **15 core NIFTY stocks**, **5 strategy engines**, **3 timeframes** (15m / 1h / 1d), using real historical fixtures with full **Zerodha transaction cost model** (0.03% brokerage capped at ₹20, STT 0.1% sell, Stamp Duty 0.015% buy, exchange fees, SEBI charges, and 8 bps slippage):
 
-| Strategy | Timeframe | Trades | LONG/SHORT | Win % | Profit Factor |
-|:--|:--|--:|:--|--:|--:|
-| RSI Mean Reversion | 15m | 179 | 83/96 | 29.6% | 1.17 |
-| MACD Signal Cross | 15m | 570 | 300/270 | 26.8% | 1.10 |
-| Breakout Volume Confirm | 15m | 485 | 242/243 | 26.2% | 1.03 |
-| VWAP Bias | 15m | 577 | 323/254 | 30.7% | **1.33** |
-| GoldenCross (20/50) | 1h | 97 | 49/48 | 33.0% | 1.26 |
-| GoldenCross (50/200) | 1d | 170 | 86/84 | 24.7% | 0.91 |
-| **TOTAL** | | **2,078** | **1,083/995** | **28.1%** | **1.14** ✅ |
+| Strategy | Timeframe | Trades | LONG/SHORT | Net Win % | Net Profit Factor | Net Avg PnL |
+|:--|:--|--:|:--|--:|--:|--:|
+| RSI Mean Reversion | 15m | 337 | 122/215 | 24.0% | 0.67 | ₹ -261.57 |
+| MACD Signal Cross | 15m | 1,149 | 579/570 | 26.6% | 0.86 | ₹ -104.33 |
+| Breakout Volume Confirm | 15m | 1,152 | 672/480 | 27.1% | 0.90 | ₹ -79.86 |
+| VWAP Bias | 15m | 1,172 | 551/621 | 25.7% | 0.81 | ₹ -136.85 |
+| GoldenCross (20/50) | 1h | 775 | 368/407 | 25.5% | 0.80 | ₹ -147.44 |
+| GoldenCross (50/200) | 1d | 170 | 86/84 | 24.1% | 0.82 | ₹ -139.09 |
+| **NET TOTAL** | | **4,755** | **2,378/2,377** | **26.1%** | **0.83** ❌ | **₹ -116.89** |
+
+> [!NOTE]
+> **Cost Model Disclosure**: The original pre-cost report indicated a Gross Profit Factor of 1.14. Under true Indian market friction (Zerodha brokerage + STT + Stamp Duty + Exchange fees + 8 bps slippage), basic un-filtered strategies drop to **Net PF 0.83**. This empirical result justifies why asset-matched regime filtering (Kaufman ER / Wilder ADX) and automated strategy discovery are strictly enforced in Athena.
 
 ---
 
@@ -109,7 +112,7 @@ Athena enforces a strict testing discipline. The entire suite runs deterministic
 pytest tests/ -q
 ```
 
-Total Test Cases: **416 tests** (all green, 100% pass rate).
+Total Test Cases: **421 tests** (all green, 100% pass rate).
 
 ---
 

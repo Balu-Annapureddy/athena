@@ -21,19 +21,18 @@ class TestTransactionCostModelDefaults(unittest.TestCase):
         self.assertEqual(total, 0.0)
 
     def test_long_trade_sell_side_has_stt(self) -> None:
-        """LONG trade: STT (0.1%) applies only on exit (sell side)."""
-        # Entry of Rs 1,00,000 (buy side) → no STT
-        # Exit of Rs 1,05,000 (sell side) → STT = 1,05,000 * 0.001 = Rs 105
+        """LONG trade: STT (0.1%) applies only on exit (sell side); stamp duty (0.015%) applies on entry (buy side)."""
+        # Entry of Rs 1,00,000 (buy side) → stamp duty = Rs 15, no STT
+        # Exit of Rs 1,05,000 (sell side) → STT = 1,05,000 * 0.001 = Rs 105, no stamp duty
         entry_c, exit_c, total = self.model.cost_for_trade(
             entry_value=100_000.0,
             exit_value=105_000.0,
             is_long=True,
         )
-        # Exit cost must exceed entry cost; the gap is dominated by STT (Rs 105)
-        # Other charges differ slightly due to the different notionals.
+        # Exit cost must exceed entry cost; the gap is dominated by STT (Rs 105) minus entry stamp (Rs 15)
         self.assertGreater(exit_c, entry_c)
-        # Difference should be at least Rs 105 (the STT component)
-        self.assertGreaterEqual(exit_c - entry_c, 105_000.0 * 0.001)
+        # Net difference exit_c - entry_c should reflect STT (105) minus stamp (15) ~ Rs 90
+        self.assertGreaterEqual(exit_c - entry_c, 80.0)
 
     def test_short_trade_stt_on_entry(self) -> None:
         """SHORT trade: entry is sell side so STT applies at entry, not exit."""
@@ -65,9 +64,10 @@ class TestTransactionCostModelDefaults(unittest.TestCase):
         exchange   = 0.0000322 * 10_000_000                  # Rs 322
         sebi       = 0.000001  * 10_000_000                  # Rs 10
         gst        = 0.18 * (brokerage + exchange)            # 18% on brokerage + exchange
+        stamp      = 0.00015 * 10_000_000                     # 0.015% stamp duty on buy
         slip       = (8.0 / 10_000) * 10_000_000             # Rs 800 slippage
-        # No STT on LONG entry (buy side)
-        expected_entry = brokerage + exchange + sebi + gst + slip
+        # No STT on LONG entry (buy side); stamp duty applies on buy
+        expected_entry = brokerage + exchange + sebi + gst + stamp + slip
         self.assertAlmostEqual(entry_c, expected_entry, places=1)
 
     def test_full_round_trip_small_position(self) -> None:
@@ -83,11 +83,12 @@ class TestTransactionCostModelDefaults(unittest.TestCase):
         self.assertLess(total, 0.02 * (entry_value + exit_value))
 
     def test_slippage_is_symmetric_per_side(self) -> None:
-        """Slippage should be applied equally to entry and exit sides."""
+        """Slippage should be applied equally to entry and exit sides when other rates are zero."""
         model = TransactionCostModel(
             brokerage_pct=0.0,
             brokerage_cap=0.0,
             stt_sell_rate=0.0,
+            stamp_duty_buy_rate=0.0,
             exchange_txn_rate=0.0,
             gst_rate=0.0,
             sebi_rate=0.0,

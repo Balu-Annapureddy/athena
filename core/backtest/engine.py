@@ -51,6 +51,10 @@ class TransactionCostModel:
     # Intraday: 0.025% on sell side only (same field; caller sets per trade type).
     stt_sell_rate: float = 0.001       # 0.1% on sell-side turnover (delivery)
 
+    # ── Stamp Duty ──────────────────────────────────────────────────────────
+    # Indian Stamp Act: 0.015% (150 per crore) on buy side only for equity delivery.
+    stamp_duty_buy_rate: float = 0.00015  # 0.015% on buy-side turnover
+
     # ── Exchange Transaction Charges ────────────────────────────────────────
     # NSE equity segment: 0.00322% (both sides).
     exchange_txn_rate: float = 0.0000322   # per side
@@ -89,8 +93,9 @@ class TransactionCostModel:
             sebi       = self.sebi_rate * notional
             gst        = self.gst_rate * (brokerage + exchange)
             stt        = (self.stt_sell_rate * notional) if is_sell else 0.0
+            stamp      = (self.stamp_duty_buy_rate * notional) if not is_sell else 0.0
             slip       = (self.slippage_bps / 10_000) * notional
-            return brokerage + exchange + sebi + gst + stt + slip
+            return brokerage + exchange + sebi + gst + stt + stamp + slip
 
         entry_is_sell = not is_long   # SHORT entry is a sell
         exit_is_sell  = is_long       # LONG exit is a sell
@@ -105,6 +110,7 @@ ZERO_COST_MODEL = TransactionCostModel(
     brokerage_pct=0.0,
     brokerage_cap=0.0,
     stt_sell_rate=0.0,
+    stamp_duty_buy_rate=0.0,
     exchange_txn_rate=0.0,
     gst_rate=0.0,
     sebi_rate=0.0,
