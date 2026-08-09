@@ -1,51 +1,23 @@
 # Changelog
 
 ## [2.4.0] - 2026-08-09
-### Added
+### Security & Live Pipeline Fix
+- **Live Signal Bot Safety Fix (`core/portfolio/registry.py`)**: Corrected `GoldenCrossDeathCrossStrategy` status in `StrategyRegistry.default()` from `BACKTESTED` to `UNVALIDATED`. The previous synthetic/un-costed promotion status caused the live scheduled Telegram pipeline (`daily_signal.py`) to broadcast active signal cards from an unvalidated strategy that failed net-of-cost validation (−INR 207.87 avg net PnL/trade). Updated `test_registry.py` to enforce `UNVALIDATED` default status across all strategies.
+
+### Added & Changed
 - **Strategy Validation Fixtures — Full 44-ticker coverage** (`fixtures/yfinance_historical/`):
-  Committed daily OHLCV JSONL fixtures for all 44 available Nifty 50 constituents (was 15).
-  Removed `*.jsonl` glob from `.gitignore` so fixture coverage is reproducible on any clone.
-  `run_real_validation_campaign.py` now reports 44 tickers with fixture coverage rather than 15.
-- **Extended Strategy CLI** (`scripts/run_real_validation_campaign.py`): Added `--strategy
-  {rsi_mean_reversion,breakout_volume}` options following the same pattern as existing choices.
-  `interval` parameter now correctly forwarded to `fetch_data()` (was accepted in the signature
-  but silently dropped).
-- **15m Intraday Fixtures** (`fixtures/yfinance_historical/`): Committed 25 `*_15m.jsonl` fixture
-  files covering the 60-day intraday window (2026-05-06 to 2026-07-28) for the original 15 tickers
-  plus 10 additional tickers. Enables deterministic offline replay of intraday validation.
-- **Breakout Volume Parameter Sweep Tool** (`scripts/sweep_breakout_volume.py`): Reusable,
-  parameterized sweep script for `BreakoutVolumeConfirmationStrategy`. Accepts `--lookbacks` and
-  `--vol-thresholds` CLI arguments. Flags combinations with fewer than 100 total trades as
-  `FAILED (LOW TRADES)` and reports per-regime pass rates (2017–20 vs 2021–22) alongside overall
-  pass ratio for regime consistency analysis.
-- **ADR-029 Addendum 2**: Documents all 6 strategies tested, both sweep rounds, and the formal
-  conclusion that no strategy in the current registry clears the net-of-cost validation gate.
+  Committed daily OHLCV JSONL fixtures for all 44 available Nifty 50 constituents.
+  Removed `*.jsonl` glob from `.gitignore` for deterministic offline replay across all workstations.
+- **Intraday Fixtures (`fixtures/yfinance_historical/*_15m.jsonl`)**: Committed 25 15m fixture files covering 2026-05-06 to 2026-07-28 for offline intraday validation.
+- **Breakout Volume Sweep Tool (`scripts/sweep_breakout_volume.py`)**: Parameterized sweep tool supporting `--sweep-type {entry, exit}` modes to evaluate entry (`lookback` × `vol_thresh`) and exit (`atr_multiplier` × `target_rr_ratio`) parameters with per-regime pass rates.
+- **ADR-029 Addendum 2 Finalization**: Documents the full 65-combination training sweep and out-of-sample validation run results.
 
-### Changed
-- `core/backtest/engine.py`: `interval` parameter now forwarded to `fetch_data()` in
-  `BacktestEngine.run_backtest()` (was accepted in the method signature but not passed through).
-
-### Investigation Results (no code change — findings only)
-All 6 strategies in the registry were run net-of-cost on the full 44-ticker daily training
-campaign (88 runs per strategy, 2017–2022, gate: 70% pass ratio, min 100 trades):
-
-| Strategy | Pass Ratio | Gate |
-|---|---|---|
-| `GoldenCrossDeathCrossStrategy` | ~29.5% | FAILED |
-| `RegimeFilteredGoldenCrossStrategy` | ~29.5% | FAILED |
-| `ATRTrailingStopStrategy` | ~29.5% | FAILED |
-| `RSIMeanReversionStrategy` | ~29.5% | FAILED |
-| `BreakoutVolumeConfirmationStrategy` (daily) | **53.4% → 67.0%** (post-sweep) | FAILED |
-| `BreakoutVolumeConfirmationStrategy` (15m) | ~4% | FAILED |
-
-Two sweep rounds (35 combinations total across `lookback_period` × `volume_trend_threshold`)
-confirmed the global training-set ceiling for `BreakoutVolumeConfirmationStrategy` at
-**67.0%** (`lookback=20, vol_thresh=100.0`, consistent across regimes: 68.2% / 65.9%). Pass ratio
-reverses monotonically above `vol_thresh=100.0`, reaching 46.6% at `vol_thresh=200.0`. No
-combination dropped below the 100-trade floor. Exit-side parameters (stop-loss / target ATR
-multipliers) remain the primary untested lever; the strategy is **"explored, not abandoned"**.
-
-Sprint 35 remains blocked. OOS window (2023–2025) untouched.
+### Final Investigation Summary & Close-out
+All 6 strategy engines in the repository were evaluated net-of-cost across the 44-ticker daily dataset (88 training runs, 2017–2022, gate: $\ge 70\%$ pass ratio, $\ge 100$ trades):
+- Baseline crossover & RSI strategies failed ($\sim 29.5\%$ pass ratio, negative net PnL/trade).
+- `BreakoutVolumeConfirmationStrategy` reached a peak 67.0% training pass ratio (`lookback=20, vol_thresh=100.0, atr_mult=2.0, target_rr=3.0`).
+- **Out-of-Sample Validation (2023–2025):** Evaluated un-tuned against the reserved OOS window. Pass ratio degraded by 12.5 percentage points to **54.5%** (24/44 runs passed, FAILED).
+- **Outcome:** **0 of 6 strategies promoted.** All strategies remain `UNVALIDATED`. `BreakoutVolumeConfirmationStrategy` is set aside, and the OOS window is consumed. Sprint 35 scale-out remains blocked pending a new strategy family. See [ADR-029 Addendum 2](docs/architecture/decisions/ADR-029_Backtesting.md) for complete details.
 
 ## [2.3.0] - 2026-08-06
 ### Added

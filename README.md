@@ -87,51 +87,18 @@ Athena is structured across five major evolutionary phases:
 ## 📊 Quantitative Validation Results (Current Status — All Strategies Unvalidated)
 
 > [!IMPORTANT]
-> **No strategy in the Athena registry has cleared the net-of-cost validation gate.**
-> The gate requires ≥ 70% passing ratio across an 88-run training campaign (44 tickers × 2 windows,
-> 2017–2022) evaluated on net-of-cost `avg_pnl_per_trade`.
-> Sprint 35 (scale-out) remains blocked until a strategy clears this gate or the gate is
-> deliberately lowered with documented reasoning. The OOS window (2023–2025) is reserved.
+> **No strategy in the Athena platform is currently validated for live trading.**
+> All strategies are registered as `UNVALIDATED` in `StrategyRegistry.default()`, ensuring live pipelines do not issue unvalidated signals.
 
-### Sprint 34 Baseline — 15 tickers, 5 strategies, 3 timeframes (gross vs. net)
+### Campaign Summary
 
-Backtested across **15 core NIFTY stocks**, **5 strategy engines**, **3 timeframes** (15m / 1h / 1d),
-using real historical fixtures with the full **Zerodha transaction cost model** (0.03% brokerage
-capped at ₹20, STT 0.1% sell, NSE exchange fees, SEBI charges, and 8 bps slippage):
+All 6 strategy engines in the codebase (`GoldenCrossDeathCrossStrategy`, `RegimeFilteredGoldenCrossStrategy`, `ATRTrailingStopStrategy`, `RSIMeanReversionStrategy`, `BreakoutVolumeConfirmationStrategy`, and its 15m intraday variant) were evaluated against the full 44-ticker NSE daily dataset (88 training backtest runs per strategy across 2017–2020 and 2021–2022) using the complete Indian market transaction cost model (Zerodha flat-fee brokerage + STT + NSE exchange fees + SEBI charges + 8 bps per-side slippage).
 
-| Strategy | Timeframe | Trades | Net Win % | Net Profit Factor | Net Avg PnL |
-|:--|:--|--:|--:|--:|--:|
-| RSI Mean Reversion | 15m | 337 | 24.0% | 0.67 | ₹ -261.57 |
-| MACD Signal Cross | 15m | 1,149 | 26.6% | 0.86 | ₹ -104.33 |
-| Breakout Volume Confirm | 15m | 1,152 | 27.1% | 0.90 | ₹ -79.86 |
-| VWAP Bias | 15m | 1,172 | 25.7% | 0.81 | ₹ -136.85 |
-| GoldenCross (20/50) | 1h | 775 | 25.5% | 0.80 | ₹ -147.44 |
-| GoldenCross (50/200) | 1d | 170 | 24.1% | 0.82 | ₹ -139.09 |
-| **NET TOTAL** | | **4,755** | **26.1%** | **0.83** ❌ | **₹ -116.89** |
+- **Gate Requirement:** Minimum 100 total completed trades and $\ge 70.0\%$ passing run ratio evaluated on net-of-cost average PnL per trade.
+- **Outcome:** **0 of 6 strategies cleared the gate.** Baseline moving-average crossover variants and RSI mean reversion failed with $\sim 29.5\%$ pass ratios and negative average net PnL per trade.
+- **Leading Candidate (`BreakoutVolumeConfirmationStrategy`):** Achieved a peak 67.0% pass ratio on the training campaign across 65 parameter grid combinations (35 entry-side + 30 exit-side). However, when evaluated once against the reserved out-of-sample window (2023–2025), its pass ratio degraded by 12.5 percentage points to **54.5%** (24/44 runs passed). Per protocol, the strategy was set aside and not promoted.
 
-> [!NOTE]
-> **Cost Model Disclosure**: Gross Profit Factor was 1.14 before costs. Under true Indian market
-> friction (Zerodha brokerage + STT + exchange fees + SEBI charges + 8 bps slippage), all baseline
-> strategies drop to **Net PF 0.83**. This is the finding that drove the expanded 44-ticker sweep below.
-
-### Post-Cost Sweep — 44 tickers, 6 strategies, daily training campaign
-
-Full 44-ticker sweep (88 runs per strategy, 2017–2022, net-of-cost, gate: ≥ 70% pass ratio):
-
-| Strategy | Pass Ratio | Status |
-|:--|--:|:--|
-| `GoldenCrossDeathCrossStrategy` (50/200 SMA) | ~29.5% | ❌ FAILED |
-| `RegimeFilteredGoldenCrossStrategy` (ADX ≥ 20) | ~29.5% | ❌ FAILED |
-| `ATRTrailingStopStrategy` | ~29.5% | ❌ FAILED |
-| `RSIMeanReversionStrategy` (rsi_period=14, daily) | ~29.5% | ❌ FAILED |
-| `BreakoutVolumeConfirmationStrategy` (15m intraday) | ~4% | ❌ FAILED |
-| **`BreakoutVolumeConfirmationStrategy` (daily, lookback=20, vol_thresh=100.0)** | **67.0%** | ❌ FAILED (closest) |
-
-`BreakoutVolumeConfirmationStrategy` on daily bars is the **current leading candidate** — 3 pp
-below the 70% gate after a 35-combination parameter sweep (two rounds, all entry-side parameters
-exhausted). Exit-side parameters (stop-loss / target ATR multipliers) are the remaining untested
-lever. See [ADR-029 Addendum 2](docs/architecture/decisions/ADR-029_Backtesting.md) for the full
-sweep results and formal conclusion.
+For complete transaction cost calculations, multi-round sweep tables, and formal decision logs, see [ADR-029: Quantitative Strategy Validation](docs/architecture/decisions/ADR-029_Backtesting.md).
 
 ---
 
