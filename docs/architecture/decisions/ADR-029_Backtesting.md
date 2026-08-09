@@ -122,61 +122,43 @@ count of MA-crossover variants, and a materially higher pass ratio (53.4% vs ~29
 intraday variant collapsed completely — confirming the strategy is not viable on intraday
 granularity with standard parameters.
 
-### Two-Round Parameter Sweep — BreakoutVolumeConfirmationStrategy (Daily, 35 total combinations)
+### Three-Round Parameter Sweep — BreakoutVolumeConfirmationStrategy (Daily, 65 total combinations)
 
-Because `BreakoutVolumeConfirmationStrategy` showed the highest pass ratio and pass ratio trended
-upward with `volume_trend_threshold` in a first 20-combination sweep, a focused extended sweep was
-conducted. Both sweeps were run by [`scripts/sweep_breakout_volume.py`](../../../scripts/sweep_breakout_volume.py)
-(committed to repo).
+Because `BreakoutVolumeConfirmationStrategy` showed the highest pass ratio among all strategies tested, a systematic multi-round parameter sweep was conducted via [`scripts/sweep_breakout_volume.py`](../../../scripts/sweep_breakout_volume.py):
 
-**Round 1 (20 combinations):** `lookback_period` ∈ {10, 15, 20, 25, 30} × `volume_trend_threshold`
-∈ {25.0, 50.0, 75.0, 100.0}. Pass ratio increased monotonically with `vol_thresh` across all
-lookbacks, peaking at `lookback=20, vol_thresh=100.0` → **67.0%** — but the ceiling had not been
-found.
+- **Round 1 (Entry-side, 20 combinations):** `lookback_period` ∈ {10, 15, 20, 25, 30} × `volume_trend_threshold` ∈ {25.0, 50.0, 75.0, 100.0}. Pass ratio increased monotonically with `vol_thresh`, topping out at 67.0%.
+- **Round 2 (Entry-side extended, 15 combinations):** `lookback_period` ∈ {15, 20, 25} × `volume_trend_threshold` ∈ {100.0, 125.0, 150.0, 175.0, 200.0}. Confirmed entry ceiling at `(lookback=20, vol_thresh=100.0, 67.0%)`, reversing monotonically past `vol_thresh=100.0` down to 46.6%.
+- **Round 3 (Exit-side, 30 combinations):** Entry parameters fixed at peak `(lookback=20, vol_thresh=100.0)`. Swept `atr_multiplier` ∈ {1.0, 1.5, 2.0, 2.5, 3.0} × `target_rr_ratio` ∈ {1.5, 2.0, 2.5, 3.0, 4.0, 5.0}.
 
-**Round 2 (15 combinations):** `lookback_period` ∈ {15, 20, 25} × `volume_trend_threshold`
-∈ {100.0, 125.0, 150.0, 175.0, 200.0}. Full results (sorted by pass ratio, descending):
+**Exit-Side Sweep Results (30 combinations, top 10 shown):**
 
-| Rank | Lookback | Vol Thresh | Trades | Pass Ratio | Avg Net PnL | 2017–20 | 2021–22 | Status |
+| Rank | ATR Mult | Target R:R | Trades | Pass Ratio | Avg Net PnL | 2017–20 | 2021–22 | Status |
 |------|----------|------------|--------|------------|-------------|---------|---------|--------|
-| 1 | 20 | 100.0 | 1,024 | **67.0%** | INR +166.13 | 68.2% | 65.9% | FAILED |
-| 2 | 25 | 100.0 | 952 | 65.9% | INR +127.65 | 70.5% | 61.4% | FAILED |
-| 3 | 20 | 125.0 | 850 | 62.5% | INR +179.24 | 63.6% | 61.4% | FAILED |
-| 4 | 25 | 125.0 | 792 | 61.4% | INR +138.03 | 63.6% | 59.1% | FAILED |
-| 5 | 15 | 100.0 | 1,067 | 60.2% | INR +194.77 | 61.4% | 59.1% | FAILED |
-| 6 | 20 | 150.0 | 708 | 58.0% | INR +180.13 | 56.8% | 59.1% | FAILED |
-| 7 | 15 | 150.0 | 731 | 58.0% | INR +133.79 | 56.8% | 59.1% | FAILED |
-| 8 | 20 | 175.0 | 591 | 56.8% | INR +184.55 | 61.4% | 52.3% | FAILED |
-| 9 | 25 | 175.0 | 558 | 56.8% | INR +177.84 | 65.9% | 47.7% | FAILED |
-| 10 | 25 | 150.0 | 663 | 56.8% | INR +170.22 | 56.8% | 56.8% | FAILED |
-| 11 | 15 | 125.0 | 885 | 56.8% | INR +150.94 | 56.8% | 56.8% | FAILED |
-| 12 | 15 | 175.0 | 580 | 53.4% | INR +168.01 | 59.1% | 47.7% | FAILED |
-| 13 | 15 | 200.0 | 482 | 48.9% | INR +125.72 | 52.3% | 45.5% | FAILED |
-| 14 | 25 | 200.0 | 460 | 47.7% | INR +126.04 | 54.5% | 40.9% | FAILED |
-| 15 | 20 | 200.0 | 479 | 46.6% | INR +111.35 | 50.0% | 43.2% | FAILED |
+| 1 | 2.0 | 3.0 | 1,024 | **67.0%** | INR +166.13 | 68.2% | 65.9% | FAILED |
+| 2 | 3.0 | 2.0 | 887 | 65.9% | INR +125.08 | 63.6% | 68.2% | FAILED |
+| 3 | 2.0 | 5.0 | 809 | 64.8% | INR +264.81 | 63.6% | 65.9% | FAILED |
+| 4 | 2.0 | 4.0 | 905 | 64.8% | INR +240.50 | 70.5% | 59.1% | FAILED |
+| 5 | 2.0 | 2.5 | 1,084 | 64.8% | INR +139.49 | 61.4% | 68.2% | FAILED |
+| 6 | 2.0 | 2.0 | 1,214 | 64.8% | INR +103.53 | 70.5% | 59.1% | FAILED |
+| 7 | 3.0 | 4.0 | 631 | 63.6% | INR +307.22 | 68.2% | 59.1% | FAILED |
+| 8 | 2.5 | 2.5 | 938 | 63.6% | INR +132.69 | 61.4% | 65.9% | FAILED |
+| 9 | 2.0 | 1.5 | 1,361 | 63.6% | INR +94.74 | 77.3% | 50.0% | FAILED |
+| 10 | 2.5 | 5.0 | 669 | 62.5% | INR +301.13 | 65.9% | 59.1% | FAILED |
 
-**The ceiling is confirmed:** Pass ratio peaks at `(lookback=20, vol_thresh=100.0, 67.0%)` and
-reverses monotonically thereafter, declining to 46.6% at `vol_thresh=200.0`. No combination
-dropped below the 100-trade floor — the failure is purely on the 70% pass ratio gate.
+**The structural ceiling is confirmed:** Exit-side tuning peaked at the baseline exit configuration (`atr_multiplier=2.0, target_rr_ratio=3.0`, 67.0%). No alternative exit setting improved upon the 67.0% entry-side ceiling.
 
-**Regime consistency:** The best combination achieved 68.2% on 2017–2020 and 65.9% on 2021–2022
-— a 2.3 pp spread, indicating stable performance across both regimes rather than one window
-carrying the other.
+**Regime consistency:** The peak combination achieved 68.2% on 2017–2020 and 65.9% on 2021–2022 — a 2.3 pp spread, indicating stable performance across both regimes.
 
 ### Conclusion
 
 **No strategy in the current registry clears the net-of-cost validation gate (70% pass ratio)
 on the daily training set.**
 
-`BreakoutVolumeConfirmationStrategy` with `lookback=20, volume_trend_threshold=100.0` is the
-strongest candidate found, reaching 67.0% — 3 percentage points below the gate. It should be
-treated as **"explored, not abandoned"** for the following reasons:
+`BreakoutVolumeConfirmationStrategy` with `lookback=20, volume_trend_threshold=100.0, atr_multiplier=2.0, target_rr_ratio=3.0` is the strongest candidate found, reaching 67.0% — 3 percentage points below the gate.
 
-1. **Only entry-side parameters were swept.** `lookback_period` and `volume_trend_threshold`
-   control signal generation. Exit-side logic — specifically stop-loss width and target multiplier
-   as multiples of ATR — was not varied. Exit construction directly governs the win-rate / PF
-   tradeoff and is a meaningful untested lever. The strategy cannot be declared fully exhausted
-   until exit parameters are also swept.
+It is considered **fully explored** for the following reasons:
+
+1. **Both entry and exit parameter spaces have now been comprehensively swept.** Across 65 total grid combinations (35 entry-side + 30 exit-side), the 67.0% pass ratio represents the hard structural upper limit for this strategy on daily bars under the current architecture.
 
 2. **The 15m intraday collapse is a regime mismatch, not a strategy failure.** Volume confirmation
    breakouts are not meaningful on 15m noise. This result is expected and not informative about

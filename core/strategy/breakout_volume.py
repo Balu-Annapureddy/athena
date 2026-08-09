@@ -22,9 +22,17 @@ from core.intelligence import volume_trend
 class BreakoutVolumeConfirmationStrategy(BaseStrategy):
     """Breakout with Volume Confirmation Strategy policy object."""
 
-    def __init__(self, lookback_period: int = 20, volume_trend_threshold: float = 50.0) -> None:
+    def __init__(
+        self,
+        lookback_period: int = 20,
+        volume_trend_threshold: float = 50.0,
+        atr_multiplier: float = 2.0,
+        target_rr_ratio: float = 3.0,
+    ) -> None:
         self._lookback_period = lookback_period
         self._vol_threshold = volume_trend_threshold
+        self._atr_multiplier = atr_multiplier
+        self._target_rr_ratio = target_rr_ratio
 
     @property
     def name(self) -> str:
@@ -67,6 +75,16 @@ class BreakoutVolumeConfirmationStrategy(BaseStrategy):
         n_high = max(prev_closes)
         n_low = min(prev_closes)
 
+        # Calculate ATR and target price if available
+        from core.intelligence import atr
+        atr_val = atr(highs, lows, closes)
+        target_price_bull = None
+        target_price_bear = None
+        if atr_val is not None and atr_val > 0:
+            risk_dist = atr_val * self._atr_multiplier
+            target_price_bull = curr_close + self._target_rr_ratio * risk_dist
+            target_price_bear = curr_close - self._target_rr_ratio * risk_dist
+
         # Bullish Breakout
         if curr_close > n_high:
             return self._create_pipeline_records(
@@ -78,7 +96,9 @@ class BreakoutVolumeConfirmationStrategy(BaseStrategy):
                 dec_policy=dec_policy,
                 dec_ctx=dec_ctx,
                 source_obs_id=obs_ids[-1],
-                facts=facts
+                facts=facts,
+                target_price=target_price_bull,
+                atr_multiplier=self._atr_multiplier,
             )
 
         # Bearish Breakout
@@ -92,7 +112,9 @@ class BreakoutVolumeConfirmationStrategy(BaseStrategy):
                 dec_policy=dec_policy,
                 dec_ctx=dec_ctx,
                 source_obs_id=obs_ids[-1],
-                facts=facts
+                facts=facts,
+                target_price=target_price_bear,
+                atr_multiplier=self._atr_multiplier,
             )
 
         return None
