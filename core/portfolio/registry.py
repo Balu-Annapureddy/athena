@@ -73,16 +73,16 @@ class StrategyRegistry:
         """Return default configured strategy registry.
 
         Validation Campaign Evidence:
-            GoldenCrossDeathCrossStrategy was promoted to BACKTESTED following a 6/6 passing
-            ValidationCampaign run against real multi-year historical NSE daily OHLCV data
-            (RELIANCE.NS, INFY.NS, TCS.NS over 2017-01-01 to 2021-06-30 and 2021-07-01 to 2025-12-31,
-            committed in fixtures/yfinance_historical/). Total Trades: 32 (>= 20), Passing Ratio: 100% (>= 67%).
+            All strategies are registered as UNVALIDATED. The previous synthetic/un-costed
+            promotion of GoldenCrossDeathCrossStrategy was superseded by the comprehensive net-of-cost
+            re-validation campaign (ADR-029 Addendum 2), which established that Golden Cross failed
+            with a 29.5% passing ratio and -INR 207.87 average net PnL per trade.
         """
         registry = cls()
-        # Golden Cross registered as BACKTESTED based on committed multi-year NSE historical validation campaign evidence
+        # All default strategies registered as UNVALIDATED following ADR-029 net-of-cost re-validation
         registry.register(
             strategy=GoldenCrossDeathCrossStrategy(),
-            status=ValidationStatus.BACKTESTED,
+            status=ValidationStatus.UNVALIDATED,
             weight=1.0,
             enabled=True
         )

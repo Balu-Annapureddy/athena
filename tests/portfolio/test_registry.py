@@ -49,12 +49,13 @@ class TestStrategyRegistry(unittest.TestCase):
         registry.register(strategy, status=ValidationStatus.BACKTESTED)
         self.assertEqual(registry.get_status("GoldenCrossDeathCrossStrategy"), ValidationStatus.BACKTESTED)
 
-    def test_default_registry_configures_golden_cross_as_backtested(self) -> None:
-        """Enforces ADR-030 safety invariant: default setup registers Golden Cross as BACKTESTED and new strategies as UNVALIDATED."""
+    def test_default_registry_configures_all_strategies_as_unvalidated(self) -> None:
+        """Enforces ADR-029 safety invariant: default setup registers all strategies as UNVALIDATED until net-of-cost validated."""
         registry = StrategyRegistry.default()
         
-        self.assertEqual(registry.get_status("GoldenCrossDeathCrossStrategy"), ValidationStatus.BACKTESTED)
+        self.assertEqual(registry.get_status("GoldenCrossDeathCrossStrategy"), ValidationStatus.UNVALIDATED)
         self.assertEqual(registry.get_status("RegimeFilteredGoldenCrossStrategy"), ValidationStatus.UNVALIDATED)
+        self.assertEqual(registry.get_status("ATRTrailingGoldenCrossStrategy"), ValidationStatus.UNVALIDATED)
         
         active = registry.get_active_strategies()
         self.assertEqual(len(active), 3)
