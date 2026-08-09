@@ -110,11 +110,11 @@ runs per strategy). The reserved out-of-sample window (2023–2025) was not touc
 
 | Strategy | Total Trades | Pass Ratio | Avg Net PnL/Trade | Gate |
 |---|---|---|---|---|
-| `GoldenCrossDeathCrossStrategy` (50/200 SMA) | ~1,700 | ~29.5% | positive | **FAILED** |
-| `RegimeFilteredGoldenCrossStrategy` (ADX ≥ 20) | ~1,700 | ~29.5% | positive | **FAILED** |
-| `ATRTrailingStopStrategy` | ~1,700 | ~29.5% | positive | **FAILED** |
-| `RSIMeanReversionStrategy` (rsi_period=14) | ~329 | ~29.5% | positive | **FAILED** |
-| `BreakoutVolumeConfirmationStrategy` (lookback=20, vol_thresh=50) | 1,426 | **53.4%** | INR +166 | **FAILED** |
+| `GoldenCrossDeathCrossStrategy` (50/200 SMA) | 309 | 29.5% | INR -207.87 | **FAILED** |
+| `RegimeFilteredGoldenCrossStrategy` (ADX ≥ 20) | 233 | 29.5% | INR -183.59 | **FAILED** |
+| `ATRTrailingStopStrategy` | 275 | 30.7% | INR -206.79 | **FAILED** |
+| `RSIMeanReversionStrategy` (rsi_period=14) | 329 | 29.5% | INR -184.22 | **FAILED** |
+| `BreakoutVolumeConfirmationStrategy` (lookback=20, vol_thresh=50) | 1,426 | **53.4%** | INR +104.70 | **FAILED** |
 | `BreakoutVolumeConfirmationStrategy` (15m intraday) | ~400 | ~4% | negative | **FAILED** |
 
 `BreakoutVolumeConfirmationStrategy` on daily bars was the structural outlier: 4.3× the trade
