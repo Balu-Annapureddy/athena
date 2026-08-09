@@ -84,22 +84,54 @@ Athena is structured across five major evolutionary phases:
 
 ---
 
-## 📊 Quantitative Validation Results (Sprint 34 — Net-of-Cost Baseline)
+## 📊 Quantitative Validation Results (Current Status — All Strategies Unvalidated)
 
-Backtested across **15 core NIFTY stocks**, **5 strategy engines**, **3 timeframes** (15m / 1h / 1d), using real historical fixtures with full **Zerodha transaction cost model** (0.03% brokerage capped at ₹20, STT 0.1% sell, Stamp Duty 0.015% buy, exchange fees, SEBI charges, and 8 bps slippage):
+> [!IMPORTANT]
+> **No strategy in the Athena registry has cleared the net-of-cost validation gate.**
+> The gate requires ≥ 70% passing ratio across an 88-run training campaign (44 tickers × 2 windows,
+> 2017–2022) evaluated on net-of-cost `avg_pnl_per_trade`.
+> Sprint 35 (scale-out) remains blocked until a strategy clears this gate or the gate is
+> deliberately lowered with documented reasoning. The OOS window (2023–2025) is reserved.
 
-| Strategy | Timeframe | Trades | LONG/SHORT | Net Win % | Net Profit Factor | Net Avg PnL |
-|:--|:--|--:|:--|--:|--:|--:|
-| RSI Mean Reversion | 15m | 337 | 122/215 | 24.0% | 0.67 | ₹ -261.57 |
-| MACD Signal Cross | 15m | 1,149 | 579/570 | 26.6% | 0.86 | ₹ -104.33 |
-| Breakout Volume Confirm | 15m | 1,152 | 672/480 | 27.1% | 0.90 | ₹ -79.86 |
-| VWAP Bias | 15m | 1,172 | 551/621 | 25.7% | 0.81 | ₹ -136.85 |
-| GoldenCross (20/50) | 1h | 775 | 368/407 | 25.5% | 0.80 | ₹ -147.44 |
-| GoldenCross (50/200) | 1d | 170 | 86/84 | 24.1% | 0.82 | ₹ -139.09 |
-| **NET TOTAL** | | **4,755** | **2,378/2,377** | **26.1%** | **0.83** ❌ | **₹ -116.89** |
+### Sprint 34 Baseline — 15 tickers, 5 strategies, 3 timeframes (gross vs. net)
+
+Backtested across **15 core NIFTY stocks**, **5 strategy engines**, **3 timeframes** (15m / 1h / 1d),
+using real historical fixtures with the full **Zerodha transaction cost model** (0.03% brokerage
+capped at ₹20, STT 0.1% sell, NSE exchange fees, SEBI charges, and 8 bps slippage):
+
+| Strategy | Timeframe | Trades | Net Win % | Net Profit Factor | Net Avg PnL |
+|:--|:--|--:|--:|--:|--:|
+| RSI Mean Reversion | 15m | 337 | 24.0% | 0.67 | ₹ -261.57 |
+| MACD Signal Cross | 15m | 1,149 | 26.6% | 0.86 | ₹ -104.33 |
+| Breakout Volume Confirm | 15m | 1,152 | 27.1% | 0.90 | ₹ -79.86 |
+| VWAP Bias | 15m | 1,172 | 25.7% | 0.81 | ₹ -136.85 |
+| GoldenCross (20/50) | 1h | 775 | 25.5% | 0.80 | ₹ -147.44 |
+| GoldenCross (50/200) | 1d | 170 | 24.1% | 0.82 | ₹ -139.09 |
+| **NET TOTAL** | | **4,755** | **26.1%** | **0.83** ❌ | **₹ -116.89** |
 
 > [!NOTE]
-> **Cost Model Disclosure**: The original pre-cost report indicated a Gross Profit Factor of 1.14. Under true Indian market friction (Zerodha brokerage + STT + Stamp Duty + Exchange fees + 8 bps slippage), basic un-filtered strategies drop to **Net PF 0.83**. This empirical result justifies why asset-matched regime filtering (Kaufman ER / Wilder ADX) and automated strategy discovery are strictly enforced in Athena.
+> **Cost Model Disclosure**: Gross Profit Factor was 1.14 before costs. Under true Indian market
+> friction (Zerodha brokerage + STT + exchange fees + SEBI charges + 8 bps slippage), all baseline
+> strategies drop to **Net PF 0.83**. This is the finding that drove the expanded 44-ticker sweep below.
+
+### Post-Cost Sweep — 44 tickers, 6 strategies, daily training campaign
+
+Full 44-ticker sweep (88 runs per strategy, 2017–2022, net-of-cost, gate: ≥ 70% pass ratio):
+
+| Strategy | Pass Ratio | Status |
+|:--|--:|:--|
+| `GoldenCrossDeathCrossStrategy` (50/200 SMA) | ~29.5% | ❌ FAILED |
+| `RegimeFilteredGoldenCrossStrategy` (ADX ≥ 20) | ~29.5% | ❌ FAILED |
+| `ATRTrailingStopStrategy` | ~29.5% | ❌ FAILED |
+| `RSIMeanReversionStrategy` (rsi_period=14, daily) | ~29.5% | ❌ FAILED |
+| `BreakoutVolumeConfirmationStrategy` (15m intraday) | ~4% | ❌ FAILED |
+| **`BreakoutVolumeConfirmationStrategy` (daily, lookback=20, vol_thresh=100.0)** | **67.0%** | ❌ FAILED (closest) |
+
+`BreakoutVolumeConfirmationStrategy` on daily bars is the **current leading candidate** — 3 pp
+below the 70% gate after a 35-combination parameter sweep (two rounds, all entry-side parameters
+exhausted). Exit-side parameters (stop-loss / target ATR multipliers) are the remaining untested
+lever. See [ADR-029 Addendum 2](docs/architecture/decisions/ADR-029_Backtesting.md) for the full
+sweep results and formal conclusion.
 
 ---
 

@@ -1,5 +1,52 @@
 # Changelog
 
+## [2.4.0] - 2026-08-09
+### Added
+- **Strategy Validation Fixtures — Full 44-ticker coverage** (`fixtures/yfinance_historical/`):
+  Committed daily OHLCV JSONL fixtures for all 44 available Nifty 50 constituents (was 15).
+  Removed `*.jsonl` glob from `.gitignore` so fixture coverage is reproducible on any clone.
+  `run_real_validation_campaign.py` now reports 44 tickers with fixture coverage rather than 15.
+- **Extended Strategy CLI** (`scripts/run_real_validation_campaign.py`): Added `--strategy
+  {rsi_mean_reversion,breakout_volume}` options following the same pattern as existing choices.
+  `interval` parameter now correctly forwarded to `fetch_data()` (was accepted in the signature
+  but silently dropped).
+- **15m Intraday Fixtures** (`fixtures/yfinance_historical/`): Committed 25 `*_15m.jsonl` fixture
+  files covering the 60-day intraday window (2026-05-06 to 2026-07-28) for the original 15 tickers
+  plus 10 additional tickers. Enables deterministic offline replay of intraday validation.
+- **Breakout Volume Parameter Sweep Tool** (`scripts/sweep_breakout_volume.py`): Reusable,
+  parameterized sweep script for `BreakoutVolumeConfirmationStrategy`. Accepts `--lookbacks` and
+  `--vol-thresholds` CLI arguments. Flags combinations with fewer than 100 total trades as
+  `FAILED (LOW TRADES)` and reports per-regime pass rates (2017–20 vs 2021–22) alongside overall
+  pass ratio for regime consistency analysis.
+- **ADR-029 Addendum 2**: Documents all 6 strategies tested, both sweep rounds, and the formal
+  conclusion that no strategy in the current registry clears the net-of-cost validation gate.
+
+### Changed
+- `core/backtest/engine.py`: `interval` parameter now forwarded to `fetch_data()` in
+  `BacktestEngine.run_backtest()` (was accepted in the method signature but not passed through).
+
+### Investigation Results (no code change — findings only)
+All 6 strategies in the registry were run net-of-cost on the full 44-ticker daily training
+campaign (88 runs per strategy, 2017–2022, gate: 70% pass ratio, min 100 trades):
+
+| Strategy | Pass Ratio | Gate |
+|---|---|---|
+| `GoldenCrossDeathCrossStrategy` | ~29.5% | FAILED |
+| `RegimeFilteredGoldenCrossStrategy` | ~29.5% | FAILED |
+| `ATRTrailingStopStrategy` | ~29.5% | FAILED |
+| `RSIMeanReversionStrategy` | ~29.5% | FAILED |
+| `BreakoutVolumeConfirmationStrategy` (daily) | **53.4% → 67.0%** (post-sweep) | FAILED |
+| `BreakoutVolumeConfirmationStrategy` (15m) | ~4% | FAILED |
+
+Two sweep rounds (35 combinations total across `lookback_period` × `volume_trend_threshold`)
+confirmed the global training-set ceiling for `BreakoutVolumeConfirmationStrategy` at
+**67.0%** (`lookback=20, vol_thresh=100.0`, consistent across regimes: 68.2% / 65.9%). Pass ratio
+reverses monotonically above `vol_thresh=100.0`, reaching 46.6% at `vol_thresh=200.0`. No
+combination dropped below the 100-trade floor. Exit-side parameters (stop-loss / target ATR
+multipliers) remain the primary untested lever; the strategy is **"explored, not abandoned"**.
+
+Sprint 35 remains blocked. OOS window (2023–2025) untouched.
+
 ## [2.3.0] - 2026-08-06
 ### Added
 - **Wilder's ADX Indicator** (`core/intelligence/indicators.py`): Welles Wilder's Average Directional Index (ADX) trend strength indicator returning `ADXResult(adx, plus_di, minus_di)`. Mathematically verified against Wilder's 14-period formulation. Exported via `core.intelligence`.
