@@ -151,7 +151,7 @@ Because `BreakoutVolumeConfirmationStrategy` showed the highest pass ratio among
 
 ### Out-of-Sample (OOS) Validation Run (2023-01-01 to 2025-12-31)
 
-Following completion of all training-set sweeps, `BreakoutVolumeConfirmationStrategy` (at its confirmed training peak: `lookback_period=20, volume_trend_threshold=100.0, atr_multiplier=2.0, target_rr_ratio=3.0`) was evaluated once against the reserved out-of-sample window (2023–2025) on all 44 tickers net-of-cost, with zero parameter re-tuning:
+Following completion of all training-set sweeps, `BreakoutVolumeConfirmationStrategy` (at its confirmed training peak: `lookback_period=20, volume_trend_threshold=100.0, atr_multiplier=2.0, target_rr_ratio=3.0`) was evaluated once against the reserved out-of-sample window (2023–2025) on all 44 tickers net-of-cost, with zero parameter re-tuning (note: 43 tickers have coverage through Dec 2025; `BAJAJFINSV.NS` coverage ends 2025-02-16):
 
 | Window | Tickers | Total Trades | Passing Runs | Pass Ratio | Avg Net PnL/Trade | Gate Status |
 |---|---|---|---|---|---|---|
