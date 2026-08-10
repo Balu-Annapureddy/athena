@@ -227,3 +227,39 @@ The following strategy families are identified as backlog candidates for future 
 1. **Pairs Trading / Statistical Arbitrage:** Cointegration testing and mean-reverting spread trading between sector-paired constituent equities (e.g. HDFCBANK / ICICIBANK).
 2. **RSI Cross-Sectional Relative Strength:** Universe-wide relative strength ranking based on multi-period RSI oscillator levels rather than raw price returns.
 3. **Sector Rotation Momentum:** Relative strength ranking applied at the sector index level before constituent selection.
+
+---
+
+## Addendum 4: Out-of-Universe Validation & Passive Benchmark Comparison
+
+### Out-of-Universe Fixture Dataset Expansion
+
+To test whether `CrossSectionalMomentumStrategy`'s edge generalizes to unseen equities, 47 new Nifty 100 constituent tickers (not in the original 49 Nifty 50 fixture set) were fetched and recorded into `fixtures/yfinance_historical` with complete daily history ($\ge 3,000$ bars each covering 2010/2017 to 2026-08-01):
+
+- **Clean New Tickers (47):** `ABB.NS`, `ACC.NS`, `ADANIPOWER.NS`, `AMBUJACEM.NS`, `ASHOKLEY.NS`, `ATGL.NS`, `BANKBARODA.NS`, `BEL.NS`, `BERGEPAINT.NS`, `BHARATFORG.NS`, `BOSCHLTD.NS`, `CANBK.NS`, `CGPOWER.NS`, `CHOLAFIN.NS`, `COLPAL.NS`, `DLF.NS`, `GODREJCP.NS`, `GODREJPROP.NS`, `HAVELLS.NS`, `JINDALSTEL.NS`, `LUPIN.NS`, `MOTHERSON.NS`, `MUTHOOTFIN.NS`, `NAUKRI.NS`, `NMDC.NS`, `OBEROIRLTY.NS`, `OFSS.NS`, `OIL.NS`, `PERSISTENT.NS`, `PETRONET.NS`, `PFC.NS`, `PNB.NS`, `POLYCAB.NS`, `RECLTD.NS`, `SBICARD.NS`, `SIEMENS.NS`, `SRF.NS`, `SUPREMEIND.NS`, `TATACOMM.NS`, `TATAELXSI.NS`, `TATAPOWER.NS`, `TORNTPHARM.NS`, `TORNTPOWER.NS`, `TVSMOTOR.NS`, `UNITDSPR.NS`, `VBL.NS`, `ZYDUSLIFE.NS`.
+- **Excluded / Failed Tickers (17):** 14 tickers excluded due to short IPO history (< 3,000 bars, e.g. `ADANIGREEN.NS`, `IRCTC.NS`, `JIOFIN.NS`), and 3 tickers failed yfinance queries (`TATAMOTORS.NS` 404, `LTIM.NS` 404, `ZOMATO.NS` missing data).
+
+### Out-of-Universe Validation Results
+
+Evaluated `CrossSectionalMomentumStrategy` with **exact, un-tuned parameters** (`lookback_period=21`, `top_n=15`, `atr_multiplier=2.0`, `target_rr_ratio=3.0`) against ONLY the 47 new tickers net-of-cost:
+
+| Campaign Window | New Tickers | Total Trades | Passing Runs | Pass Ratio | Avg Net PnL/Trade | Gate Status |
+|---|---|---|---|---|---|---|
+| **Training (2017–2022)** | 47 | 1,108 | 62 / 94 | **66.0%** | INR +266.06 | **FAILED** |
+| **Out-of-Sample (2023–2025)** | 47 | 604 | 37 / 47 | **78.7%** | INR +390.96 | **PASSED** |
+
+### Passive Equal-Weight Benchmark Comparison
+
+Computed a simple equal-weight buy-and-hold benchmark (100% long allocation across all 47 new tickers at window start, held with zero trading/costs) versus the strategy's net portfolio return (net of Zerodha fees + 8 bps slippage):
+
+| Window | Passive Benchmark Return (Buy-and-Hold) | Strategy Net Return (Net-of-Cost) | Excess Return vs. Benchmark |
+|---|---|---|---|
+| **Training Window 1 (2017–2020)** | **+116.59%** | **+5.06%** | **-111.53%** |
+| **Training Window 2 (2021–2022)** | **+79.23%** | **+2.97%** | **-76.26%** |
+| **Out-of-Sample Window (2023–2025)** | **+115.11%** | **+5.08%** | **-110.02%** |
+
+### Findings & Protocol Summary
+
+1. **Ticker Selection Sensitivity:** On the new 47-ticker universe, the training campaign pass ratio dropped from **73.9% to 66.0%** (4 percentage points below the 70.0% gate), indicating that training pass rates exhibit mild sensitivity to constituent selection. Out-of-sample pass rates remained strong at **78.7%**.
+2. **Benchmark Shortfall (Cash Drag):** While the strategy achieved positive net PnL and trade win rates across both windows, its overall portfolio return (+2.97% to +5.08% per window) significantly lagged the passive buy-and-hold benchmark (+79% to +116% per window). This shortfall stems from cash drag (unallocated capital during non-trend periods) and strict ATR trailing stop exits during a multi-year Indian equity bull market.
+3. **Production Governance:** Per project protocol, `StrategyRegistry.default()` remains **UNTOUCHED**, and no strategy has been promoted to live production signals.
