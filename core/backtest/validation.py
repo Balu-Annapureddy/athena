@@ -5,6 +5,8 @@ to prevent false-positive strategy promotions.
 """
 
 import dataclasses
+import json
+import os
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -24,6 +26,10 @@ class CampaignResult:
     required_passing_ratio: float
     reason: str
     run_details: List[Dict[str, Any]]
+    benchmark_return: float = 0.0
+    strategy_return: float = 0.0
+    excess_return: float = 0.0
+    benchmark_underperformance_flag: bool = False
 
 
 class ValidationCampaign:
@@ -34,6 +40,9 @@ class ValidationCampaign:
       - A strategy must clear a configured proportion of regimes (min_passing_ratio,
         defaulting to 0.67 - meaning roughly two-thirds of tested runs) to be promoted
         to BACKTESTED. This is a design choice to ensure strategy robustness.
+      - Evaluates portfolio-level net returns against a passive equal-weight buy-and-hold
+        benchmark over the exact same tickers and date ranges, prominently flagging
+        any severe underperformance (cash drag / premature exit penalties).
 
     DATA SOURCE REQUIREMENT (see ADR-030):
       Promotion to BACKTESTED is only meaningful when this campaign is executed against
@@ -47,7 +56,6 @@ class ValidationCampaign:
       A campaign result of "passed" on synthetic data must NOT be used to register a
       strategy with status=ValidationStatus.BACKTESTED in StrategyRegistry.
     """
-
 
     def __init__(
         self,
@@ -74,7 +82,60 @@ class ValidationCampaign:
         self._date_ranges = date_ranges
         self._min_total_trades = min_total_trades
         self._min_passing_ratio = min_passing_ratio
+        self._fixture_dir = fixture_dir
         self._engine = BacktestEngine(fixture_dir=fixture_dir, cost_model=cost_model)
+
+    def _compute_passive_benchmark(self) -> float:
+        """Compute the simple equal-weight buy-and-hold benchmark return across all tickers and date ranges.
+
+        Returns:
+            The average buy-and-hold percentage return across all valid ticker/date-range combinations.
+        """
+        all_rets: List[float] = []
+        for ticker in self._tickers:
+            date_closes: Dict[str, float] = {}
+            fpath = os.path.join(self._fixture_dir, f"YFinanceConnector_{ticker}.jsonl")
+            if os.path.exists(fpath):
+                try:
+                    with open(fpath, "r", encoding="utf-8") as f:
+                        for line in f:
+                            if not line.strip():
+                                continue
+                            d = json.loads(line).get("normalized", {})
+                            dt = d.get("provenance", {}).get("publication_timestamp", "")[:10]
+                            c = d.get("payload", {}).get("close")
+                            if dt and c is not None:
+                                date_closes[dt] = float(c)
+                except Exception:
+                    pass
+
+            if not date_closes:
+                try:
+                    payloads = self._engine._connector.fetch_data(ticker, start="2010-01-01", end="2026-08-01")
+                    for p in payloads:
+                        raw = p.get("raw", {})
+                        dt = raw.get("__timestamp__", "")[:10]
+                        c = p.get("payload", {}).get("close")
+                        if dt and c is not None:
+                            date_closes[dt] = float(c)
+                except Exception:
+                    pass
+
+            if not date_closes:
+                continue
+
+            sorted_dates = sorted(date_closes.keys())
+            for start_date, end_date in self._date_ranges:
+                sub_dates = [d for d in sorted_dates if start_date <= d <= end_date]
+                if len(sub_dates) >= 2:
+                    p_start = date_closes[sub_dates[0]]
+                    p_end = date_closes[sub_dates[-1]]
+                    if p_start > 0:
+                        all_rets.append((p_end - p_start) / p_start)
+
+        if all_rets:
+            return sum(all_rets) / len(all_rets)
+        return 0.0
 
     def execute(self, strategy: Any, account_size: float, risk_percent: float = 0.01) -> CampaignResult:
         """Run the validation campaign by executing backtests over all regimes.
@@ -159,6 +220,30 @@ class ValidationCampaign:
 
         passing_ratio = passing_runs / total_runs if total_runs > 0 else 0.0
 
+        # Passive equal-weight benchmark computation & relative performance comparison
+        benchmark_return = self._compute_passive_benchmark()
+        strategy_return = (
+            sum(d.get("total_return", 0.0) for d in run_details) / len(run_details)
+            if run_details else 0.0
+        )
+        excess_return = strategy_return - benchmark_return
+
+        # Flag underperformance if benchmark is positive and strategy lags by > 20pp or < 50% benchmark return
+        benchmark_underperformance_flag = (
+            (benchmark_return > 0.0 and excess_return < -0.20) or
+            (benchmark_return > 0.10 and strategy_return < 0.5 * benchmark_return)
+        )
+
+        if total_expected > 5:
+            print("=" * 85, flush=True)
+            print("PASSIVE BENCHMARK RELATIVE EVALUATION:", flush=True)
+            print(f"  Passive Equal-Weight Benchmark Return : {benchmark_return * 100:+.2f}%", flush=True)
+            print(f"  Strategy Portfolio Net Return (Net)    : {strategy_return * 100:+.2f}%", flush=True)
+            print(f"  Excess Return over Benchmark           : {excess_return * 100:+.2f}%", flush=True)
+            if benchmark_underperformance_flag:
+                print("  [BENCHMARK UNDERPERFORMANCE FLAG] Strategy portfolio return dramatically underperforms buy-and-hold!", flush=True)
+            print("=" * 85, flush=True)
+
         # Enforce validation rules
         if total_trades < self._min_total_trades:
             passed = False
@@ -179,6 +264,12 @@ class ValidationCampaign:
                 f"{self._min_passing_ratio:.2f}) with {total_trades} total trades."
             )
 
+        if benchmark_underperformance_flag:
+            reason += (
+                f" [BENCHMARK FLAG: Strategy net return ({strategy_return * 100:+.1f}%) "
+                f"dramatically underperforms passive buy-and-hold benchmark ({benchmark_return * 100:+.1f}%)]"
+            )
+
         return CampaignResult(
             passed=passed,
             total_trades_count=total_trades,
@@ -188,7 +279,11 @@ class ValidationCampaign:
             passing_ratio=passing_ratio,
             required_passing_ratio=self._min_passing_ratio,
             reason=reason,
-            run_details=run_details
+            run_details=run_details,
+            benchmark_return=benchmark_return,
+            strategy_return=strategy_return,
+            excess_return=excess_return,
+            benchmark_underperformance_flag=benchmark_underperformance_flag,
         )
 
     def promote_records(self, thesis_records: List[Any], decision_records: List[Any]) -> Tuple[List[Any], List[Any]]:

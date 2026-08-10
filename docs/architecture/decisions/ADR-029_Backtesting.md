@@ -263,3 +263,26 @@ Computed a simple equal-weight buy-and-hold benchmark (100% long allocation acro
 1. **Ticker Selection Sensitivity:** On the new 47-ticker universe, the training campaign pass ratio dropped from **73.9% to 66.0%** (4 percentage points below the 70.0% gate), indicating that training pass rates exhibit mild sensitivity to constituent selection. Out-of-sample pass rates remained strong at **78.7%**.
 2. **Benchmark Shortfall (Cash Drag):** While the strategy achieved positive net PnL and trade win rates across both windows, its overall portfolio return (+2.97% to +5.08% per window) significantly lagged the passive buy-and-hold benchmark (+79% to +116% per window). This shortfall stems from cash drag (unallocated capital during non-trend periods) and strict ATR trailing stop exits during a multi-year Indian equity bull market.
 3. **Production Governance:** Per project protocol, `StrategyRegistry.default()` remains **UNTOUCHED**, and no strategy has been promoted to live production signals.
+
+---
+
+## Addendum 5: Permanent Passive Benchmark Relative Performance Check
+
+### Rationale & Historical Background
+
+During evaluation of `CrossSectionalMomentumStrategy` (`lookback_period=21`, `top_n=15`), the strategy cleared trade-level passing ratio gates (73.9% in training, 84.1% in OOS) with positive average PnL/trade (+INR 310.75 to +INR 473.07). However, portfolio-level evaluation revealed a major hidden vulnerability:
+- Over the 2017–2020 window, a 100% long equal-weight buy-and-hold basket returned **+116.59%**, while the strategy's portfolio return was only **+5.06%** (shortfall of **-111.53%**).
+- Over the 2023–2025 window, the buy-and-hold basket returned **+115.11%**, while the strategy returned only **+5.08%** (shortfall of **-110.02%**).
+
+This massive underperformance was caused by **cash drag** (unallocated portfolio capital while holding cash during non-signal bars) and **premature trailing ATR exits** during strong multi-year secular bull market trends.
+
+### Methodology & Validation Gate Enhancement
+
+To prevent promoting strategies that pass trade win-rate gates while failing to generate meaningful alpha over holding cash or holding the underlying equity basket, `ValidationCampaign` (`core/backtest/validation.py`) has been upgraded with a **permanent, automated benchmark-relative performance check**:
+
+1. **Passive Equal-Weight Benchmark Computation:** Automatically computes the average buy-and-hold return across all tested tickers and date ranges (`benchmark_return`).
+2. **Strategy Portfolio Net Return:** Computes the average portfolio net return across all regimes (`strategy_return`) and excess return (`excess_return = strategy_return - benchmark_return`).
+3. **Benchmark Underperformance Flag (`benchmark_underperformance_flag`):** Automatically sets a prominent flag in `CampaignResult` if:
+   - `benchmark_return > 0.0` and `excess_return < -0.20` (-20 percentage points underperformance), OR
+   - `benchmark_return > 0.10` and `strategy_return < 0.5 * benchmark_return` (less than half the buy-and-hold basket return).
+4. **Governance Integration:** The benchmark return, strategy return, excess return, and underperformance flag are permanently reported in `CampaignResult` and logged in validation campaign outputs. If flagged, the campaign `reason` text records `[BENCHMARK FLAG]` to warn against live promotion without addressing allocation efficiency.

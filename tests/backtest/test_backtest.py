@@ -339,6 +339,40 @@ class TestValidationCampaign(unittest.TestCase):
         self.assertAlmostEqual(result.passing_ratio, 0.3333333)
         self.assertIn("insufficient passing ratio", result.reason)
 
+    def test_benchmark_relative_performance_flag(self) -> None:
+        """Confirm that CampaignResult computes benchmark metrics and flags severe underperformance."""
+        campaign = ValidationCampaign(
+            tickers=["RELIANCE.NS"],
+            date_ranges=[("2026-07-01", "2026-07-05")],
+            min_total_trades=1,
+            min_passing_ratio=0.50
+        )
+        # Mock engine backtest to return a low total return (+2%)
+        mock_metrics = BacktestMetrics(
+            total_return=0.02, win_rate=0.8, max_drawdown=0.02, sharpe_ratio=1.0,
+            profit_factor=2.0, avg_pnl_per_trade=20.0, avg_win=50.0, avg_loss=-25.0,
+            total_trades=10, winning_trades=8, losing_trades=2
+        )
+        campaign._engine.run_backtest = MagicMock(return_value={
+            "metrics": mock_metrics,
+            "trades": [None] * 10,
+            "equity_curve": [1000.0],
+            "thesis_records": [],
+            "decision_records": []
+        })
+
+        # Mock _compute_passive_benchmark to simulate a +100% buy-and-hold market return
+        campaign._compute_passive_benchmark = MagicMock(return_value=1.00)
+
+        result = campaign.execute(strategy=None, account_size=10000.0)
+        self.assertTrue(result.passed)
+        self.assertAlmostEqual(result.benchmark_return, 1.00)
+        self.assertAlmostEqual(result.strategy_return, 0.02)
+        self.assertAlmostEqual(result.excess_return, -0.98)
+        self.assertTrue(result.benchmark_underperformance_flag)
+        self.assertIn("BENCHMARK FLAG", result.reason)
+
 
 if __name__ == "__main__":
     unittest.main()
+
