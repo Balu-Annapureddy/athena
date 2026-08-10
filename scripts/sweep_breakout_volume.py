@@ -15,6 +15,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from core.backtest.validation import ValidationCampaign
 from core.strategy.breakout_volume import BreakoutVolumeConfirmationStrategy
+from core.strategy.cross_sectional_momentum import CrossSectionalMomentumStrategy
 
 FIXTURE_DIR = "fixtures/yfinance_historical"
 NIFTY_50_TICKERS = [
@@ -40,6 +41,9 @@ DEFAULT_VOL_GRID = [100.0, 125.0, 150.0, 175.0, 200.0]
 DEFAULT_ATR_MULT_GRID = [1.0, 1.5, 2.0, 2.5, 3.0]
 DEFAULT_TARGET_RR_GRID = [1.5, 2.0, 2.5, 3.0, 4.0, 5.0]
 
+DEFAULT_CSM_LOOKBACK_GRID = [21, 42, 63, 126, 252]
+DEFAULT_CSM_TOP_N_GRID = [3, 5, 10, 15, 20]
+
 
 def get_available_tickers():
     available = []
@@ -55,38 +59,49 @@ def get_available_tickers():
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Run parameter sweep for BreakoutVolumeConfirmationStrategy.")
-    parser.add_argument("--sweep-type", type=str, choices=["entry", "exit"], default="entry", help="Sweep entry parameters (lookback x vol_thresh) or exit parameters (atr_mult x target_rr).")
+    parser = argparse.ArgumentParser(description="Run parameter sweep for strategy validation.")
+    parser.add_argument("--strategy", type=str, choices=["breakout_volume", "cross_sectional_momentum"], default="breakout_volume", help="Strategy to sweep.")
+    parser.add_argument("--sweep-type", type=str, choices=["entry", "exit"], default="entry", help="Sweep entry parameters or exit parameters.")
     parser.add_argument("--lookbacks", type=int, nargs="+", default=None, help="List of lookback periods to test.")
     parser.add_argument("--vol-thresholds", type=float, nargs="+", default=None, help="List of volume trend thresholds to test.")
-    parser.add_argument("--atr-multipliers", type=float, nargs="+", default=None, help="List of ATR stop loss multipliers to test (exit sweep).")
-    parser.add_argument("--target-rr-ratios", type=float, nargs="+", default=None, help="List of target reward:risk ratios to test (exit sweep).")
+    parser.add_argument("--top-ns", type=int, nargs="+", default=None, help="List of top-N universe sizes to test (cross-sectional momentum).")
+    parser.add_argument("--atr-multipliers", type=float, nargs="+", default=None, help="List of ATR stop loss multipliers to test.")
+    parser.add_argument("--target-rr-ratios", type=float, nargs="+", default=None, help="List of target reward:risk ratios to test.")
     args = parser.parse_args()
 
-    sweep_type = args.sweep-type if hasattr(args, "sweep-type") else getattr(args, "sweep_type", "entry")
+    strat_choice = args.strategy
+    sweep_type = getattr(args, "sweep_type", "entry")
 
-    if sweep_type == "exit":
+    if strat_choice == "cross_sectional_momentum":
+        lookback_grid = args.lookbacks if args.lookbacks is not None else DEFAULT_CSM_LOOKBACK_GRID
+        top_n_grid = args.top_ns if args.top_ns is not None else DEFAULT_CSM_TOP_N_GRID
+        vol_grid = [0.0]
+        atr_mult_grid = args.atr_multipliers if args.atr_multipliers is not None else [2.0]
+        target_rr_grid = args.target_rr_ratios if args.target_rr_ratios is not None else [3.0]
+    elif sweep_type == "exit":
         lookback_grid = args.lookbacks if args.lookbacks is not None else [20]
         vol_grid = args.vol_thresholds if args.vol_thresholds is not None else [100.0]
+        top_n_grid = [10]
         atr_mult_grid = args.atr_multipliers if args.atr_multipliers is not None else DEFAULT_ATR_MULT_GRID
         target_rr_grid = args.target_rr_ratios if args.target_rr_ratios is not None else DEFAULT_TARGET_RR_GRID
     else:
         lookback_grid = args.lookbacks if args.lookbacks is not None else DEFAULT_LOOKBACK_GRID
         vol_grid = args.vol_thresholds if args.vol_thresholds is not None else DEFAULT_VOL_GRID
+        top_n_grid = [10]
         atr_mult_grid = args.atr_multipliers if args.atr_multipliers is not None else [2.0]
         target_rr_grid = args.target_rr_ratios if args.target_rr_ratios is not None else [3.0]
 
     available_tickers = get_available_tickers()
 
-    combo_count = len(lookback_grid) * len(vol_grid) * len(atr_mult_grid) * len(target_rr_grid)
+    combo_count = len(lookback_grid) * len(vol_grid) * len(top_n_grid) * len(atr_mult_grid) * len(target_rr_grid)
 
     print("=" * 135)
-    print(f"GRID PARAMETER SWEEP ({sweep_type.upper()} MODE) — BreakoutVolumeConfirmationStrategy")
+    print(f"GRID PARAMETER SWEEP ({sweep_type.upper()} MODE) — {strat_choice}")
     print("=" * 135)
     print(f"Data Source       : {FIXTURE_DIR}")
     print(f"Tickers Available : {len(available_tickers)} / {len(NIFTY_50_TICKERS)} Nifty 50 constituents")
     print(f"Training Windows  : {TRAINING_DATE_RANGES}")
-    print(f"Grid Dimensions   : lookback {lookback_grid} x vol_thresh {vol_grid} x atr_mult {atr_mult_grid} x target_rr {target_rr_grid} ({combo_count} combinations)")
+    print(f"Grid Dimensions   : lookback {lookback_grid} x vol {vol_grid} x top_n {top_n_grid} ({combo_count} combinations)")
     print(f"Total Runs / Grid : {len(available_tickers) * len(TRAINING_DATE_RANGES)} backtests per combination")
     print("=" * 135)
     print()
@@ -106,18 +121,28 @@ def main() -> None:
 
     for lb in lookback_grid:
         for vol in vol_grid:
-            for atr_m in atr_mult_grid:
-                for trr in target_rr_grid:
-                    idx += 1
-                    combo_label = f"lb={lb}, vol={vol}, atr_m={atr_m}, target_rr={trr}"
-                    print(f"[{idx:2d}/{combo_count}] Evaluating {combo_label}...", flush=True)
+            for tn in top_n_grid:
+                for atr_m in atr_mult_grid:
+                    for trr in target_rr_grid:
+                        idx += 1
+                        combo_label = f"lb={lb}, top_n={tn}, vol={vol}, atr_m={atr_m}, target_rr={trr}"
+                        print(f"[{idx:2d}/{combo_count}] Evaluating {combo_label}...", flush=True)
 
-                    strategy = BreakoutVolumeConfirmationStrategy(
-                        lookback_period=lb,
-                        volume_trend_threshold=vol,
-                        atr_multiplier=atr_m,
-                        target_rr_ratio=trr,
-                    )
+                        if strat_choice == "cross_sectional_momentum":
+                            strategy = CrossSectionalMomentumStrategy(
+                                lookback_period=lb,
+                                top_n=tn,
+                                atr_multiplier=atr_m,
+                                target_rr_ratio=trr,
+                                fixture_dir=FIXTURE_DIR,
+                            )
+                        else:
+                            strategy = BreakoutVolumeConfirmationStrategy(
+                                lookback_period=lb,
+                                volume_trend_threshold=vol,
+                                atr_multiplier=atr_m,
+                                target_rr_ratio=trr,
+                            )
 
                     import io, contextlib
                     with contextlib.redirect_stdout(io.StringIO()):
@@ -172,6 +197,7 @@ def main() -> None:
                     sweep_results.append({
                         "lookback": lb,
                         "vol_thresh": vol,
+                        "top_n": tn,
                         "atr_multiplier": atr_m,
                         "target_rr_ratio": trr,
                         "total_trades": total_trades,
@@ -192,14 +218,14 @@ def main() -> None:
     sweep_results.sort(key=lambda r: (r["passing_ratio"], r["avg_net_pnl"]), reverse=True)
 
     print("=" * 135)
-    print(f"PARAM GRID SWEEP RESULTS — BreakoutVolumeConfirmationStrategy ({sweep_type.upper()} MODE, Sorted by Passing Ratio)")
+    print(f"PARAM GRID SWEEP RESULTS — {strat_choice} ({sweep_type.upper()} MODE, Sorted by Passing Ratio)")
     print("=" * 135)
-    print(f"{'Rank':<5} | {'Lookback':<8} | {'Vol Thresh':<10} | {'ATR Mult':<8} | {'Target R:R':<10} | {'Trades':<7} | {'Pass Runs':<10} | {'Pass Ratio':<11} | {'Avg Net PnL':<13} | {'2017-20 Pass %':<15} | {'2021-22 Pass %':<15} | {'Gate Status'}")
+    print(f"{'Rank':<5} | {'Lookback':<8} | {'Vol Thresh':<10} | {'Top N':<6} | {'ATR Mult':<8} | {'Target R:R':<10} | {'Trades':<7} | {'Pass Runs':<10} | {'Pass Ratio':<11} | {'Avg Net PnL':<13} | {'2017-20 Pass %':<15} | {'2021-22 Pass %':<15} | {'Gate Status'}")
     print("-" * 135)
 
     for rank, r in enumerate(sweep_results, start=1):
         print(
-            f"{rank:<5} | {r['lookback']:<8} | {r['vol_thresh']:<10.1f} | {r['atr_multiplier']:<8.1f} | {r['target_rr_ratio']:<10.1f} | {r['total_trades']:<7} | "
+            f"{rank:<5} | {r['lookback']:<8} | {r['vol_thresh']:<10.1f} | {r['top_n']:<6d} | {r['atr_multiplier']:<8.1f} | {r['target_rr_ratio']:<10.1f} | {r['total_trades']:<7} | "
             f"{r['passing_runs']:>2}/{r['total_runs']:<7} | {r['passing_ratio']*100:>9.1f}% | "
             f"INR {r['avg_net_pnl']:>9.2f} | {r['w1_ratio']:>13.1f}% | {r['w2_ratio']:>13.1f}% | {r['gate_status']}"
         )

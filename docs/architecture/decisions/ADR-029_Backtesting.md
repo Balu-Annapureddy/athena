@@ -178,3 +178,43 @@ registry configuration (see Clarification section above).
 **Sprint 35 (scale to more capital / more tickers) remains blocked** pending either:
 - A new strategy family (e.g. mean reversion, statistical arbitrage) that clears the 70% net-of-cost validation gate on training windows, or
 - A deliberate, documented decision to restructure the validation methodology with stated rationale.
+
+---
+
+## Addendum 3: Cross-Sectional Momentum Strategy Validation & Backlog Identification
+
+### Architecture & Design
+
+To evaluate cross-sectional momentum without mutating `BacktestEngine.run_backtest()`'s single-ticker loop, a dedicated `CrossSectionalRankProvider` component was introduced ([`core/strategy/cross_sectional_momentum.py`](file:///c:/Users/annap/Desktop/athena/core/strategy/cross_sectional_momentum.py)):
+- Pre-indexes daily price series across all 44 Nifty 50 constituents in `fixtures/yfinance_historical`.
+- Computes $N$-day return $R_k(t) = (P_k(t) - P_k(t-N)) / P_k(t-N)$ across the universe per trading date $t$.
+- Caches 1-based cross-sectional rankings into an $O(1)$ lookup table accessed by `CrossSectionalMomentumStrategy.evaluate()`.
+
+### Training Campaign Parameter Sweep (2017–2022)
+
+Evaluated net-of-cost across 25 parameter combinations (`lookback_period` $\in \{21, 42, 63, 126, 252\}$ days × `top_n` $\in \{3, 5, 10, 15, 20\}$):
+
+| Rank | Lookback (Days) | Top-N Universe | Total Trades | Passing Runs | Pass Ratio | Avg Net PnL/Trade | 2017–20 Pass % | 2021–22 Pass % | Gate Status |
+|---|---|---|---|---|---|---|---|---|---|
+| **1** | **252** | **3** | **167** | **30 / 88** | **34.1%** | **INR -136.21** | **43.2%** | **25.0%** | **FAILED** |
+| 2 | 252 | 5 | 274 | 30 / 88 | 34.1% | INR -152.88 | 40.9% | 27.3% | FAILED |
+| 3 | 252 | 10 | 451 | 29 / 88 | 33.0% | INR -173.49 | 43.2% | 22.7% | FAILED |
+| 4 | 126 | 3 | 208 | 29 / 88 | 33.0% | INR -148.97 | 40.9% | 25.0% | FAILED |
+| 5 | 252 | 15 | 594 | 29 / 88 | 33.0% | INR -171.74 | 40.9% | 25.0% | FAILED |
+| 6 | 126 | 5 | 314 | 28 / 88 | 31.8% | INR -158.42 | 38.6% | 25.0% | FAILED |
+| 7 | 252 | 20 | 698 | 27 / 88 | 30.7% | INR -178.67 | 36.4% | 25.0% | FAILED |
+| 8 | 126 | 10 | 505 | 27 / 88 | 30.7% | INR -175.75 | 38.6% | 22.7% | FAILED |
+| **12 (Baseline)** | **63** | **10** | **433** | **24 / 88** | **27.3%** | **INR -197.80** | **29.5%** | **25.0%** | **FAILED** |
+| 25 | 21 | 20 | 566 | 17 / 88 | 19.3% | INR -206.56 | 20.5% | 18.2% | FAILED |
+
+### Findings & Protocol Decision
+
+1. **Failure Across All Grid Points:** All 25 grid combinations failed the validation gate (peak: 34.1% pass ratio at 252-day lookback, top-3). Cross-sectional momentum returns were insufficient to overcome transaction friction (brokerage + STT + slippage).
+2. **Reserved OOS Window Preserved:** Because no parameter combination cleared or approached the 70.0% training gate, **the reserved out-of-sample window (2023–2025) was NOT touched or spent.** It remains reserved for future candidates.
+
+### Future Strategy Research Backlog
+
+The following strategy families are formally identified as backlog candidates for future investigation:
+1. **Pairs Trading / Statistical Arbitrage:** Cointegration testing and mean-reverting spread trading between sector-paired constituent equities (e.g. HDFCBANK / ICICIBANK).
+2. **RSI Cross-Sectional Relative Strength:** Universe-wide cross-sectional ranking based on multi-period RSI oscillator levels rather than raw price returns.
+3. **Sector Rotation Momentum:** Relative strength ranking applied at the sector index level before constituent selection.

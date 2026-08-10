@@ -8,6 +8,7 @@ from core.strategy.rsi_mean_reversion import RSIMeanReversionStrategy
 from core.strategy.macd_cross import MACDSignalCrossStrategy
 from core.strategy.vwap_bias import VWAPBiasStrategy
 from core.strategy.breakout_volume import BreakoutVolumeConfirmationStrategy
+from core.strategy.cross_sectional_momentum import CrossSectionalMomentumStrategy
 
 __all__ = [
     "BaseStrategy",
@@ -18,4 +19,5 @@ __all__ = [
     "MACDSignalCrossStrategy",
     "VWAPBiasStrategy",
     "BreakoutVolumeConfirmationStrategy",
+    "CrossSectionalMomentumStrategy",
 ]
