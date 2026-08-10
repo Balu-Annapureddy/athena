@@ -196,21 +196,21 @@ Evaluated net-of-cost across 25 parameter combinations (`lookback_period` $\in \
 
 | Rank | Lookback (Days) | Top-N Universe | Total Trades | Passing Runs | Pass Ratio | Avg Net PnL/Trade | 2017–20 Pass % | 2021–22 Pass % | Gate Status |
 |---|---|---|---|---|---|---|---|---|---|
-| **1** | **252** | **3** | **167** | **30 / 88** | **34.1%** | **INR -136.21** | **43.2%** | **25.0%** | **FAILED** |
-| 2 | 252 | 5 | 274 | 30 / 88 | 34.1% | INR -152.88 | 40.9% | 27.3% | FAILED |
-| 3 | 252 | 10 | 451 | 29 / 88 | 33.0% | INR -173.49 | 43.2% | 22.7% | FAILED |
-| 4 | 126 | 3 | 208 | 29 / 88 | 33.0% | INR -148.97 | 40.9% | 25.0% | FAILED |
-| 5 | 252 | 15 | 594 | 29 / 88 | 33.0% | INR -171.74 | 40.9% | 25.0% | FAILED |
-| 6 | 126 | 5 | 314 | 28 / 88 | 31.8% | INR -158.42 | 38.6% | 25.0% | FAILED |
-| 7 | 252 | 20 | 698 | 27 / 88 | 30.7% | INR -178.67 | 36.4% | 25.0% | FAILED |
-| 8 | 126 | 10 | 505 | 27 / 88 | 30.7% | INR -175.75 | 38.6% | 22.7% | FAILED |
-| **12 (Baseline)** | **63** | **10** | **433** | **24 / 88** | **27.3%** | **INR -197.80** | **29.5%** | **25.0%** | **FAILED** |
-| 25 | 21 | 20 | 566 | 17 / 88 | 19.3% | INR -206.56 | 20.5% | 18.2% | FAILED |
+| **1 (Peak)** | **252** | **15** | **970** | **55 / 88** | **62.5%** | **INR +82.91** | **65.9%** | **59.1%** | **FAILED** |
+| 2 | 252 | 20 | 1,042 | 55 / 88 | 62.5% | INR +68.49 | 63.6% | 61.4% | FAILED |
+| 3 | 252 | 10 | 812 | 54 / 88 | 61.4% | INR +84.81 | 63.6% | 59.1% | FAILED |
+| 4 | 252 | 5 | 538 | 53 / 88 | 60.2% | INR +135.03 | 59.1% | 61.4% | FAILED |
+| 5 | 126 | 20 | 1,133 | 52 / 88 | 59.1% | INR +67.12 | 59.1% | 59.1% | FAILED |
+| 6 | 126 | 15 | 1,025 | 51 / 88 | 58.0% | INR +118.23 | 59.1% | 56.8% | FAILED |
+| 7 | 126 | 10 | 870 | 51 / 88 | 58.0% | INR +112.56 | 59.1% | 56.8% | FAILED |
+| **9 (Baseline)** | **63** | **10** | **863** | **50 / 88** | **56.8%** | **INR +118.17** | **56.8%** | **56.8%** | **FAILED** |
+| 14 | 252 | 3 | 355 | 45 / 88 | 51.1% | INR +197.66 | 52.3% | 50.0% | FAILED |
+| 25 (Lowest) | 21 | 3 | 444 | 35 / 88 | 39.8% | INR +37.36 | 38.6% | 40.9% | FAILED |
 
 ### Findings & Protocol Decision
 
-1. **Failure Across All Grid Points:** All 25 grid combinations failed the validation gate (peak: 34.1% pass ratio at 252-day lookback, top-3). Cross-sectional momentum returns were insufficient to overcome transaction friction (brokerage + STT + slippage).
-2. **Reserved OOS Window Preserved:** Because no parameter combination cleared or approached the 70.0% training gate, **the reserved out-of-sample window (2023–2025) was NOT touched or spent.** It remains reserved for future candidates.
+1. **Failure Across All Grid Points:** All 25 grid combinations failed the validation gate (peak: 62.5% pass ratio at 252-day lookback, top-15/20). While net PnL/trade was positive across all 25 grid combinations (up to INR +197.66/trade), cross-sectional momentum pass ratios were insufficient to reach the 70.0% gate across both training market regimes.
+2. **Reserved OOS Window Preserved:** Because no parameter combination cleared the 70.0% training gate, **the reserved out-of-sample window (2023–2025) was NOT touched or spent.** It remains reserved for future candidates.
 
 ### Future Strategy Research Backlog
 

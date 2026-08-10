@@ -151,7 +151,21 @@ class CrossSectionalMomentumStrategy(BaseStrategy):
             return None
 
         curr_close = closes[-1]
-        entity = facts[0].value.source.split("/")[-1] if facts else "Unknown"
+        
+        # Resolve target ticker symbol from dec_ctx or fact metadata
+        entity = None
+        if dec_ctx and getattr(dec_ctx, "target_security_id", None):
+            entity = dec_ctx.target_security_id
+        if not entity and facts:
+            for f in facts:
+                src = getattr(f.metadata, "source", "")
+                if src and src.startswith("YFINANCE_"):
+                    parts = src.split("_")
+                    if len(parts) >= 3:
+                        entity = parts[1]
+                        break
+        if not entity:
+            entity = facts[0].value.source.split("/")[-1] if facts else "Unknown"
 
         # Resolve date_str from dec_ctx or observation ID
         date_str = None

@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import List, Any
+from typing import List, Any, Optional
 from core.decision_builder.portfolio import PortfolioState
 from core.decision_builder.policies import DecisionPolicy
 
@@ -13,6 +13,7 @@ class DecisionEvaluationContext:
     active_policy: DecisionPolicy
     portfolio: PortfolioState
     existing_records: List[Any] = field(default_factory=list)
+    target_security_id: Optional[str] = None
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "existing_records", list(self.existing_records))
@@ -24,5 +25,6 @@ class DecisionEvaluationContext:
             current_time=datetime.now(timezone.utc),
             active_policy=DecisionPolicy(),
             portfolio=PortfolioState(cash_available=100000.0, total_value=100000.0),
-            existing_records=[]
+            existing_records=[],
+            target_security_id=None
         )

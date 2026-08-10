@@ -90,7 +90,8 @@ class DailySignalRunner:
                 current_time=last_date,
                 active_policy=dec_policy,
                 portfolio=sim_portfolio,
-                existing_records=[]
+                existing_records=[],
+                target_security_id=ticker
             )
 
             # Evaluate strategy rules
