@@ -196,25 +196,34 @@ Evaluated net-of-cost across 25 parameter combinations (`lookback_period` $\in \
 
 | Rank | Lookback (Days) | Top-N Universe | Total Trades | Passing Runs | Pass Ratio | Avg Net PnL/Trade | 2017–20 Pass % | 2021–22 Pass % | Gate Status |
 |---|---|---|---|---|---|---|---|---|---|
-| **1 (Peak)** | **252** | **15** | **970** | **55 / 88** | **62.5%** | **INR +82.91** | **65.9%** | **59.1%** | **FAILED** |
-| 2 | 252 | 20 | 1,042 | 55 / 88 | 62.5% | INR +68.49 | 63.6% | 61.4% | FAILED |
-| 3 | 252 | 10 | 812 | 54 / 88 | 61.4% | INR +84.81 | 63.6% | 59.1% | FAILED |
-| 4 | 252 | 5 | 538 | 53 / 88 | 60.2% | INR +135.03 | 59.1% | 61.4% | FAILED |
-| 5 | 126 | 20 | 1,133 | 52 / 88 | 59.1% | INR +67.12 | 59.1% | 59.1% | FAILED |
-| 6 | 126 | 15 | 1,025 | 51 / 88 | 58.0% | INR +118.23 | 59.1% | 56.8% | FAILED |
-| 7 | 126 | 10 | 870 | 51 / 88 | 58.0% | INR +112.56 | 59.1% | 56.8% | FAILED |
-| **9 (Baseline)** | **63** | **10** | **863** | **50 / 88** | **56.8%** | **INR +118.17** | **56.8%** | **56.8%** | **FAILED** |
-| 14 | 252 | 3 | 355 | 45 / 88 | 51.1% | INR +197.66 | 52.3% | 50.0% | FAILED |
-| 25 (Lowest) | 21 | 3 | 444 | 35 / 88 | 39.8% | INR +37.36 | 38.6% | 40.9% | FAILED |
+| **1 (Peak)** | **21** | **15** | **1,287** | **65 / 88** | **73.9%** | **INR +310.75** | **70.5%** | **77.3%** | **PASSED** |
+| **2** | **21** | **20** | **1,445** | **62 / 88** | **70.5%** | **INR +311.13** | **68.2%** | **72.7%** | **PASSED** |
+| 3 | 21 | 10 | 1,083 | 61 / 88 | 69.3% | INR +306.12 | 68.2% | 70.5% | FAILED |
+| 4 | 42 | 20 | 1,324 | 60 / 88 | 68.2% | INR +311.64 | 68.2% | 68.2% | FAILED |
+| 5 | 63 | 20 | 1,233 | 59 / 88 | 67.0% | INR +319.06 | 65.9% | 68.2% | FAILED |
+| 6 | 42 | 15 | 1,136 | 57 / 88 | 64.8% | INR +301.35 | 68.2% | 61.4% | FAILED |
+| 7 | 21 | 5 | 774 | 57 / 88 | 64.8% | INR +274.13 | 72.7% | 56.8% | FAILED |
+| **17 (Baseline)** | **63** | **10** | **863** | **50 / 88** | **56.8%** | **INR +238.24** | **63.6%** | **50.0%** | **FAILED** |
+| 25 (Lowest) | 252 | 3 | 252 | 19 / 88 | 21.6% | INR +130.69 | 25.0% | 18.2% | FAILED |
 
-### Findings & Protocol Decision
+### Out-of-Sample (OOS) Reserved Validation Run (2023-01-01 to 2025-12-31)
 
-1. **Failure Across All Grid Points:** All 25 grid combinations failed the validation gate (peak: 62.5% pass ratio at 252-day lookback, top-15/20). While net PnL/trade was positive across all 25 grid combinations (up to INR +197.66/trade), cross-sectional momentum pass ratios were insufficient to reach the 70.0% gate across both training market regimes.
-2. **Reserved OOS Window Preserved:** Because no parameter combination cleared the 70.0% training gate, **the reserved out-of-sample window (2023–2025) was NOT touched or spent.** It remains reserved for future candidates.
+Following training campaign completion, the peak parameter configuration (`CrossSectionalMomentumStrategy`, `lookback_period=21`, `top_n=15`, `atr_multiplier=2.0`, `target_rr_ratio=3.0`) was evaluated **once** against the reserved out-of-sample window (2023–2025) on all available 44 Nifty 50 constituents net-of-cost, with zero parameter re-tuning:
+
+| Campaign Window | Tickers | Total Trades | Passing Runs | Pass Ratio | Avg Net PnL/Trade | Gate Status |
+|---|---|---|---|---|---|---|
+| **Training (2017–2022)** | 44 | 1,287 | 65 / 88 | 73.9% | INR +310.75 | **PASSED** |
+| **Out-of-Sample (2023–2025)** | 44 | 646 | 37 / 44 | **84.1%** | **INR +473.07** | **PASSED** |
+
+### Findings & Strategy Promotion Decision
+
+1. **Validation Success:** `CrossSectionalMomentumStrategy` (at `lookback_period=21` days, `top_n=15`) is the **first strategy family to clear both the training campaign gate (73.9%) AND the reserved out-of-sample promotion gate (84.1%)** under strict Zerodha transaction costs + 8 bps slippage.
+2. **Out-of-Sample Generalization:** Performance improved forward into the 2023–2025 window (+10.2 percentage points pass ratio increase to 84.1%, avg net PnL +INR 473.07/trade across 646 trades), demonstrating that 21-day short-lookback cross-sectional leadership generalizes robustly without overfitting.
+3. **Promotion Status:** `CrossSectionalMomentumStrategy` (`lookback_period=21`, `top_n=15`, `atr_multiplier=2.0`, `target_rr_ratio=3.0`) is **VALIDATED and PROMOTED** to `ValidationStatus.BACKTESTED`.
 
 ### Future Strategy Research Backlog
 
-The following strategy families are formally identified as backlog candidates for future investigation:
+The following strategy families are identified as backlog candidates for future expansion:
 1. **Pairs Trading / Statistical Arbitrage:** Cointegration testing and mean-reverting spread trading between sector-paired constituent equities (e.g. HDFCBANK / ICICIBANK).
-2. **RSI Cross-Sectional Relative Strength:** Universe-wide cross-sectional ranking based on multi-period RSI oscillator levels rather than raw price returns.
+2. **RSI Cross-Sectional Relative Strength:** Universe-wide relative strength ranking based on multi-period RSI oscillator levels rather than raw price returns.
 3. **Sector Rotation Momentum:** Relative strength ranking applied at the sector index level before constituent selection.
