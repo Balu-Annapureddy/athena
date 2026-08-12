@@ -5,7 +5,19 @@ Formulas are cited and defined according to standard quantitative trading practi
 
 import math
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import Dict, List, Optional
+
+# Standard return observations per trading year under Athena's NSE market convention:
+# - Daily: 252 trading sessions/year -> 252
+# - 1h (hourly): 252 sessions * 6.25 1h bars/session -> 1575
+# - 15m: 252 sessions * 25 15m bars/session -> 6300
+TIMEFRAME_PERIODS_PER_YEAR: Dict[str, float] = {
+    "1d": 252.0,
+    "daily": 252.0,
+    "1h": 1575.0,
+    "hourly": 1575.0,
+    "15m": 6300.0,
+}
 
 
 @dataclass(frozen=True)
@@ -32,19 +44,41 @@ class MetricsCalculator:
         starting_equity: float,
         ending_equity: float,
         equity_curve: List[float],
-        trade_pnls: List[float]
+        trade_pnls: List[float],
+        periods_per_year: Optional[float] = None,
+        timeframe: Optional[str] = None,
     ) -> BacktestMetrics:
         """Calculate standard backtesting performance metrics.
 
         Args:
             starting_equity: The starting account size/equity.
             ending_equity: The final account size/equity (including open positions).
-            equity_curve: Daily sequence of portfolio equity values.
+            equity_curve: Sequence of portfolio equity values.
             trade_pnls: List of profits/losses (currency) for all completed trades.
+            periods_per_year: Explicit number of return observation periods per trading year.
+                              If specified, must be > 0.0.
+            timeframe: Optional timeframe string ('1d', 'daily', '1h', 'hourly', '15m').
+                       If provided, maps to standard periods_per_year.
+                       If neither periods_per_year nor timeframe is provided, defaults to 252.0 (daily).
 
         Returns:
             A BacktestMetrics instance.
         """
+        # Resolve effective periods_per_year for Sharpe annualization
+        if periods_per_year is not None:
+            if periods_per_year <= 0.0:
+                raise ValueError(f"periods_per_year must be positive, got {periods_per_year}")
+            eff_periods_per_year = float(periods_per_year)
+        elif timeframe is not None:
+            tf_norm = timeframe.strip().lower()
+            if tf_norm not in TIMEFRAME_PERIODS_PER_YEAR:
+                raise ValueError(
+                    f"Unsupported timeframe '{timeframe}'. Supported timeframes: {sorted(list(TIMEFRAME_PERIODS_PER_YEAR.keys()))}"
+                )
+            eff_periods_per_year = TIMEFRAME_PERIODS_PER_YEAR[tf_norm]
+        else:
+            eff_periods_per_year = 252.0  # Backward-compatible daily default
+
         total_trades = len(trade_pnls)
         
         # 1. Total Return:
@@ -57,7 +91,6 @@ class MetricsCalculator:
         # Win/Loss trade categorization
         winning_trades_list = [pnl for pnl in trade_pnls if pnl > 0]
         losing_trades_list = [pnl for pnl in trade_pnls if pnl < 0]
-        flat_trades_count = sum(1 for pnl in trade_pnls if pnl == 0)
 
         winning_trades = len(winning_trades_list)
         losing_trades = len(losing_trades_list)
@@ -73,7 +106,7 @@ class MetricsCalculator:
         avg_win = sum(winning_trades_list) / winning_trades if winning_trades > 0 else 0.0
         avg_loss = sum(losing_trades_list) / losing_trades if losing_trades > 0 else 0.0
 
-        # 4. Average PnL per Trade (formerly expectancy):
+        # 4. Average PnL per Trade (expectancy):
         # Formula: Total PnL / Total Trades Count
         avg_pnl_per_trade = sum(trade_pnls) / total_trades if total_trades > 0 else 0.0
 
@@ -99,23 +132,23 @@ class MetricsCalculator:
                     max_dd = dd
 
         # 7. Annualized Sharpe Ratio:
-        # Formula: sqrt(252) * Mean(Daily Returns) / Std(Daily Returns)
-        # Daily Return: r_t = (Equity_t - Equity_{t-1}) / Equity_{t-1}
-        daily_returns: List[float] = []
+        # Formula: sqrt(eff_periods_per_year) * Mean(Bar Returns) / Std(Bar Returns)
+        # Bar Return: r_t = (Equity_t - Equity_{t-1}) / Equity_{t-1}
+        bar_returns: List[float] = []
         for i in range(1, len(equity_curve)):
             prev = equity_curve[i - 1]
             curr = equity_curve[i]
             if prev > 0:
-                daily_returns.append((curr - prev) / prev)
+                bar_returns.append((curr - prev) / prev)
             else:
-                daily_returns.append(0.0)
+                bar_returns.append(0.0)
 
-        if len(daily_returns) > 1:
-            mean_ret = sum(daily_returns) / len(daily_returns)
-            variance = sum((r - mean_ret) ** 2 for r in daily_returns) / (len(daily_returns) - 1)
+        if len(bar_returns) > 1:
+            mean_ret = sum(bar_returns) / len(bar_returns)
+            variance = sum((r - mean_ret) ** 2 for r in bar_returns) / (len(bar_returns) - 1)
             std_ret = math.sqrt(variance)
             if std_ret > 0.0:
-                sharpe_ratio = math.sqrt(252) * (mean_ret / std_ret)
+                sharpe_ratio = math.sqrt(eff_periods_per_year) * (mean_ret / std_ret)
             else:
                 sharpe_ratio = 0.0
         else:

@@ -157,6 +157,7 @@ def run_multi_timeframe_validation() -> Dict[str, Any]:
             ending_equity=ACCOUNT_SIZE + sum(trade_pnls),
             equity_curve=[ACCOUNT_SIZE + sum(trade_pnls[: k + 1]) for k in range(len(trade_pnls))] if trade_pnls else [ACCOUNT_SIZE],
             trade_pnls=trade_pnls,
+            timeframe=interval,
         )
 
         all_strategy_summaries.append(

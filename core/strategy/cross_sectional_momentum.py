@@ -12,7 +12,7 @@ Journal of Finance, 1993.
 import json
 import os
 import glob
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 from core.domain.entities import Fact, InvestmentThesis, Decision
 from core.thesis_builder.ledger import ThesisRecord
@@ -68,40 +68,76 @@ class CrossSectionalRankProvider:
             if len(dates) >= 100:
                 self._ticker_dates[ticker] = dates
 
-    def compute_ranks_for_lookback(self, lookback: int) -> None:
-        """Pre-calculate and cache cross-sectional ranks for a specific lookback window."""
-        if any(k[0] == lookback for k in self._ranks_cache):
-            return
+    def compute_ranks_for_lookback(
+        self,
+        lookback: int,
+        pit_provider: Optional[Any] = None,
+        index_symbol: str = "NIFTY_500",
+    ) -> None:
+        """Pre-calculate and cache cross-sectional ranks for a specific lookback window.
+
+        Args:
+            lookback: Lookback period in bars (e.g., 63).
+            pit_provider: Optional PointInTimeUniverseProvider for PIT constituent filtering.
+            index_symbol: Target index identifier for pit_provider queries.
+        """
+        pit_id = id(pit_provider) if pit_provider is not None else 0
 
         for ticker, dates in self._ticker_dates.items():
             for idx in range(lookback, len(dates)):
                 dt_curr = dates[idx]
+
+                # Filter by point-in-time universe if provider supplied
+                if pit_provider is not None:
+                    if not pit_provider.is_constituent(ticker, index_symbol, dt_curr):
+                        continue
+
                 dt_prev = dates[idx - lookback]
                 p_curr = self._date_ticker_close[dt_curr].get(ticker)
                 p_prev = self._date_ticker_close[dt_prev].get(ticker)
                 if p_curr is not None and p_prev is not None and p_prev > 0:
                     ret = (p_curr - p_prev) / p_prev
-                    cache_key = (lookback, dt_curr)
+                    cache_key = (lookback, index_symbol, pit_id, dt_curr)
                     if cache_key not in self._ranks_cache:
                         self._ranks_cache[cache_key] = ({}, {})
                     self._ranks_cache[cache_key][1][ticker] = ret
 
-        # Sort and assign ranks per date
-        for (lb, dt_curr), (ranks, rets) in list(self._ranks_cache.items()):
-            if lb == lookback and rets:
-                sorted_tickers = sorted(rets.items(), key=lambda x: x[1], reverse=True)
+                    # Set legacy key if pit_provider is None for backwards compatibility
+                    if pit_provider is None:
+                        legacy_key = (lookback, dt_curr)
+                        if legacy_key not in self._ranks_cache:
+                            self._ranks_cache[legacy_key] = ({}, {})
+                        self._ranks_cache[legacy_key][1][ticker] = ret
+
+        # Sort and assign ranks per date (deterministic tie-breaker: return desc, ticker asc)
+        for key, (ranks, rets) in list(self._ranks_cache.items()):
+            if rets and not ranks:
+                sorted_tickers = sorted(rets.items(), key=lambda x: (-x[1], x[0]))
                 for rank, (t, r) in enumerate(sorted_tickers, start=1):
                     ranks[t] = rank
 
     def get_rank_and_return(
-        self, ticker: str, date_str: str, lookback: int
+        self,
+        ticker: str,
+        date_str: str,
+        lookback: int,
+        pit_provider: Optional[Any] = None,
+        index_symbol: str = "NIFTY_500",
     ) -> Tuple[Optional[int], Optional[float]]:
         """Return 1-based cross-sectional rank and momentum return for a ticker on date_str."""
-        cache_key = (lookback, date_str)
-        if cache_key not in self._ranks_cache:
-            return None, None
-        ranks, rets = self._ranks_cache[cache_key]
-        return ranks.get(ticker), rets.get(ticker)
+        pit_id = id(pit_provider) if pit_provider is not None else 0
+        cache_key = (lookback, index_symbol, pit_id, date_str)
+        if cache_key in self._ranks_cache:
+            ranks, rets = self._ranks_cache[cache_key]
+            return ranks.get(ticker), rets.get(ticker)
+
+        # Fallback to legacy key (lookback, date_str) if pit_provider is None
+        legacy_key = (lookback, date_str)
+        if legacy_key in self._ranks_cache:
+            ranks, rets = self._ranks_cache[legacy_key]
+            return ranks.get(ticker), rets.get(ticker)
+
+        return None, None
 
 
 class CrossSectionalMomentumStrategy(BaseStrategy):
@@ -115,6 +151,8 @@ class CrossSectionalMomentumStrategy(BaseStrategy):
         target_rr_ratio: float = 3.0,
         min_momentum_pct: float = 0.0,
         fixture_dir: str = "fixtures/yfinance_historical",
+        pit_provider: Optional[Any] = None,
+        index_symbol: str = "NIFTY_500",
     ) -> None:
         self._lookback_period = lookback_period
         self._top_n = top_n
@@ -122,8 +160,12 @@ class CrossSectionalMomentumStrategy(BaseStrategy):
         self._target_rr_ratio = target_rr_ratio
         self._min_momentum_pct = min_momentum_pct
         self._fixture_dir = fixture_dir
+        self._pit_provider = pit_provider
+        self._index_symbol = index_symbol
         self._rank_provider = CrossSectionalRankProvider.get_instance(fixture_dir)
-        self._rank_provider.compute_ranks_for_lookback(lookback_period)
+        self._rank_provider.compute_ranks_for_lookback(
+            lookback_period, pit_provider=pit_provider, index_symbol=index_symbol
+        )
 
     @property
     def name(self) -> str:
@@ -183,7 +225,9 @@ class CrossSectionalMomentumStrategy(BaseStrategy):
         if not date_str:
             return None
 
-        rank, ret = self._rank_provider.get_rank_and_return(entity, date_str, self._lookback_period)
+        rank, ret = self._rank_provider.get_rank_and_return(
+            entity, date_str, self._lookback_period, pit_provider=self._pit_provider, index_symbol=self._index_symbol
+        )
         if rank is None or ret is None:
             return None
 

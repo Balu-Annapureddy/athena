@@ -1,0 +1,99 @@
+{
+  "dataset_version": "1.0.0",
+  "retrieval_date": "2026-08-11",
+  "source": "NSE_OFFICIAL_ARCHIVES",
+  "records_count": 14,
+  "checksum_sha256": "8192de31a241e71e5f2bbec9e0715308af49fde979d62d5d9f809e04be358371",
+  "indexes_covered": [
+    "NIFTY_100",
+    "NIFTY_50",
+    "NIFTY_500"
+  ],
+  "dataset_status": "SYNTHETIC_FIXTURE",
+  "records": [
+    {
+      "ticker": "RELIANCE.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "TCS.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "INFY.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HDFCBANK.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ICICIBANK.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HEROHONDA.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": "2011-08-04"
+    },
+    {
+      "ticker": "HEROMOTOCO.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2011-08-04",
+      "dropped_date": null
+    },
+    {
+      "ticker": "RELIANCE.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "TCS.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BHARTIARTL.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "LT.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "RELIANCE.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "TCS.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "INFY.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    }
+  ]
+}

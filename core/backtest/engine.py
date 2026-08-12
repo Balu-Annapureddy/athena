@@ -166,6 +166,8 @@ class BacktestEngine:
         risk_percent: float = 0.01,
         atr_multiplier: float = 2.0,
         interval: str = "1d",
+        periods_per_year: Optional[float] = None,
+        timeframe: Optional[str] = None,
         **kwargs
     ) -> Dict[str, Any]:
         """Run walk-forward daily backtest for a strategy on a ticker.
@@ -178,6 +180,8 @@ class BacktestEngine:
             account_size: Starting capital.
             risk_percent: Maximum capital risk percent per trade (defaults to 1%).
             atr_multiplier: ATR stop loss multiplier.
+            periods_per_year: Explicit return periods per year for Sharpe ratio calculation.
+            timeframe: Optional timeframe string ('1d', 'daily', '1h', 'hourly', '15m').
 
         Returns:
             Dictionary containing:
@@ -284,7 +288,7 @@ class BacktestEngine:
                     # If both stop-loss and target-price are touched on the same bar,
                     # always resolve to the stop-loss exit first.
                     if price.low <= sl:
-                        exit_price = sl
+                        exit_price = min(sl, price.open)
                         exit_reason = "STOP_LOSS"
                     elif price.high >= tp:
                         exit_price = tp
@@ -293,7 +297,7 @@ class BacktestEngine:
                     # If both stop-loss and target-price are touched on the same bar,
                     # always resolve to the stop-loss exit first.
                     if price.high >= sl:
-                        exit_price = sl
+                        exit_price = max(sl, price.open)
                         exit_reason = "STOP_LOSS"
                     elif price.low <= tp:
                         exit_price = tp
@@ -488,17 +492,22 @@ class BacktestEngine:
         # 5. Compute metrics — net-of-cost (for strategy promotion decisions)
         net_pnls   = [t.net_pnl for t in completed_trades]
         gross_pnls = [t.pnl     for t in completed_trades]
+        eff_tf = timeframe if timeframe is not None else interval
         metrics = MetricsCalculator.calculate(
             starting_equity=account_size,
             ending_equity=equity_curve[-1],
             equity_curve=equity_curve,
-            trade_pnls=net_pnls
+            trade_pnls=net_pnls,
+            periods_per_year=periods_per_year,
+            timeframe=eff_tf,
         )
         gross_metrics = MetricsCalculator.calculate(
             starting_equity=account_size,
             ending_equity=account_size + sum(gross_pnls),
             equity_curve=equity_curve,   # equity curve already reflects costs
-            trade_pnls=gross_pnls
+            trade_pnls=gross_pnls,
+            periods_per_year=periods_per_year,
+            timeframe=eff_tf,
         )
         total_costs_paid = sum(t.total_costs for t in completed_trades)
 

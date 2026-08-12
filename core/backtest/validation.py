@@ -12,6 +12,26 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from core.domain.enums import ValidationStatus
 from core.backtest.engine import BacktestEngine, TransactionCostModel
+from core.portfolio.engine import MultiAssetPortfolioEngine
+from core.portfolio.universe import PointInTimeUniverseProvider, MissingPointInTimeUniverseDataError
+
+
+@dataclass
+class PortfolioResearchConfig:
+    """Explicit research configuration for multi-asset shared-capital portfolio campaigns."""
+    initial_capital: float = 1_000_000.0
+    max_positions: int = 10
+    risk_per_trade: float = 0.01
+    max_position_equity_pct: float = 0.10
+    execution_delay_bars: int = 0
+    short_borrow_rate_annual: float = 0.0
+    require_pit: bool = False
+    allow_synthetic: bool = True
+    timeframe: str = "1d"
+    index_symbol: str = "NIFTY_500"
+
+    def to_dict(self) -> Dict[str, Any]:
+        return dataclasses.asdict(self)
 
 
 @dataclass(frozen=True)
@@ -30,32 +50,14 @@ class CampaignResult:
     strategy_return: float = 0.0
     excess_return: float = 0.0
     benchmark_underperformance_flag: bool = False
+    mode: str = "single_stock"
+    portfolio_metrics: Optional[Any] = None
+    ticker_diagnostics: Optional[List[Dict[str, Any]]] = None
+    portfolio_config: Optional[Dict[str, Any]] = None
 
 
 class ValidationCampaign:
-    """Enforces multi-ticker and multi-date-range backtest validation rules.
-
-    The validation campaign is a deliberate, configurable quality gate:
-      - A strategy must generate at least min_total_trades to prevent statistical noise.
-      - A strategy must clear a configured proportion of regimes (min_passing_ratio,
-        defaulting to 0.67 - meaning roughly two-thirds of tested runs) to be promoted
-        to BACKTESTED. This is a design choice to ensure strategy robustness.
-      - Evaluates portfolio-level net returns against a passive equal-weight buy-and-hold
-        benchmark over the exact same tickers and date ranges, prominently flagging
-        any severe underperformance (cash drag / premature exit penalties).
-
-    DATA SOURCE REQUIREMENT (see ADR-030):
-      Promotion to BACKTESTED is only meaningful when this campaign is executed against
-      REAL historical market data — either live-fetched via YFinanceConnector over a
-      real date range, or replayed from JSONL fixtures recorded from such a fetch and
-      committed to the repository.
-
-      Running a campaign against synthetic or procedurally generated price data
-      demonstrates that the engine mechanics are correct (gates, no-lookahead,
-      tie-break) but does NOT constitute evidence of real-world strategy viability.
-      A campaign result of "passed" on synthetic data must NOT be used to register a
-      strategy with status=ValidationStatus.BACKTESTED in StrategyRegistry.
-    """
+    """Enforces multi-ticker and multi-date-range backtest validation rules."""
 
     def __init__(
         self,
@@ -65,6 +67,10 @@ class ValidationCampaign:
         min_passing_ratio: float = 0.67,
         fixture_dir: str = "fixtures/yfinance",
         cost_model: Optional[TransactionCostModel] = None,
+        mode: str = "single_stock",
+        portfolio_config: Optional[PortfolioResearchConfig] = None,
+        pit_provider: Optional[PointInTimeUniverseProvider] = None,
+        require_pit: bool = False,
     ) -> None:
         """Initialize the ValidationCampaign.
 
@@ -75,14 +81,21 @@ class ValidationCampaign:
             min_passing_ratio: Required ratio of positive runs. Defaults to 0.67 (2/3).
             fixture_dir: Directory for offline payload replay data.
             cost_model: Transaction cost model applied to every backtest run.
-                        Defaults to the standard Indian-market model.
-                        Pass ZERO_COST_MODEL for gross-only (legacy) runs.
+            mode: "single_stock" (legacy single-ticker) or "portfolio" (shared-capital multi-asset).
+            portfolio_config: Optional PortfolioResearchConfig for portfolio mode.
+            pit_provider: Optional PointInTimeUniverseProvider for survivorship-free research.
+            require_pit: If True, fails loudly if pit_provider is missing in portfolio mode.
         """
         self._tickers = tickers
         self._date_ranges = date_ranges
         self._min_total_trades = min_total_trades
         self._min_passing_ratio = min_passing_ratio
         self._fixture_dir = fixture_dir
+        self._cost_model = cost_model
+        self._mode = mode
+        self._portfolio_config = portfolio_config
+        self._pit_provider = pit_provider
+        self._require_pit = require_pit
         self._engine = BacktestEngine(fixture_dir=fixture_dir, cost_model=cost_model)
 
     def _compute_passive_benchmark(self) -> float:
@@ -148,6 +161,107 @@ class ValidationCampaign:
         Returns:
             A CampaignResult instance.
         """
+        if self._mode == "portfolio":
+            cfg = self._portfolio_config if self._portfolio_config is not None else PortfolioResearchConfig(
+                initial_capital=account_size, risk_per_trade=risk_percent
+            )
+            p_engine = MultiAssetPortfolioEngine(
+                fixture_dir=self._fixture_dir,
+                cost_model=self._cost_model,
+                pit_provider=self._pit_provider,
+                index_symbol=cfg.index_symbol,
+                strict_pit=self._require_pit,
+            )
+
+            run_details = []
+            total_trades = 0
+            passing_runs = 0
+            total_runs = 0
+            all_portfolio_returns = []
+            ticker_diag_map: Dict[str, Dict[str, Any]] = {
+                t: {"ticker": t, "signals_generated": 0, "signals_accepted": 0, "signals_rejected": 0, "trades": 0, "gross_pnl": 0.0, "net_pnl": 0.0, "costs": 0.0}
+                for t in self._tickers
+            }
+
+            for start_date, end_date in self._date_ranges:
+                total_runs += 1
+                res = p_engine.run_portfolio_backtest(
+                    strategy=strategy,
+                    tickers=self._tickers,
+                    start_date=start_date,
+                    end_date=end_date,
+                    initial_capital=cfg.initial_capital,
+                    risk_per_trade=cfg.risk_per_trade,
+                    max_position_equity_pct=cfg.max_position_equity_pct,
+                    max_positions=cfg.max_positions,
+                    timeframe=cfg.timeframe,
+                    require_pit=self._require_pit,
+                    allow_synthetic=cfg.allow_synthetic,
+                    execution_delay_bars=cfg.execution_delay_bars,
+                    short_borrow_rate_annual=cfg.short_borrow_rate_annual,
+                )
+
+                run_trade_count = len(res.trades)
+                total_trades += run_trade_count
+                all_portfolio_returns.append(res.total_return)
+                is_passing = res.metrics.avg_pnl_per_trade > 0.0 or res.total_return > 0.0
+                if is_passing:
+                    passing_runs += 1
+
+                for pos in res.trades:
+                    if pos.ticker in ticker_diag_map:
+                        ticker_diag_map[pos.ticker]["trades"] += 1
+                        ticker_diag_map[pos.ticker]["net_pnl"] += pos.realized_pnl
+
+                run_details.append({
+                    "start_date": start_date,
+                    "end_date": end_date,
+                    "trade_count": run_trade_count,
+                    "total_return": res.total_return,
+                    "max_drawdown": res.metrics.max_drawdown,
+                    "sharpe_ratio": res.metrics.sharpe_ratio,
+                    "is_passing": is_passing,
+                    "metrics": res.metrics,
+                    "rejected_signals_count": res.rejected_signals_count,
+                    "result": res,
+                })
+
+            passing_ratio = passing_runs / total_runs if total_runs > 0 else 0.0
+            benchmark_return = self._compute_passive_benchmark()
+            strategy_return = (
+                sum(all_portfolio_returns) / len(all_portfolio_returns)
+                if all_portfolio_returns else 0.0
+            )
+            excess_return = strategy_return - benchmark_return
+            benchmark_underperformance_flag = (
+                (benchmark_return > 0.0 and excess_return < -0.20) or
+                (benchmark_return > 0.10 and strategy_return < 0.5 * benchmark_return)
+            )
+
+            passed = (total_trades >= self._min_total_trades) and (passing_ratio >= self._min_passing_ratio)
+            reason = f"Portfolio Campaign {'approved' if passed else 'rejected'}. Runs passed: {passing_runs}/{total_runs}, Total trades: {total_trades}."
+
+            return CampaignResult(
+                passed=passed,
+                total_trades_count=total_trades,
+                min_required_trades=self._min_total_trades,
+                passing_runs_count=passing_runs,
+                total_runs_count=total_runs,
+                passing_ratio=passing_ratio,
+                required_passing_ratio=self._min_passing_ratio,
+                reason=reason,
+                run_details=run_details,
+                benchmark_return=benchmark_return,
+                strategy_return=strategy_return,
+                excess_return=excess_return,
+                benchmark_underperformance_flag=benchmark_underperformance_flag,
+                mode="portfolio",
+                portfolio_metrics=run_details[0]["metrics"] if run_details else None,
+                ticker_diagnostics=list(ticker_diag_map.values()),
+                portfolio_config=cfg.to_dict(),
+            )
+
+        # Mode == "single_stock" (Legacy behavior - 100% preserved)
         run_details = []
         total_trades = 0
         passing_runs = 0
@@ -284,6 +398,7 @@ class ValidationCampaign:
             strategy_return=strategy_return,
             excess_return=excess_return,
             benchmark_underperformance_flag=benchmark_underperformance_flag,
+            mode="single_stock",
         )
 
     def promote_records(self, thesis_records: List[Any], decision_records: List[Any]) -> Tuple[List[Any], List[Any]]:

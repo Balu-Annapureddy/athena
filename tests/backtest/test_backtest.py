@@ -1,12 +1,13 @@
 """Unit tests for backtesting metrics, engine, validation campaigns, and lookahead/exit rules."""
 
+import math
 import unittest
 from datetime import datetime, timezone
 from typing import Any, List, Optional, Tuple
 from unittest.mock import MagicMock
 
 from core.domain.common import DomainMetadata, FactId, ObservationId, SecurityId
-from core.domain.entities import Fact
+from core.domain.entities import Fact, InvestmentThesis, Decision
 from core.domain.enums import RecommendationAction, ValidationStatus, ThesisDirection
 from core.domain.value_objects import Measurement
 from core.backtest.metrics import MetricsCalculator, BacktestMetrics
@@ -240,6 +241,119 @@ class TestBacktestEngine(unittest.TestCase):
         self.assertEqual(trades[0].exit_price, 490.0)
         self.assertEqual(trades[0].pnl, -100.0)  # 10 shares * (490 - 500) = -100
 
+    def test_long_gap_down_stop_loss_fills_at_open_price(self) -> None:
+        """Verify long position gap-down through stop loss fills at price.open and PnL reflects gap."""
+        engine = BacktestEngine(cost_model=None)
+        
+        # Bar 0: Signal bar (strategy returns BUY decision)
+        # Bar 1: Trade execution bar (enters LONG at open 100, SL=95, TP=120)
+        # Bar 2: Gap down exit bar (open 80 < SL 95 -> fills exit at 80.0)
+        bar0 = self._create_mock_bar("2026-07-01", 100.0, 103.0, 99.0, 102.0, 1000)
+        bar1 = self._create_mock_bar("2026-07-02", 100.0, 105.0, 98.0, 102.0, 1000)
+        bar2 = self._create_mock_bar("2026-07-03", 80.0, 82.0, 75.0, 78.0, 1000)
+        
+        mock_strategy = MagicMock()
+        mock_strategy.required_history_bars = 1
+        
+        thesis = InvestmentThesis(
+            hypothesis_statement="Long entry",
+            evidence=[],
+            confidence=0.8,
+            recommendation=RecommendationAction.BUY,
+            target_security=SecurityId("RELIANCE.NS"),
+            time_horizon=TimeHorizon.SWING,
+            key_risks=[]
+        )
+        t_record = ThesisRecord(thesis=thesis, state=ThesisState.ACCEPTED)
+        
+        decision = Decision(
+            thesis_id=thesis.id,
+            action=RecommendationAction.BUY,
+            target_security=SecurityId("RELIANCE.NS"),
+            target_price=120.0,
+            stop_loss_price=95.0,
+            time_horizon=TimeHorizon.SWING,
+            validity_window_hours=24
+        )
+        d_record = DecisionRecord(decision=decision, state=DecisionState.PROMOTED)
+        
+        mock_strategy.evaluate = MagicMock(side_effect=[(thesis, t_record, decision, d_record), None, None])
+        engine._connector.fetch_data = MagicMock(return_value=[bar0, bar1, bar2])
+        
+        res = engine.run_backtest(mock_strategy, "RELIANCE.NS", "2026-07-01", "2026-07-03", account_size=10000.0)
+        trades = res["trades"]
+        self.assertEqual(len(trades), 1)
+        t = trades[0]
+        self.assertEqual(t.direction, "LONG")
+        self.assertEqual(t.exit_reason, "STOP_LOSS")
+        self.assertEqual(t.exit_price, 80.0)  # Filled at open (80.0) instead of limit SL (95.0)
+        self.assertAlmostEqual(t.pnl, t.shares * (80.0 - 100.0))  # PnL accurately reflects gap
+
+    def test_long_normal_stop_loss_fills_at_stop_price(self) -> None:
+        """Verify long position normal stop loss (open >= SL, low <= SL) fills at limit stop price."""
+        engine = BacktestEngine(cost_model=None)
+        
+        bar0 = self._create_mock_bar("2026-07-01", 100.0, 103.0, 99.0, 102.0, 1000)
+        bar1 = self._create_mock_bar("2026-07-02", 100.0, 105.0, 98.0, 102.0, 1000)
+        bar2 = self._create_mock_bar("2026-07-03", 98.0, 99.0, 92.0, 93.0, 1000)  # Open (98) >= SL (95), Low (92) <= SL (95)
+        
+        mock_strategy = MagicMock()
+        mock_strategy.required_history_bars = 1
+        
+        thesis = InvestmentThesis(
+            hypothesis_statement="Long entry", evidence=[], confidence=0.8,
+            recommendation=RecommendationAction.BUY, target_security=SecurityId("RELIANCE.NS"),
+            time_horizon=TimeHorizon.SWING, key_risks=[]
+        )
+        t_record = ThesisRecord(thesis=thesis, state=ThesisState.ACCEPTED)
+        decision = Decision(
+            thesis_id=thesis.id, action=RecommendationAction.BUY, target_security=SecurityId("RELIANCE.NS"),
+            target_price=120.0, stop_loss_price=95.0, time_horizon=TimeHorizon.SWING, validity_window_hours=24
+        )
+        d_record = DecisionRecord(decision=decision, state=DecisionState.PROMOTED)
+        mock_strategy.evaluate = MagicMock(side_effect=[(thesis, t_record, decision, d_record), None, None])
+        engine._connector.fetch_data = MagicMock(return_value=[bar0, bar1, bar2])
+        
+        res = engine.run_backtest(mock_strategy, "RELIANCE.NS", "2026-07-01", "2026-07-03", account_size=10000.0)
+        trades = res["trades"]
+        self.assertEqual(len(trades), 1)
+        t = trades[0]
+        self.assertEqual(t.exit_reason, "STOP_LOSS")
+        self.assertEqual(t.exit_price, 95.0)  # Fills at limit SL (95.0)
+
+    def test_short_gap_up_stop_loss_fills_at_open_price(self) -> None:
+        """Verify short position gap-up through stop loss fills at price.open and PnL reflects gap."""
+        engine = BacktestEngine(cost_model=None)
+        
+        bar0 = self._create_mock_bar("2026-07-01", 100.0, 103.0, 97.0, 98.0, 1000)
+        bar1 = self._create_mock_bar("2026-07-02", 100.0, 102.0, 95.0, 98.0, 1000)
+        bar2 = self._create_mock_bar("2026-07-03", 115.0, 120.0, 114.0, 118.0, 1000)  # Open (115) > SL (105)
+        
+        mock_strategy = MagicMock()
+        mock_strategy.required_history_bars = 1
+        
+        thesis = InvestmentThesis(
+            hypothesis_statement="Short entry", evidence=[], confidence=0.8,
+            recommendation=RecommendationAction.SELL, target_security=SecurityId("RELIANCE.NS"),
+            time_horizon=TimeHorizon.SWING, key_risks=[]
+        )
+        t_record = ThesisRecord(thesis=thesis, state=ThesisState.ACCEPTED)
+        decision = Decision(
+            thesis_id=thesis.id, action=RecommendationAction.SELL, target_security=SecurityId("RELIANCE.NS"),
+            target_price=80.0, stop_loss_price=105.0, time_horizon=TimeHorizon.SWING, validity_window_hours=24
+        )
+        d_record = DecisionRecord(decision=decision, state=DecisionState.PROMOTED)
+        mock_strategy.evaluate = MagicMock(side_effect=[(thesis, t_record, decision, d_record), None, None])
+        engine._connector.fetch_data = MagicMock(return_value=[bar0, bar1, bar2])
+        
+        res = engine.run_backtest(mock_strategy, "RELIANCE.NS", "2026-07-01", "2026-07-03", account_size=10000.0)
+        trades = res["trades"]
+        self.assertEqual(len(trades), 1)
+        t = trades[0]
+        self.assertEqual(t.direction, "SHORT")
+        self.assertEqual(t.exit_reason, "STOP_LOSS")
+        self.assertEqual(t.exit_price, 115.0)  # Filled at gap open (115.0) instead of limit SL (105.0)
+
 
 class TestBacktestMetrics(unittest.TestCase):
 
@@ -272,6 +386,66 @@ class TestBacktestMetrics(unittest.TestCase):
         
         # Average PnL per trade = 200 / 4 = 50
         self.assertEqual(metrics.avg_pnl_per_trade, 50.0)
+
+    def test_sharpe_annualization_daily_1h_15m(self) -> None:
+        """Verify Sharpe annualization scales correctly for daily (252), 1h (1575), and 15m (6300)."""
+        equity_curve = [100.0, 102.0, 101.0, 104.0, 103.0]
+        trade_pnls = [2.0, -1.0, 3.0, -1.0]
+
+        # 1. Backward-compatible default / explicit daily (252)
+        m_default = MetricsCalculator.calculate(100.0, 103.0, equity_curve, trade_pnls)
+        m_daily = MetricsCalculator.calculate(100.0, 103.0, equity_curve, trade_pnls, timeframe="1d")
+        self.assertAlmostEqual(m_default.sharpe_ratio, m_daily.sharpe_ratio)
+
+        # 2. 1h timeframe (1575)
+        m_1h = MetricsCalculator.calculate(100.0, 103.0, equity_curve, trade_pnls, timeframe="1h")
+        expected_1h_ratio = math.sqrt(1575.0 / 252.0)
+        self.assertAlmostEqual(m_1h.sharpe_ratio / m_daily.sharpe_ratio, expected_1h_ratio)
+
+        # 3. 15m timeframe (6300)
+        m_15m = MetricsCalculator.calculate(100.0, 103.0, equity_curve, trade_pnls, timeframe="15m")
+        expected_15m_ratio = math.sqrt(6300.0 / 252.0)
+        self.assertAlmostEqual(m_15m.sharpe_ratio / m_daily.sharpe_ratio, expected_15m_ratio)
+
+        # 4. Explicit periods_per_year parameter override
+        m_custom = MetricsCalculator.calculate(100.0, 103.0, equity_curve, trade_pnls, periods_per_year=1000.0)
+        expected_custom_ratio = math.sqrt(1000.0 / 252.0)
+        self.assertAlmostEqual(m_custom.sharpe_ratio / m_daily.sharpe_ratio, expected_custom_ratio)
+
+    def test_sharpe_invalid_timeframe_or_periods_raises_error(self) -> None:
+        """Verify invalid timeframe string or non-positive periods_per_year raises ValueError."""
+        equity_curve = [100.0, 102.0, 104.0]
+        trade_pnls = [2.0, 2.0]
+        with self.assertRaises(ValueError):
+            MetricsCalculator.calculate(100.0, 104.0, equity_curve, trade_pnls, timeframe="invalid_tf")
+        with self.assertRaises(ValueError):
+            MetricsCalculator.calculate(100.0, 104.0, equity_curve, trade_pnls, periods_per_year=0.0)
+        with self.assertRaises(ValueError):
+            MetricsCalculator.calculate(100.0, 104.0, equity_curve, trade_pnls, periods_per_year=-252.0)
+
+    def test_sharpe_deterministic_numerical_verification(self) -> None:
+        """Deterministic numerical verification test comparing Sharpe calculation against manual math formula."""
+        equity_curve = [100.0, 102.0, 101.0, 104.0, 103.0]
+        trade_pnls = [2.0, -1.0, 3.0, -1.0]
+
+        rets = [
+            (102.0 - 100.0) / 100.0,
+            (101.0 - 102.0) / 102.0,
+            (104.0 - 101.0) / 101.0,
+            (103.0 - 104.0) / 104.0,
+        ]
+        mean_ret = sum(rets) / len(rets)
+        var_ret = sum((r - mean_ret) ** 2 for r in rets) / (len(rets) - 1)
+        std_ret = math.sqrt(var_ret)
+        
+        expected_daily_sharpe = math.sqrt(252.0) * (mean_ret / std_ret)
+        expected_15m_sharpe = math.sqrt(6300.0) * (mean_ret / std_ret)
+
+        calc_daily = MetricsCalculator.calculate(100.0, 103.0, equity_curve, trade_pnls, periods_per_year=252.0)
+        calc_15m = MetricsCalculator.calculate(100.0, 103.0, equity_curve, trade_pnls, timeframe="15m")
+
+        self.assertAlmostEqual(calc_daily.sharpe_ratio, expected_daily_sharpe, places=7)
+        self.assertAlmostEqual(calc_15m.sharpe_ratio, expected_15m_sharpe, places=7)
 
 
 class TestValidationCampaign(unittest.TestCase):
@@ -375,4 +549,5 @@ class TestValidationCampaign(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
 

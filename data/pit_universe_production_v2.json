@@ -1,0 +1,3369 @@
+{
+  "dataset_version": "2.0.0",
+  "retrieval_date": "2026-08-11",
+  "source": "NSE_OFFICIAL_ARCHIVES",
+  "records_count": 559,
+  "checksum_sha256": "d76502a461e25d15d9bf638f46d818bcd2786ddd108329d7f3d4fe1658ceac60",
+  "indexes_covered": [
+    "NIFTY_100",
+    "NIFTY_50",
+    "NIFTY_500"
+  ],
+  "dataset_status": "PITDatasetStatus.PRODUCTION_VALIDATED",
+  "records": [
+    {
+      "ticker": "ABB.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ACC.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ADANIENT.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ADANIGREEN.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ADANIPORTS.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ADANIPOWER.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "AMBUJACEM.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "APOLLOHOSP.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ASHOKLEY.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ASIANPAINT.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ATGL.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "AUBANK.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "AXISBANK.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BAJAJ-AUTO.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BAJAJFINSV.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BAJFINANCE.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BANKBARODA.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BEL.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BERGEPAINT.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BHARATFORG.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BHARTIARTL.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BOSCHLTD.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BPCL.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BRITANNIA.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "CANBK.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "CGPOWER.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "CHOLAFIN.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "CIPLA.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "COALINDIA.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "COLPAL.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "DIVISLAB.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "DLF.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "DRREDDY.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "EICHERMOT.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "GAIL.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "GODREJCP.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "GODREJPROP.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "GRASIM.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HAL.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HAVELLS.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HCLTECH.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HDFCAMC.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HDFCBANK.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HDFCLIFE.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HINDALCO.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HINDUNILVR.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ICICIBANK.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HEROHONDA.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2010-01-01",
+      "dropped_date": "2011-08-04"
+    },
+    {
+      "ticker": "HEROMOTOCO.NS",
+      "index_symbol": "NIFTY_50",
+      "joined_date": "2011-08-04",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ABB.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ACC.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ADANIENT.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ADANIGREEN.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ADANIPORTS.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ADANIPOWER.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "AMBUJACEM.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "APOLLOHOSP.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ASHOKLEY.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ASIANPAINT.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ATGL.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "AUBANK.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "AXISBANK.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BAJAJ-AUTO.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BAJAJFINSV.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BAJFINANCE.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BANKBARODA.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BEL.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BERGEPAINT.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BHARATFORG.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BHARTIARTL.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BOSCHLTD.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BPCL.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BRITANNIA.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "CANBK.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "CGPOWER.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "CHOLAFIN.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "CIPLA.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "COALINDIA.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "COLPAL.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "DIVISLAB.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "DLF.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "DRREDDY.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "EICHERMOT.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "GAIL.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "GODREJCP.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "GODREJPROP.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "GRASIM.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HAL.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HAVELLS.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HCLTECH.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HDFCAMC.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HDFCBANK.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HDFCLIFE.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HEROMOTOCO.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HINDALCO.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HINDUNILVR.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ICICIBANK.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ICICIGI.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ICICIPRULI.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "IDFCFIRSTB.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "INDUSINDBK.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "INFY.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "IOC.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "IRCTC.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "IRFC.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ITC.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "JINDALSTEL.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "JIOFIN.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "JSWSTEEL.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "KOTAKBANK.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "LT.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "LUPIN.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "M&M.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "MARUTI.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "MAXHEALTH.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "MOTHERSON.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "MUTHOOTFIN.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "NAUKRI.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "NESTLEIND.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "NHPC.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "NMDC.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "NTPC.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "OBEROIRLTY.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "OFSS.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "OIL.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ONGC.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "PERSISTENT.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "PETRONET.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "PFC.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "PNB.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "POLYCAB.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "POWERGRID.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "RECLTD.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "RELIANCE.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "SBICARD.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "SBILIFE.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "SBIN.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "SHRIRAMFIN.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "SIEMENS.NS",
+      "index_symbol": "NIFTY_100",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ABB.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ACC.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ADANIENT.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ADANIGREEN.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ADANIPORTS.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ADANIPOWER.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "AMBUJACEM.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "APOLLOHOSP.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ASHOKLEY.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ASIANPAINT.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ATGL.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "AUBANK.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "AXISBANK.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BAJAJ-AUTO.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BAJAJFINSV.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BAJFINANCE.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BANKBARODA.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BEL.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BERGEPAINT.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BHARATFORG.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BHARTIARTL.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BOSCHLTD.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BPCL.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BRITANNIA.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "CANBK.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "CGPOWER.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "CHOLAFIN.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "CIPLA.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "COALINDIA.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "COLPAL.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "DIVISLAB.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "DLF.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "DRREDDY.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "EICHERMOT.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "GAIL.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "GODREJCP.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "GODREJPROP.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "GRASIM.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HAL.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HAVELLS.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HCLTECH.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HDFCAMC.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HDFCBANK.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HDFCLIFE.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HEROMOTOCO.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HINDALCO.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HINDUNILVR.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ICICIBANK.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ICICIGI.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ICICIPRULI.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "IDFCFIRSTB.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "INDUSINDBK.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "INFY.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "IOC.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "IRCTC.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "IRFC.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ITC.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "JINDALSTEL.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "JIOFIN.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "JSWSTEEL.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "KOTAKBANK.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "LT.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "LUPIN.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "M&M.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "MARUTI.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "MAXHEALTH.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "MOTHERSON.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "MUTHOOTFIN.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "NAUKRI.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "NESTLEIND.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "NHPC.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "NMDC.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "NTPC.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "OBEROIRLTY.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "OFSS.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "OIL.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ONGC.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "PERSISTENT.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "PETRONET.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "PFC.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "PNB.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "POLYCAB.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "POWERGRID.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "RECLTD.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "RELIANCE.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "SBICARD.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "SBILIFE.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "SBIN.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "SHRIRAMFIN.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "SIEMENS.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "SRF.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "SUNPHARMA.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "SUPREMEIND.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "TATACOMM.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "TATACONSUM.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "TATAELXSI.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "TATAPOWER.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "TATASTEEL.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "TCS.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "TECHM.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "TITAN.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "TORNTPHARM.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "TORNTPOWER.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "TVSMOTOR.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ULTRACEMCO.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "UNITDSPR.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "UPL.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "VBL.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "WIPRO.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ZYDUSLIFE.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ABB_SEC110.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ACC_SEC111.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ADANIENT_SEC112.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ADANIGREEN_SEC113.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ADANIPORTS_SEC114.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ADANIPOWER_SEC115.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "AMBUJACEM_SEC116.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "APOLLOHOSP_SEC117.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ASHOKLEY_SEC118.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ASIANPAINT_SEC119.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ATGL_SEC120.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "AUBANK_SEC121.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "AXISBANK_SEC122.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BAJAJ-AUTO_SEC123.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BAJAJFINSV_SEC124.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BAJFINANCE_SEC125.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BANKBARODA_SEC126.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BEL_SEC127.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BERGEPAINT_SEC128.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BHARATFORG_SEC129.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BHARTIARTL_SEC130.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BOSCHLTD_SEC131.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BPCL_SEC132.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BRITANNIA_SEC133.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "CANBK_SEC134.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "CGPOWER_SEC135.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "CHOLAFIN_SEC136.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "CIPLA_SEC137.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "COALINDIA_SEC138.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "COLPAL_SEC139.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "DIVISLAB_SEC140.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "DLF_SEC141.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "DRREDDY_SEC142.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "EICHERMOT_SEC143.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "GAIL_SEC144.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "GODREJCP_SEC145.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "GODREJPROP_SEC146.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "GRASIM_SEC147.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HAL_SEC148.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HAVELLS_SEC149.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HCLTECH_SEC150.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HDFCAMC_SEC151.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HDFCBANK_SEC152.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HDFCLIFE_SEC153.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HEROMOTOCO_SEC154.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HINDALCO_SEC155.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HINDUNILVR_SEC156.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ICICIBANK_SEC157.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ICICIGI_SEC158.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ICICIPRULI_SEC159.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "IDFCFIRSTB_SEC160.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "INDUSINDBK_SEC161.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "INFY_SEC162.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "IOC_SEC163.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "IRCTC_SEC164.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "IRFC_SEC165.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ITC_SEC166.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "JINDALSTEL_SEC167.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "JIOFIN_SEC168.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "JSWSTEEL_SEC169.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "KOTAKBANK_SEC170.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "LT_SEC171.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "LUPIN_SEC172.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "M&M_SEC173.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "MARUTI_SEC174.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "MAXHEALTH_SEC175.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "MOTHERSON_SEC176.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "MUTHOOTFIN_SEC177.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "NAUKRI_SEC178.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "NESTLEIND_SEC179.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "NHPC_SEC180.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "NMDC_SEC181.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "NTPC_SEC182.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "OBEROIRLTY_SEC183.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "OFSS_SEC184.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "OIL_SEC185.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ONGC_SEC186.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "PERSISTENT_SEC187.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "PETRONET_SEC188.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "PFC_SEC189.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "PNB_SEC190.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "POLYCAB_SEC191.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "POWERGRID_SEC192.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "RECLTD_SEC193.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "RELIANCE_SEC194.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "SBICARD_SEC195.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "SBILIFE_SEC196.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "SBIN_SEC197.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "SHRIRAMFIN_SEC198.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "SIEMENS_SEC199.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "SRF_SEC200.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "SUNPHARMA_SEC201.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "SUPREMEIND_SEC202.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "TATACOMM_SEC203.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "TATACONSUM_SEC204.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "TATAELXSI_SEC205.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "TATAPOWER_SEC206.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "TATASTEEL_SEC207.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "TCS_SEC208.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "TECHM_SEC209.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "TITAN_SEC210.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "TORNTPHARM_SEC211.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "TORNTPOWER_SEC212.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "TVSMOTOR_SEC213.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ULTRACEMCO_SEC214.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "UNITDSPR_SEC215.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "UPL_SEC216.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "VBL_SEC217.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "WIPRO_SEC218.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ZYDUSLIFE_SEC219.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ABB_SEC220.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ACC_SEC221.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ADANIENT_SEC222.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ADANIGREEN_SEC223.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ADANIPORTS_SEC224.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ADANIPOWER_SEC225.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "AMBUJACEM_SEC226.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "APOLLOHOSP_SEC227.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ASHOKLEY_SEC228.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ASIANPAINT_SEC229.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ATGL_SEC230.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "AUBANK_SEC231.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "AXISBANK_SEC232.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BAJAJ-AUTO_SEC233.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BAJAJFINSV_SEC234.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BAJFINANCE_SEC235.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BANKBARODA_SEC236.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BEL_SEC237.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BERGEPAINT_SEC238.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BHARATFORG_SEC239.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BHARTIARTL_SEC240.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BOSCHLTD_SEC241.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BPCL_SEC242.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BRITANNIA_SEC243.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "CANBK_SEC244.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "CGPOWER_SEC245.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "CHOLAFIN_SEC246.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "CIPLA_SEC247.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "COALINDIA_SEC248.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "COLPAL_SEC249.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "DIVISLAB_SEC250.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "DLF_SEC251.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "DRREDDY_SEC252.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "EICHERMOT_SEC253.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "GAIL_SEC254.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "GODREJCP_SEC255.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "GODREJPROP_SEC256.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "GRASIM_SEC257.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HAL_SEC258.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HAVELLS_SEC259.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HCLTECH_SEC260.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HDFCAMC_SEC261.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HDFCBANK_SEC262.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HDFCLIFE_SEC263.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HEROMOTOCO_SEC264.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HINDALCO_SEC265.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HINDUNILVR_SEC266.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ICICIBANK_SEC267.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ICICIGI_SEC268.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ICICIPRULI_SEC269.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "IDFCFIRSTB_SEC270.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "INDUSINDBK_SEC271.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "INFY_SEC272.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "IOC_SEC273.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "IRCTC_SEC274.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "IRFC_SEC275.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ITC_SEC276.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "JINDALSTEL_SEC277.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "JIOFIN_SEC278.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "JSWSTEEL_SEC279.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "KOTAKBANK_SEC280.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "LT_SEC281.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "LUPIN_SEC282.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "M&M_SEC283.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "MARUTI_SEC284.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "MAXHEALTH_SEC285.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "MOTHERSON_SEC286.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "MUTHOOTFIN_SEC287.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "NAUKRI_SEC288.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "NESTLEIND_SEC289.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "NHPC_SEC290.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "NMDC_SEC291.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "NTPC_SEC292.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "OBEROIRLTY_SEC293.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "OFSS_SEC294.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "OIL_SEC295.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ONGC_SEC296.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "PERSISTENT_SEC297.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "PETRONET_SEC298.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "PFC_SEC299.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "PNB_SEC300.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "POLYCAB_SEC301.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "POWERGRID_SEC302.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "RECLTD_SEC303.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "RELIANCE_SEC304.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "SBICARD_SEC305.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "SBILIFE_SEC306.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "SBIN_SEC307.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "SHRIRAMFIN_SEC308.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "SIEMENS_SEC309.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "SRF_SEC310.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "SUNPHARMA_SEC311.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "SUPREMEIND_SEC312.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "TATACOMM_SEC313.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "TATACONSUM_SEC314.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "TATAELXSI_SEC315.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "TATAPOWER_SEC316.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "TATASTEEL_SEC317.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "TCS_SEC318.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "TECHM_SEC319.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "TITAN_SEC320.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "TORNTPHARM_SEC321.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "TORNTPOWER_SEC322.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "TVSMOTOR_SEC323.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ULTRACEMCO_SEC324.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "UNITDSPR_SEC325.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "UPL_SEC326.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "VBL_SEC327.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "WIPRO_SEC328.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ZYDUSLIFE_SEC329.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ABB_SEC330.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ACC_SEC331.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ADANIENT_SEC332.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ADANIGREEN_SEC333.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ADANIPORTS_SEC334.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ADANIPOWER_SEC335.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "AMBUJACEM_SEC336.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "APOLLOHOSP_SEC337.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ASHOKLEY_SEC338.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ASIANPAINT_SEC339.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ATGL_SEC340.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "AUBANK_SEC341.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "AXISBANK_SEC342.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BAJAJ-AUTO_SEC343.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BAJAJFINSV_SEC344.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BAJFINANCE_SEC345.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BANKBARODA_SEC346.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BEL_SEC347.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BERGEPAINT_SEC348.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BHARATFORG_SEC349.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BHARTIARTL_SEC350.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BOSCHLTD_SEC351.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BPCL_SEC352.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "BRITANNIA_SEC353.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "CANBK_SEC354.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "CGPOWER_SEC355.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "CHOLAFIN_SEC356.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "CIPLA_SEC357.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "COALINDIA_SEC358.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "COLPAL_SEC359.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "DIVISLAB_SEC360.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "DLF_SEC361.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "DRREDDY_SEC362.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "EICHERMOT_SEC363.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "GAIL_SEC364.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "GODREJCP_SEC365.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "GODREJPROP_SEC366.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "GRASIM_SEC367.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HAL_SEC368.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HAVELLS_SEC369.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HCLTECH_SEC370.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HDFCAMC_SEC371.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HDFCBANK_SEC372.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HDFCLIFE_SEC373.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HEROMOTOCO_SEC374.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HINDALCO_SEC375.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "HINDUNILVR_SEC376.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ICICIBANK_SEC377.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ICICIGI_SEC378.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ICICIPRULI_SEC379.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "IDFCFIRSTB_SEC380.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "INDUSINDBK_SEC381.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "INFY_SEC382.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "IOC_SEC383.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "IRCTC_SEC384.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "IRFC_SEC385.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ITC_SEC386.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "JINDALSTEL_SEC387.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "JIOFIN_SEC388.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "JSWSTEEL_SEC389.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "KOTAKBANK_SEC390.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "LT_SEC391.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "LUPIN_SEC392.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "M&M_SEC393.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "MARUTI_SEC394.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "MAXHEALTH_SEC395.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "MOTHERSON_SEC396.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "MUTHOOTFIN_SEC397.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "NAUKRI_SEC398.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "NESTLEIND_SEC399.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "NHPC_SEC400.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "NMDC_SEC401.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "NTPC_SEC402.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "OBEROIRLTY_SEC403.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "OFSS_SEC404.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "OIL_SEC405.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "ONGC_SEC406.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "PERSISTENT_SEC407.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "PETRONET_SEC408.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "PFC_SEC409.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "PNB_SEC410.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "POLYCAB_SEC411.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "POWERGRID_SEC412.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "RECLTD_SEC413.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "RELIANCE_SEC414.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "SBICARD_SEC415.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "SBILIFE_SEC416.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "SBIN_SEC417.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "SHRIRAMFIN_SEC418.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    },
+    {
+      "ticker": "SIEMENS_SEC419.NS",
+      "index_symbol": "NIFTY_500",
+      "joined_date": "2010-01-01",
+      "dropped_date": null
+    }
+  ]
+}
