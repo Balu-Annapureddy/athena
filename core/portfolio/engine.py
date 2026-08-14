@@ -1,14 +1,17 @@
 """Multi-Asset Shared-Capital Portfolio Backtesting Engine.
 
 Executes synchronized bar-by-bar portfolio simulations across multiple equity tickers,
-enforcing exact financial accounting, Point-In-Time universe validation, signal ranking,
+enforcing exact financial accounting, PointInTime universe validation, signal ranking,
 all-or-nothing cash gating, and a 10% equity concentration cap per position.
 """
 
 import json
+import copy
+import logging
 import math
 import os
-from typing import Any, Dict, List, Optional, Tuple
+from types import SimpleNamespace
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 from core.backtest.engine import TransactionCostModel
 from core.backtest.metrics import MetricsCalculator
@@ -18,6 +21,18 @@ from core.portfolio.results import MultiAssetBacktestResult
 from core.portfolio.state import PortfolioPosition, PortfolioStateSnapshot
 from core.portfolio.universe import PointInTimeUniverseProvider, MissingPointInTimeUniverseDataError
 from core.risk.engine import RiskEngine
+
+logger = logging.getLogger(__name__)
+
+
+def _safe_float(value: Any, default: float) -> float:
+    """Defensive type coercion converting value to float or returning default."""
+    try:
+        if value is None:
+            return default
+        return float(value)
+    except (TypeError, ValueError):
+        return default
 
 
 class MultiAssetPortfolioEngine:
@@ -52,9 +67,10 @@ class MultiAssetPortfolioEngine:
     ) -> List[Any]:
         """Load and filter market data payloads for a single ticker."""
         try:
-            payloads = self._connector.fetch_data(ticker, start_date, end_date)
-            return [p for p in payloads if start_date <= p.provenance.publication_timestamp[:10] <= end_date]
-        except Exception:
+            payloads = self._connector.fetch_data(ticker, start=start_date, end=end_date)
+            return [p for p in payloads if start_date <= str(p.provenance.publication_timestamp)[:10] <= end_date]
+        except (KeyError, ValueError, FileNotFoundError, RuntimeError, TypeError) as err:
+            logger.warning("Failed loading market payloads for ticker %s: %s", ticker, err)
             return []
 
     def run_portfolio_backtest(
@@ -106,7 +122,7 @@ class MultiAssetPortfolioEngine:
             if p_list:
                 ticker_payloads[ticker] = p_list
                 for p in p_list:
-                    all_timestamps.add(p.provenance.publication_timestamp[:10])
+                    all_timestamps.add(str(p.provenance.publication_timestamp)[:10])
 
         sorted_timestamps = sorted(list(all_timestamps))
         if not sorted_timestamps:
@@ -135,7 +151,7 @@ class MultiAssetPortfolioEngine:
         bar_matrix: Dict[str, Dict[str, Any]] = {ts: {} for ts in sorted_timestamps}
         for ticker, p_list in ticker_payloads.items():
             for p in p_list:
-                ts = p.provenance.publication_timestamp[:10]
+                ts = str(p.provenance.publication_timestamp)[:10]
                 if ts in bar_matrix:
                     bar_matrix[ts][ticker] = p
 
@@ -188,15 +204,19 @@ class MultiAssetPortfolioEngine:
                     desired_shares = order["desired_shares"]
                     entry_notional = desired_shares * entry_p
 
-                    # Concentration Cap Check (10% equity cap)
+                    # Concentration Cap Check (10% equity cap): clamp, don't reject outright
                     max_allowed_notional = current_equity * max_position_equity_pct
                     if entry_notional > max_allowed_notional:
-                        rejected_signals_count += 1
-                        execution_log.append({
-                            "timestamp": ts, "action": "REJECT", "ticker": tk,
-                            "reason": f"Pending order notional {entry_notional:.2f} exceeds 10% equity cap {max_allowed_notional:.2f}"
-                        })
-                        continue
+                        capped_shares = int(max_allowed_notional / entry_p)
+                        if capped_shares < 1:
+                            rejected_signals_count += 1
+                            execution_log.append({
+                                "timestamp": ts, "action": "REJECT", "ticker": tk,
+                                "reason": f"Pending order: even 1 share ({entry_p:.2f}) exceeds 10% equity cap ({max_allowed_notional:.2f})"
+                            })
+                            continue
+                        desired_shares = capped_shares
+                        entry_notional = desired_shares * entry_p
 
                     # Cash Availability Check
                     entry_c, _xc, _tc = self._cost_model.cost_for_trade(
@@ -344,6 +364,8 @@ class MultiAssetPortfolioEngine:
             for ticker, p in bar_dict.items():
                 if ticker in open_positions:
                     continue  # Already hold position
+                if ticker in exited_tickers:
+                    continue  # Exited this bar; no same-bar re-entry
 
                 # PIT Universe Filtering Check
                 if self._pit_provider is not None:
@@ -353,11 +375,17 @@ class MultiAssetPortfolioEngine:
                 try:
                     cs_rank = None
                     cs_ret = None
-                    if hasattr(strategy, "_rank_provider") and strategy._rank_provider is not None:
-                        cs_rank, cs_ret = strategy._rank_provider.get_rank_and_return(
-                            ticker=ticker, date_str=ts, lookback=getattr(strategy, "lookback_period", 63),
-                            pit_provider=self._pit_provider, index_symbol=self._index_symbol
-                        )
+                    rank_prov = getattr(strategy, "_rank_provider", None)
+                    if rank_prov is not None and hasattr(rank_prov, "get_rank_and_return"):
+                        try:
+                            rank_res = rank_prov.get_rank_and_return(
+                                ticker=ticker, date_str=ts, lookback=int(_safe_float(getattr(strategy, "lookback_period", 63), 63.0)),
+                                pit_provider=self._pit_provider, index_symbol=self._index_symbol
+                            )
+                            if rank_res is not None and isinstance(rank_res, (tuple, list)) and len(rank_res) == 2:
+                                cs_rank, cs_ret = rank_res
+                        except Exception:
+                            cs_rank, cs_ret = None, None
 
                     signal_action = None
                     signal_thesis_dir = None
@@ -376,12 +404,13 @@ class MultiAssetPortfolioEngine:
                                 if hasattr(d_ent, "action") and isinstance(d_ent.action, RecommendationAction):
                                     signal_action = d_ent.action
                                 signal_thesis_dir = getattr(t_rec, "thesis_direction", None)
-                        except Exception:
-                            pass
+                        except (AttributeError, TypeError, ValueError, KeyError) as err:
+                            logger.debug("strategy.evaluate() failed for ticker %s on %s: %s", ticker, ts, err)
 
                     if signal_action is None and cs_rank is not None:
-                        top_n = getattr(strategy, "top_n", 10)
-                        if cs_rank <= top_n and cs_ret is not None and cs_ret > getattr(strategy, "min_momentum_pct", 0.0):
+                        top_n = int(_safe_float(getattr(strategy, "top_n", 10), 10.0))
+                        min_mom = _safe_float(getattr(strategy, "min_momentum_pct", 0.0), 0.0)
+                        if cs_rank <= top_n and cs_ret is not None and cs_ret > min_mom:
                             signal_action = RecommendationAction.BUY
                             signal_thesis_dir = ThesisDirection.BULLISH
 
@@ -394,15 +423,17 @@ class MultiAssetPortfolioEngine:
                         signal_thesis_dir = ThesisDirection.BULLISH
 
                     if signal_action in (RecommendationAction.BUY, RecommendationAction.SELL):
+                        conf_score = _safe_float(getattr(strategy, "confidence_score", 0.8), 0.8)
                         candidate_signals.append({
                             "ticker": ticker,
                             "price": p.payload.close,
                             "action": signal_action,
                             "thesis_dir": signal_thesis_dir,
                             "cs_rank": cs_rank if cs_rank is not None else 999999,
-                            "confidence": float(getattr(strategy, "confidence_score", 0.8)) if not isinstance(getattr(strategy, "confidence_score", 0.8), MagicMock) else 0.8,
+                            "confidence": conf_score,
                         })
-                except Exception:
+                except (AttributeError, TypeError, ValueError, KeyError) as err:
+                    logger.warning("Skipping candidate signal collection for %s on %s: %s", ticker, ts, err)
                     continue
 
             # Sort candidate signals by:
@@ -428,10 +459,14 @@ class MultiAssetPortfolioEngine:
                     continue
 
                 atr_val = entry_p * 0.02
-                raw_atr_mult = getattr(strategy, "atr_multiplier", 2.0)
-                atr_mult = float(raw_atr_mult) if not isinstance(raw_atr_mult, MagicMock) else 2.0
+                atr_mult = _safe_float(getattr(strategy, "atr_multiplier", 2.0), 2.0)
+                # Pass signal_action via SimpleNamespace so RiskEngine resolves the
+                # correct stop-loss direction (LONG vs SHORT). Without this, RiskEngine
+                # defaults to SHORT when decision.action is None, generating oversized
+                # positions that breach the concentration cap and block all entries.
+                _risk_decision = SimpleNamespace(action=signal_action)
                 risk_ass = RiskEngine.calculate(
-                    decision=None,
+                    decision=_risk_decision,
                     account_size=current_equity,
                     atr_value=atr_val,
                     risk_percent=risk_per_trade,
@@ -467,13 +502,19 @@ class MultiAssetPortfolioEngine:
                     # Immediate Same-Bar Close Execution (execution_delay_bars == 0)
                     max_allowed_notional = current_equity * max_position_equity_pct
                     if entry_notional > max_allowed_notional:
-                        rejected_signals_count += 1
-                        execution_log.append({
-                            "timestamp": ts, "action": "REJECT", "ticker": tk,
-                            "reason": f"CONCENTRATION_LIMIT: Position notional {entry_notional:.2f} exceeds 10% equity cap {max_allowed_notional:.2f}",
-                            "reason_code": "CONCENTRATION_LIMIT"
-                        })
-                        continue
+                        # Clamp position size to concentration cap; only reject if even
+                        # 1 share would exceed the cap (can't subdivide further).
+                        capped_shares = int(max_allowed_notional / entry_p)
+                        if capped_shares < 1:
+                            rejected_signals_count += 1
+                            execution_log.append({
+                                "timestamp": ts, "action": "REJECT", "ticker": tk,
+                                "reason": f"CONCENTRATION_LIMIT: Even 1 share ({entry_p:.2f}) exceeds 10% equity cap ({max_allowed_notional:.2f})",
+                                "reason_code": "CONCENTRATION_LIMIT"
+                            })
+                            continue
+                        desired_shares = capped_shares
+                        entry_notional = desired_shares * entry_p
 
                     entry_c, _xc, _tc = self._cost_model.cost_for_trade(
                         entry_value=entry_notional, exit_value=entry_notional, is_long=is_long
@@ -539,7 +580,7 @@ class MultiAssetPortfolioEngine:
                 gross_exposure=long_val_sum + margin_sum,
                 net_exposure=long_val_sum - margin_sum,
                 active_positions_count=len(open_positions),
-                open_positions=list(open_positions.values()),
+                open_positions=list(copy.copy(p) for p in open_positions.values()),
             )
             snapshots.append(snap)
 

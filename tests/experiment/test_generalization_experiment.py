@@ -1,7 +1,7 @@
 """Adversarial and Unit tests for Batch 8: Cross-Sectional Generalization Experiment Framework."""
 
 import unittest
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 from core.experiment.generalization import (
     UniversePartition,
@@ -85,7 +85,10 @@ class TestCrossSectionalGeneralizationExperiment(unittest.TestCase):
         )
         bar0 = self._create_mock_bar("2026-07-01", 50_000.0, 51_000.0, 49_000.0, 50_000.0)
 
-        report = exp.execute_experiment("2026-07-01", "2026-07-01")
+        # Patch _load_ticker_payloads on the class so the experiment's internal engine
+        # returns the expensive bar (EXPENSIVE.NS doesn't exist on real yfinance).
+        with patch.object(MultiAssetPortfolioEngine, "_load_ticker_payloads", return_value=[bar0]):
+            report = exp.execute_experiment("2026-07-01", "2026-07-01")
         self.assertEqual(report.dev_nifty50_result.rejected_signals_count, 1)
 
     def test_reproducibility_hash_deterministic(self) -> None:

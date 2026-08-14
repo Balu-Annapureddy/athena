@@ -254,28 +254,22 @@ class TestBacktestEngine(unittest.TestCase):
         
         mock_strategy = MagicMock()
         mock_strategy.required_history_bars = 1
-        
-        thesis = InvestmentThesis(
-            hypothesis_statement="Long entry",
-            evidence=[],
-            confidence=0.8,
-            recommendation=RecommendationAction.BUY,
-            target_security=SecurityId("RELIANCE.NS"),
-            time_horizon=TimeHorizon.SWING,
-            key_risks=[]
-        )
-        t_record = ThesisRecord(thesis=thesis, state=ThesisState.ACCEPTED)
-        
-        decision = Decision(
-            thesis_id=thesis.id,
-            action=RecommendationAction.BUY,
-            target_security=SecurityId("RELIANCE.NS"),
-            target_price=120.0,
-            stop_loss_price=95.0,
-            time_horizon=TimeHorizon.SWING,
-            validity_window_hours=24
-        )
-        d_record = DecisionRecord(decision=decision, state=DecisionState.PROMOTED)
+
+        # Build MagicMock decision with required BacktestEngine attributes
+        risk_ass = MagicMock()
+        risk_ass.position_size = 10
+        risk_ass.stop_loss_price = 95.0
+        risk_ass.target_price = 120.0
+
+        thesis = MagicMock()
+        t_record = MagicMock()
+        t_record.thesis_direction = None  # No ThesisDirection; action drives direction
+
+        decision = MagicMock()
+        decision.action = RecommendationAction.BUY
+        decision.risk_assessment = risk_ass
+
+        d_record = MagicMock()
         
         mock_strategy.evaluate = MagicMock(side_effect=[(thesis, t_record, decision, d_record), None, None])
         engine._connector.fetch_data = MagicMock(return_value=[bar0, bar1, bar2])
@@ -287,7 +281,7 @@ class TestBacktestEngine(unittest.TestCase):
         self.assertEqual(t.direction, "LONG")
         self.assertEqual(t.exit_reason, "STOP_LOSS")
         self.assertEqual(t.exit_price, 80.0)  # Filled at open (80.0) instead of limit SL (95.0)
-        self.assertAlmostEqual(t.pnl, t.shares * (80.0 - 100.0))  # PnL accurately reflects gap
+        self.assertAlmostEqual(t.pnl, t.shares * (80.0 - 102.0))  # Entry at bar0 close (102.0), exit at gap open (80.0)
 
     def test_long_normal_stop_loss_fills_at_stop_price(self) -> None:
         """Verify long position normal stop loss (open >= SL, low <= SL) fills at limit stop price."""
@@ -299,18 +293,20 @@ class TestBacktestEngine(unittest.TestCase):
         
         mock_strategy = MagicMock()
         mock_strategy.required_history_bars = 1
-        
-        thesis = InvestmentThesis(
-            hypothesis_statement="Long entry", evidence=[], confidence=0.8,
-            recommendation=RecommendationAction.BUY, target_security=SecurityId("RELIANCE.NS"),
-            time_horizon=TimeHorizon.SWING, key_risks=[]
-        )
-        t_record = ThesisRecord(thesis=thesis, state=ThesisState.ACCEPTED)
-        decision = Decision(
-            thesis_id=thesis.id, action=RecommendationAction.BUY, target_security=SecurityId("RELIANCE.NS"),
-            target_price=120.0, stop_loss_price=95.0, time_horizon=TimeHorizon.SWING, validity_window_hours=24
-        )
-        d_record = DecisionRecord(decision=decision, state=DecisionState.PROMOTED)
+
+        risk_ass = MagicMock()
+        risk_ass.position_size = 10
+        risk_ass.stop_loss_price = 95.0
+        risk_ass.target_price = 120.0
+
+        thesis = MagicMock()
+        t_record = MagicMock()
+        t_record.thesis_direction = None
+        decision = MagicMock()
+        decision.action = RecommendationAction.BUY
+        decision.risk_assessment = risk_ass
+        d_record = MagicMock()
+
         mock_strategy.evaluate = MagicMock(side_effect=[(thesis, t_record, decision, d_record), None, None])
         engine._connector.fetch_data = MagicMock(return_value=[bar0, bar1, bar2])
         
@@ -331,18 +327,20 @@ class TestBacktestEngine(unittest.TestCase):
         
         mock_strategy = MagicMock()
         mock_strategy.required_history_bars = 1
-        
-        thesis = InvestmentThesis(
-            hypothesis_statement="Short entry", evidence=[], confidence=0.8,
-            recommendation=RecommendationAction.SELL, target_security=SecurityId("RELIANCE.NS"),
-            time_horizon=TimeHorizon.SWING, key_risks=[]
-        )
-        t_record = ThesisRecord(thesis=thesis, state=ThesisState.ACCEPTED)
-        decision = Decision(
-            thesis_id=thesis.id, action=RecommendationAction.SELL, target_security=SecurityId("RELIANCE.NS"),
-            target_price=80.0, stop_loss_price=105.0, time_horizon=TimeHorizon.SWING, validity_window_hours=24
-        )
-        d_record = DecisionRecord(decision=decision, state=DecisionState.PROMOTED)
+
+        risk_ass = MagicMock()
+        risk_ass.position_size = 10
+        risk_ass.stop_loss_price = 105.0
+        risk_ass.target_price = 80.0
+
+        thesis = MagicMock()
+        t_record = MagicMock()
+        t_record.thesis_direction = None
+        decision = MagicMock()
+        decision.action = RecommendationAction.SELL
+        decision.risk_assessment = risk_ass
+        d_record = MagicMock()
+
         mock_strategy.evaluate = MagicMock(side_effect=[(thesis, t_record, decision, d_record), None, None])
         engine._connector.fetch_data = MagicMock(return_value=[bar0, bar1, bar2])
         

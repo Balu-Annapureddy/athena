@@ -96,7 +96,18 @@ class ValidationCampaign:
         self._portfolio_config = portfolio_config
         self._pit_provider = pit_provider
         self._require_pit = require_pit
-        self._engine = BacktestEngine(fixture_dir=fixture_dir, cost_model=cost_model)
+        if self._mode == "portfolio":
+            cfg = self._portfolio_config if self._portfolio_config is not None else PortfolioResearchConfig()
+            self._portfolio_engine = MultiAssetPortfolioEngine(
+                fixture_dir=self._fixture_dir,
+                cost_model=self._cost_model,
+                pit_provider=self._pit_provider,
+                index_symbol=cfg.index_symbol,
+                strict_pit=self._require_pit,
+            )
+            self._engine = self._portfolio_engine
+        else:
+            self._engine = BacktestEngine(fixture_dir=fixture_dir, cost_model=cost_model)
 
     def _compute_passive_benchmark(self) -> float:
         """Compute the simple equal-weight buy-and-hold benchmark return across all tickers and date ranges.
@@ -165,13 +176,15 @@ class ValidationCampaign:
             cfg = self._portfolio_config if self._portfolio_config is not None else PortfolioResearchConfig(
                 initial_capital=account_size, risk_per_trade=risk_percent
             )
-            p_engine = MultiAssetPortfolioEngine(
-                fixture_dir=self._fixture_dir,
-                cost_model=self._cost_model,
-                pit_provider=self._pit_provider,
-                index_symbol=cfg.index_symbol,
-                strict_pit=self._require_pit,
-            )
+            p_engine = getattr(self, "_portfolio_engine", None)
+            if p_engine is None:
+                p_engine = MultiAssetPortfolioEngine(
+                    fixture_dir=self._fixture_dir,
+                    cost_model=self._cost_model,
+                    pit_provider=self._pit_provider,
+                    index_symbol=cfg.index_symbol,
+                    strict_pit=self._require_pit,
+                )
 
             run_details = []
             total_trades = 0

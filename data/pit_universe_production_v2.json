@@ -9,7 +9,7 @@
     "NIFTY_50",
     "NIFTY_500"
   ],
-  "dataset_status": "PITDatasetStatus.PRODUCTION_VALIDATED",
+  "dataset_status": "SYNTHETIC_FIXTURE",
   "records": [
     {
       "ticker": "ABB.NS",

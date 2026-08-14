@@ -40,9 +40,17 @@ class SymbolNormalizer:
     def normalize(self, raw_symbol: str, as_of_date: Optional[str] = None, source: str = "NSE_OFFICIAL") -> str:
         """Normalize raw NSE symbol to standard '.NS' ticker format with deterministic mapping.
 
+        Architectural Decision (Priority 4):
+        This function's primary responsibility is providing the unified, current ticker symbol
+        required to fetch price data from external providers (e.g., YFinance), which index all
+        historical OHLCV price series under current ticker symbols (e.g., 'HEROMOTOCO.NS' rather
+        than historical predecessor name 'HEROHONDA.NS'). Therefore, known renames map unconditionally
+        to the current ticker regardless of as_of_date, while recording effective_date in the audit log
+        for full provenance and traceability.
+
         Args:
             raw_symbol: Raw exchange symbol string (e.g. 'RELIANCE', 'M&M', 'HEROHONDA').
-            as_of_date: Optional ISO date string ('YYYY-MM-DD').
+            as_of_date: Optional ISO date string ('YYYY-MM-DD') for audit provenance tracking.
             source: Provenance source description.
 
         Returns:
@@ -53,20 +61,19 @@ class SymbolNormalizer:
 
         clean_sym = raw_symbol.strip().upper()
 
-        # Check known symbol renames / corporate actions
+        # Check known symbol renames / corporate actions (mapped unconditionally for data fetch consistency)
         if clean_sym in self.KNOWN_RENAMES:
             target_ticker, eff_date, reason = self.KNOWN_RENAMES[clean_sym]
-            if as_of_date is None or as_of_date >= eff_date:
-                self._audit_log.append(
-                    SymbolMappingRecord(
-                        raw_symbol=clean_sym,
-                        normalized_ticker=target_ticker,
-                        effective_date=eff_date,
-                        reason=reason,
-                        provenance=source,
-                    )
+            self._audit_log.append(
+                SymbolMappingRecord(
+                    raw_symbol=clean_sym,
+                    normalized_ticker=target_ticker,
+                    effective_date=eff_date,
+                    reason=reason,
+                    provenance=source,
                 )
-                return target_ticker
+            )
+            return target_ticker
 
         # Strip existing suffix if present
         if clean_sym.endswith(".NS") or clean_sym.endswith(".BO"):

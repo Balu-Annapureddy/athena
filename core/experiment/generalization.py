@@ -174,7 +174,7 @@ class CrossSectionalGeneralizationExperiment:
                 # Empty fallback
                 empty_metrics = BacktestMetrics(
                     total_trades=0, winning_trades=0, losing_trades=0, win_rate=0.0,
-                    avg_pnl_per_trade=0.0, total_return=0.0, max_drawdown=0.0,
+                    avg_pnl_per_trade=0.0, avg_win=0.0, avg_loss=0.0, total_return=0.0, max_drawdown=0.0,
                     sharpe_ratio=0.0, profit_factor=0.0
                 )
                 return GeneralizationStepResult(
@@ -222,12 +222,21 @@ class CrossSectionalGeneralizationExperiment:
         # Stage 3: Unseen NIFTY 500 Universe
         step3_res = _run_stage("NIFTY_500_UNSEEN", self._partition_500.unseen_tickers, is_unseen=True)
 
-        # Compute deterministic reproducibility hash
-        raw_payload = f"{self._strategy.name}_{start_date}_{end_date}_{step1_res.total_return:.6f}_{step2_res.total_return:.6f}_{step3_res.total_return:.6f}"
+        # Compute deterministic reproducibility hash using structured, explicitly-typed inputs
+        strat_class_name = type(self._strategy).__name__
+        raw_payload = (
+            f"{strat_class_name}_{start_date}_{end_date}_"
+            f"{step1_res.total_return:.6f}_{step2_res.total_return:.6f}_{step3_res.total_return:.6f}_"
+            f"{step1_res.total_trades}_{step2_res.total_trades}_{step3_res.total_trades}"
+        )
         reproducibility_hash = hashlib.sha256(raw_payload.encode("utf-8")).hexdigest()
 
+        strat_display_name = getattr(self._strategy, "name", strat_class_name)
+        if not isinstance(strat_display_name, str):
+            strat_display_name = strat_class_name
+
         return GeneralizationExperimentReport(
-            strategy_name=getattr(self._strategy, "name", "CrossSectionalStrategy"),
+            strategy_name=strat_display_name,
             strategy_config={
                 "lookback_period": getattr(self._strategy, "_lookback_period", 63),
                 "top_n": getattr(self._strategy, "_top_n", 10),

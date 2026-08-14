@@ -555,13 +555,22 @@ class TestMultiAssetPortfolioEngine(unittest.TestCase):
     def test_backtest_engine_regression_untouched(self) -> None:
         """Batch 5 - 20: Regression test proving BacktestEngine single-ticker behavior remains 100% untouched."""
         from core.backtest.engine import BacktestEngine
+        from unittest.mock import patch
         engine = BacktestEngine()
         bar0 = self._create_mock_bar("2026-07-01", 100.0, 105.0, 98.0, 102.0)
         engine._connector.fetch_data = MagicMock(return_value=[bar0])
-        
+
+        # Mock the observation factory to bypass ObservationFactory.create_observation
+        # which requires real ConnectorPayload timestamps (.isoformat()). The regression
+        # test only verifies that BacktestEngine returns a dict with 'metrics'.
+        mock_obs = MagicMock()
+        engine._obs_factory = MagicMock()
+        engine._obs_factory.create_observation = MagicMock(return_value=mock_obs)
+
         mock_strat = MagicMock()
         mock_strat.required_history_bars = 1
-        res = engine.run_backtest(mock_strat, "RELIANCE.NS", "2026-07-01", "2026-07-01")
+        mock_strat.evaluate.return_value = None
+        res = engine.run_backtest(mock_strat, "RELIANCE.NS", "2026-07-01", "2026-07-01", 100000.0)
         self.assertIn("metrics", res)
 
 

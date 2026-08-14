@@ -52,6 +52,7 @@ class PITDatasetValidator:
             - NIFTY_50 unique tickers >= 40
             - NIFTY_100 unique tickers >= 80
             - NIFTY_500 unique tickers >= 400
+            - No single (joined_date, dropped_date) pair accounts for > 80% of records
         """
         if not is_valid or not records:
             return PITDatasetStatus.SYNTHETIC_FIXTURE
@@ -59,6 +60,17 @@ class PITDatasetValidator:
         nifty50_tickers = {r.ticker for r in records if r.index_symbol == "NIFTY_50"}
         nifty100_tickers = {r.ticker for r in records if r.index_symbol == "NIFTY_100"}
         nifty500_tickers = {r.ticker for r in records if r.index_symbol == "NIFTY_500"}
+
+        pair_counts: Dict[Tuple[str, Optional[str]], int] = {}
+        for r in records:
+            pair = (r.joined_date, r.dropped_date)
+            pair_counts[pair] = pair_counts.get(pair, 0) + 1
+
+        max_pair_count = max(pair_counts.values()) if pair_counts else 0
+        backdated_frac = max_pair_count / len(records)
+
+        if backdated_frac > 0.80:
+            return PITDatasetStatus.PARTIAL
 
         if (
             len(records) >= 500
@@ -158,6 +170,23 @@ class PITDatasetValidator:
                         check_id=10, check_name="MISSING_SOURCE_PROVENANCE", record_ticker=meta.get("ticker", "UNKNOWN"),
                         index_symbol=meta.get("index_symbol", "UNKNOWN"), message=f"Payload {idx}: Missing source provenance."
                     ))
+
+        # Check 11: Temporal authenticity (detect backdated constituent lists)
+        # Only meaningful for datasets with >= 10 records; smaller datasets are unit-test
+        # fixtures that cannot demonstrate historical variation by construction.
+        if len(records) >= 10:
+            pair_counts: Dict[Tuple[str, Optional[str]], int] = {}
+            for r in records:
+                pair = (r.joined_date, r.dropped_date)
+                pair_counts[pair] = pair_counts.get(pair, 0) + 1
+
+            max_count = max(pair_counts.values())
+            backdated_frac = max_count / len(records)
+            if backdated_frac > 0.80:
+                errors.append(ValidationError(
+                    check_id=11, check_name="BACKDATED_CONSTITUENT_LIST", record_ticker="SYSTEM", index_symbol="ALL",
+                    message=f"{backdated_frac * 100:.1f}% of records show no real historical join/drop variation — this looks like a current constituent list backdated, not genuine point-in-time history."
+                ))
 
         is_valid = (len(errors) == 0)
         status = self.classify_dataset_status(records, is_valid)

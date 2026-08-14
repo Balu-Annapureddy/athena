@@ -32,6 +32,7 @@ class VersionedPITDataset:
     def to_json_file(self, target_path: str) -> None:
         """Write versioned PIT dataset to a JSON file."""
         os.makedirs(os.path.dirname(os.path.abspath(target_path)), exist_ok=True)
+        status_val = self.dataset_status.value if hasattr(self.dataset_status, "value") else str(self.dataset_status)
         payload = {
             "dataset_version": self.dataset_version,
             "retrieval_date": self.retrieval_date,
@@ -39,7 +40,7 @@ class VersionedPITDataset:
             "records_count": self.records_count,
             "checksum_sha256": self.checksum_sha256,
             "indexes_covered": self.indexes_covered,
-            "dataset_status": str(self.dataset_status),
+            "dataset_status": status_val,
             "records": self.records,
         }
         with open(target_path, "w", encoding="utf-8") as f:
@@ -50,6 +51,9 @@ class VersionedPITDataset:
         """Load versioned PIT dataset from a JSON file."""
         with open(source_path, "r", encoding="utf-8") as f:
             data = json.load(f)
+        raw_status = data.get("dataset_status", "SYNTHETIC_FIXTURE")
+        # Strip any legacy ClassName prefix if present in old files
+        clean_status = raw_status.split(".")[-1] if "." in raw_status else raw_status
         return cls(
             dataset_version=data["dataset_version"],
             retrieval_date=data["retrieval_date"],
@@ -58,7 +62,7 @@ class VersionedPITDataset:
             checksum_sha256=data["checksum_sha256"],
             indexes_covered=data["indexes_covered"],
             records=data["records"],
-            dataset_status=data.get("dataset_status", "SYNTHETIC_FIXTURE"),
+            dataset_status=clean_status,
         )
 
 
@@ -128,6 +132,8 @@ class PointInTimeDatasetIngestor:
         indexes_covered = sorted(list(set(r.index_symbol for r in recs)))
         retrieval_date = datetime.now().strftime("%Y-%m-%d")
 
+        status_str = val_report.dataset_status.value if hasattr(val_report.dataset_status, "value") else str(val_report.dataset_status)
+
         dataset = VersionedPITDataset(
             dataset_version=self.dataset_version,
             retrieval_date=retrieval_date,
@@ -136,11 +142,11 @@ class PointInTimeDatasetIngestor:
             checksum_sha256=checksum,
             indexes_covered=indexes_covered,
             records=serializable_records,
-            dataset_status=str(val_report.dataset_status),
+            dataset_status=status_str,
         )
 
         # Build populated provider
-        provider = PointInTimeUniverseProvider(strict_mode=True, dataset_status=str(val_report.dataset_status))
+        provider = PointInTimeUniverseProvider(strict_mode=True, dataset_status=status_str)
         provider.load_records(recs)
 
         return dataset, val_report, provider
