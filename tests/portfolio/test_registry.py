@@ -50,19 +50,28 @@ class TestStrategyRegistry(unittest.TestCase):
         self.assertEqual(registry.get_status("GoldenCrossDeathCrossStrategy"), ValidationStatus.BACKTESTED)
 
     def test_default_registry_configures_all_strategies_as_unvalidated(self) -> None:
-        """Enforces ADR-029 safety invariant: default setup registers all strategies as UNVALIDATED until net-of-cost validated."""
+        """Enforces ADR-029 safety invariant: default setup registers all 8 strategies as UNVALIDATED until net-of-cost validated."""
         registry = StrategyRegistry.default()
         
-        self.assertEqual(registry.get_status("GoldenCrossDeathCrossStrategy"), ValidationStatus.UNVALIDATED)
-        self.assertEqual(registry.get_status("RegimeFilteredGoldenCrossStrategy"), ValidationStatus.UNVALIDATED)
-        self.assertEqual(registry.get_status("ATRTrailingGoldenCrossStrategy"), ValidationStatus.UNVALIDATED)
+        expected_names = [
+            "GoldenCrossDeathCrossStrategy",
+            "ATRTrailingGoldenCrossStrategy",
+            "RegimeFilteredGoldenCrossStrategy",
+            "BreakoutVolumeConfirmationStrategy",
+            "CrossSectionalMomentumStrategy",
+            "MACDSignalCrossStrategy",
+            "RSIMeanReversionStrategy",
+            "VWAPBiasStrategy",
+        ]
         
+        for name in expected_names:
+            self.assertEqual(registry.get_status(name), ValidationStatus.UNVALIDATED)
+
         active = registry.get_active_strategies()
-        self.assertEqual(len(active), 3)
-        strategy_names = [a[0].name for a in active]
-        self.assertIn("GoldenCrossDeathCrossStrategy", strategy_names)
-        self.assertIn("RegimeFilteredGoldenCrossStrategy", strategy_names)
-        self.assertIn("ATRTrailingGoldenCrossStrategy", strategy_names)
+        self.assertEqual(len(active), 8)
+        active_names = [a[0].name for a in active]
+        for name in expected_names:
+            self.assertIn(name, active_names)
 
 
 if __name__ == "__main__":

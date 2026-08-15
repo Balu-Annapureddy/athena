@@ -8,6 +8,11 @@ from core.strategy.base import BaseStrategy
 from core.strategy.golden_cross import GoldenCrossDeathCrossStrategy
 from core.strategy.regime_filtered_golden_cross import RegimeFilteredGoldenCrossStrategy
 from core.strategy.atr_trailing_golden_cross import ATRTrailingGoldenCrossStrategy
+from core.strategy.breakout_volume import BreakoutVolumeConfirmationStrategy
+from core.strategy.cross_sectional_momentum import CrossSectionalMomentumStrategy
+from core.strategy.macd_cross import MACDSignalCrossStrategy
+from core.strategy.rsi_mean_reversion import RSIMeanReversionStrategy
+from core.strategy.vwap_bias import VWAPBiasStrategy
 
 
 class StrategyRegistry:
@@ -73,29 +78,26 @@ class StrategyRegistry:
         """Return default configured strategy registry.
 
         Validation Campaign Evidence:
-            All strategies are registered as UNVALIDATED. The previous synthetic/un-costed
-            promotion of GoldenCrossDeathCrossStrategy was superseded by the comprehensive net-of-cost
-            re-validation campaign (ADR-029 Addendum 2), which established that Golden Cross failed
-            with a 29.5% passing ratio and -INR 207.87 average net PnL per trade.
+            All 8 strategies evaluated in Out-Of-Sample campaign (2021–2026) against NIFTY 50 PIT universe.
+            Zero strategies beat the NIFTY 50 Buy & Hold benchmark (+133.56% return).
+            All 8 strategies remain registered as UNVALIDATED per strict safety policies.
         """
         registry = cls()
-        # All default strategies registered as UNVALIDATED following ADR-029 net-of-cost re-validation
-        registry.register(
-            strategy=GoldenCrossDeathCrossStrategy(),
-            status=ValidationStatus.UNVALIDATED,
-            weight=1.0,
-            enabled=True
-        )
-        registry.register(
-            strategy=RegimeFilteredGoldenCrossStrategy(),
-            status=ValidationStatus.UNVALIDATED,
-            weight=1.0,
-            enabled=True
-        )
-        registry.register(
-            strategy=ATRTrailingGoldenCrossStrategy(),
-            status=ValidationStatus.UNVALIDATED,
-            weight=1.0,
-            enabled=True
-        )
+        strategies = [
+            GoldenCrossDeathCrossStrategy(),
+            ATRTrailingGoldenCrossStrategy(),
+            RegimeFilteredGoldenCrossStrategy(),
+            BreakoutVolumeConfirmationStrategy(),
+            CrossSectionalMomentumStrategy(),
+            MACDSignalCrossStrategy(),
+            RSIMeanReversionStrategy(),
+            VWAPBiasStrategy(),
+        ]
+        for strat in strategies:
+            registry.register(
+                strategy=strat,
+                status=ValidationStatus.UNVALIDATED,
+                weight=1.0,
+                enabled=True,
+            )
         return registry
