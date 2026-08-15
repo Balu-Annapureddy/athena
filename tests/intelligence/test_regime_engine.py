@@ -261,6 +261,51 @@ class TestRegimeAdaptivePortfolioEngine(unittest.TestCase):
         self.assertEqual(result.test_start, "2020-01-01")
         self.assertEqual(result.test_end, "2023-12-31")
 
+    def test_end_to_end_regime_engine_no_mocks(self) -> None:
+        """End-to-end integration test exercising RegimeAdaptivePortfolioEngine with ZERO mocks.
+        Uses real strategy classes (GoldenCrossDeathCrossStrategy & RSIMeanReversionStrategy)
+        and real historical fixtures to verify actual trade execution and capital allocation.
+        """
+        from core.strategy.golden_cross import GoldenCrossDeathCrossStrategy
+        from core.strategy.rsi_mean_reversion import RSIMeanReversionStrategy
+
+        engine = RegimeAdaptivePortfolioEngine(
+            trender_strategy=GoldenCrossDeathCrossStrategy(),
+            mean_reverter_strategy=RSIMeanReversionStrategy(),
+            fixture_dir="fixtures/yfinance_historical",
+            er_period=21,
+            vol_window=63,
+        )
+
+        tickers = ["RELIANCE.NS", "TCS.NS", "INFY.NS"]
+        result = engine.run(
+            tickers=tickers,
+            training_start="2018-01-01",
+            training_end="2019-12-31",
+            test_start="2020-01-01",
+            test_end="2021-12-31",
+            initial_capital=1_000_000.0,
+        )
+
+        # 1. Classification report must cover all tickers
+        self.assertEqual(len(result.classification_report), len(tickers))
+
+        # 2. Total allocated capital across sub-portfolios must sum to initial_capital
+        total_allocated = sum(r.allocated_capital for r in result.classification_report)
+        self.assertAlmostEqual(total_allocated, 1_000_000.0, places=2)
+
+        # 3. Real trades must be generated across the combined sub-portfolios
+        self.assertGreater(
+            result.combined_trades_count, 0,
+            "RegimeAdaptivePortfolioEngine produced 0 trades in end-to-end execution!"
+        )
+
+        # 4. Each ticker must be partitioned into exactly one regime
+        all_classified = set(result.trender_tickers) | set(result.mean_reverter_tickers)
+        self.assertEqual(all_classified, set(tickers))
+        self.assertEqual(set(result.trender_tickers) & set(result.mean_reverter_tickers), set())
+
 
 if __name__ == "__main__":
     unittest.main()
+

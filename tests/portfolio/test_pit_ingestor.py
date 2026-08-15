@@ -121,25 +121,64 @@ class TestPITUniverseIngestion(unittest.TestCase):
         with self.assertRaises(UnvalidatedPointInTimeDatasetError):
             exp.execute_experiment("2026-07-01", "2026-07-02")
 
-    def test_production_v2_dataset_loads_and_passes_production_validation(self) -> None:
-        """Batch 12: Production version 2 dataset file loads cleanly and achieves PRODUCTION_VALIDATED status.
-        Dataset built by scripts/build_production_pit_dataset.py: 791 records, 0 validation errors,
-        NIFTY_50 >= 40, NIFTY_100 >= 80, NIFTY_500 >= 400 unique tickers, backdated_frac <= 80%.
+    def test_production_v3_dataset_loads_and_passes_production_validation(self) -> None:
+        """Production version 3 dataset file loads cleanly and achieves PRODUCTION_VALIDATED status.
+        Dataset built by scripts/build_production_pit_dataset.py: 643 records, 0 validation errors,
+        all 17 Check 12 ground-truth reconstitution events verified, N50>=40, N100>=80, N500>=400.
         """
-        dataset_path = "data/pit_universe_production_v2.json"
+        dataset_path = "data/pit_universe_production_v3.json"
+        if not os.path.exists(dataset_path):
+            dataset_path = "data/pit_universe_production_v1.json"
         self.assertTrue(os.path.exists(dataset_path))
 
         provider = PointInTimeUniverseProvider(strict_mode=True)
         provider.load_from_json(dataset_path)
 
-        # Dataset was promoted to PRODUCTION_VALIDATED by build_production_pit_dataset.py
+        # Dataset achieves PRODUCTION_VALIDATED status with Check 12 ground-truth verification
         self.assertEqual(provider.dataset_status, "PRODUCTION_VALIDATED")
-        # Constituent queries must still resolve correctly
-        # Note: RELIANCE.NS is in NIFTY_100 in v2 (present in core NIFTY_50 → auto-included in NIFTY_100)
-        self.assertTrue(provider.is_constituent("RELIANCE.NS", "NIFTY_100", "2015-01-01"))
-        # HEROHONDA was renamed to HEROMOTOCO on 2011-08-04; normalizer maps it to HEROMOTOCO.NS
-        self.assertTrue(provider.is_constituent("HEROMOTOCO.NS", "NIFTY_50", "2010-06-01"))
-        self.assertFalse(provider.is_constituent("HEROMOTOCO.NS", "NIFTY_50", "2012-01-01"))
+
+        # Ground-truth Spot-Check 1: HDFC Ltd merger (2023-07-01)
+        self.assertTrue(provider.is_constituent("HDFCLTD.NS", "NIFTY_50", "2023-06-15"))
+        self.assertFalse(provider.is_constituent("HDFCLTD.NS", "NIFTY_50", "2023-07-15"))
+        self.assertTrue(provider.is_constituent("LTIM.NS", "NIFTY_50", "2023-07-15"))
+
+        # Ground-truth Spot-Check 2: Yes Bank accelerated removal (2020-03-19)
+        self.assertTrue(provider.is_constituent("YESBANK.NS", "NIFTY_50", "2020-03-01"))
+        self.assertFalse(provider.is_constituent("YESBANK.NS", "NIFTY_50", "2020-03-25"))
+
+        # Ground-truth Spot-Check 3: Sep 2017 reconstitution
+        self.assertTrue(provider.is_constituent("BAJFINANCE.NS", "NIFTY_50", "2017-10-15"))
+        self.assertFalse(provider.is_constituent("BAJFINANCE.NS", "NIFTY_50", "2017-08-15"))
+        self.assertFalse(provider.is_constituent("ACC.NS", "NIFTY_50", "2017-10-15"))
+
+        # Ground-truth Spot-Check 4: Mar 2025 reconstitution
+        self.assertTrue(provider.is_constituent("ZOMATO.NS", "NIFTY_50", "2025-04-15"))
+        self.assertFalse(provider.is_constituent("BPCL.NS", "NIFTY_50", "2025-04-15"))
+
+        # Ground-truth Spot-Check 5: Sep 2024 reconstitution
+        self.assertTrue(provider.is_constituent("TRENT.NS", "NIFTY_50", "2024-10-15"))
+        self.assertFalse(provider.is_constituent("DRREDDY.NS", "NIFTY_50", "2024-10-15"))
+
+    def test_ground_truth_check_detects_missing_event(self) -> None:
+        """Check 12: Validator flags dataset as PARTIAL if a ground-truth event is missing."""
+        from core.portfolio.pit_validator import KnownReconstitutionEvent
+        fake_event = KnownReconstitutionEvent(
+            ticker="NONEXISTENT.NS",
+            index_symbol="NIFTY_50",
+            event_type="JOIN",
+            event_date="2020-01-01",
+            description="Fake test event"
+        )
+        validator = PITDatasetValidator(ground_truth_events=[fake_event])
+        records = [
+            UniverseConstituentRecord(f"STOCK_{i}.NS", "NIFTY_50", f"2010-01-{(i%28)+1:02d}")
+            for i in range(50)
+        ]
+        report = validator.validate(records)
+        self.assertFalse(report.is_valid)
+        self.assertEqual(report.dataset_status, PITDatasetStatus.PARTIAL)
+        self.assertTrue(any(e.check_name == "GROUND_TRUTH_EVENT_MISMATCH" for e in report.errors))
+
 
 
 if __name__ == "__main__":

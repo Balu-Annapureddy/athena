@@ -241,6 +241,113 @@ class TestBacktestEngine(unittest.TestCase):
         self.assertEqual(trades[0].exit_price, 490.0)
         self.assertEqual(trades[0].pnl, -100.0)  # 10 shares * (490 - 500) = -100
 
+    def _create_real_domain_trade_signal(
+        self,
+        action: RecommendationAction,
+        direction: ThesisDirection,
+        entry_price: float,
+        stop_loss: float,
+        target_price: float,
+        position_size: int = 10,
+    ) -> Tuple[InvestmentThesis, ThesisRecord, Decision, DecisionRecord]:
+        import uuid
+        from core.domain.common.identifiers import DomainId, ThesisId, HypothesisId, DecisionId
+        from core.domain.value_objects import Confidence
+        from core.thesis_builder.candidate import StrategyStyle
+
+        now = datetime.now(timezone.utc)
+        did = DomainId(uuid.uuid4())
+        tid = ThesisId(uuid.uuid4())
+        sid = SecurityId("RELIANCE.NS")
+        meta = DomainMetadata(id=did, created_at=now, updated_at=now)
+        conf = Confidence(
+            score=0.8, evidence_quality=0.85, model_agreement=0.8, evidence_count=3,
+            last_updated=now, rationale="Real domain trade signal fixture"
+        )
+        thesis_entity = InvestmentThesis(
+            metadata=meta,
+            target_security_id=sid,
+            thesis_direction=direction,
+            confidence=conf,
+            associated_hypothesis_id=HypothesisId(uuid.uuid4()),
+            evidence_ids=[],
+            inference_ids=[],
+            assumptions=[],
+            risks=[],
+            invalidation_conditions=[],
+            scenarios={}
+        )
+        t_record = ThesisRecord(
+            id=tid,
+            target_security_id="RELIANCE.NS",
+            thesis_direction=direction,
+            associated_hypothesis_id=HypothesisId(uuid.uuid4()),
+            supporting_hypothesis_ids=[],
+            opposing_hypothesis_ids=[],
+            evidence_ids=[],
+            inference_ids=[],
+            assumptions=[],
+            identified_risks=[],
+            invalidation_conditions=[],
+            scenarios=[],
+            time_horizon=TimeHorizon.SHORT_TERM,
+            strategy_style=StrategyStyle.MOMENTUM,
+            confidence=conf,
+            rule_name="StopLossTestRule",
+            rule_version="1.0.0",
+            policy_version="1.0.0",
+            state=ThesisState.ACTIVE,
+            timestamp=now
+        )
+        risk_per_share = abs(entry_price - stop_loss)
+        risk_ass = RiskAssessment(
+            position_size=position_size,
+            stop_loss_price=stop_loss,
+            risk_per_share=risk_per_share,
+            total_risk_amount=risk_per_share * position_size,
+            reward_to_risk_ratio=abs(target_price - entry_price) / max(0.001, risk_per_share),
+            is_ratio_flagged=False,
+            entry_price=entry_price,
+            target_price=target_price
+        )
+        decision_entity = Decision(
+            metadata=meta,
+            thesis_id=tid,
+            action=action,
+            executed_at=now,
+            execution_parameters={},
+            entry_price=entry_price,
+            target_price=target_price,
+            risk_assessment=risk_ass
+        )
+        rationale = DecisionRationale(
+            supporting_thesis_ids=[tid],
+            policy_constraints=[],
+            rejected_alternatives=[],
+            explanation="Real domain decision rationale"
+        )
+        policy_res = DecisionPolicyResult(passed=True, violations=[])
+        assessment = DecisionAssessment(
+            policy_result=policy_res,
+            execution_priority=Priority.HIGH,
+            overall_score=0.85
+        )
+        d_record = DecisionRecord(
+            id=DecisionId(uuid.uuid4()),
+            thesis_id=tid,
+            proposed_action=action,
+            target_weight=0.1,
+            rationale=rationale,
+            assessment=assessment,
+            rule_name="StopLossTestRule",
+            rule_version="1.0.0",
+            policy_version="1.0.0",
+            state=DecisionState.PROPOSED,
+            timestamp=now,
+            risk_assessment=risk_ass
+        )
+        return thesis_entity, t_record, decision_entity, d_record
+
     def test_long_gap_down_stop_loss_fills_at_open_price(self) -> None:
         """Verify long position gap-down through stop loss fills at price.open and PnL reflects gap."""
         engine = BacktestEngine(cost_model=None)
@@ -255,23 +362,16 @@ class TestBacktestEngine(unittest.TestCase):
         mock_strategy = MagicMock()
         mock_strategy.required_history_bars = 1
 
-        # Build MagicMock decision with required BacktestEngine attributes
-        risk_ass = MagicMock()
-        risk_ass.position_size = 10
-        risk_ass.stop_loss_price = 95.0
-        risk_ass.target_price = 120.0
+        signal = self._create_real_domain_trade_signal(
+            action=RecommendationAction.BUY,
+            direction=ThesisDirection.BULLISH,
+            entry_price=102.0,
+            stop_loss=95.0,
+            target_price=120.0,
+            position_size=10
+        )
 
-        thesis = MagicMock()
-        t_record = MagicMock()
-        t_record.thesis_direction = None  # No ThesisDirection; action drives direction
-
-        decision = MagicMock()
-        decision.action = RecommendationAction.BUY
-        decision.risk_assessment = risk_ass
-
-        d_record = MagicMock()
-        
-        mock_strategy.evaluate = MagicMock(side_effect=[(thesis, t_record, decision, d_record), None, None])
+        mock_strategy.evaluate = MagicMock(side_effect=[signal, None, None])
         engine._connector.fetch_data = MagicMock(return_value=[bar0, bar1, bar2])
         
         res = engine.run_backtest(mock_strategy, "RELIANCE.NS", "2026-07-01", "2026-07-03", account_size=10000.0)
@@ -294,20 +394,16 @@ class TestBacktestEngine(unittest.TestCase):
         mock_strategy = MagicMock()
         mock_strategy.required_history_bars = 1
 
-        risk_ass = MagicMock()
-        risk_ass.position_size = 10
-        risk_ass.stop_loss_price = 95.0
-        risk_ass.target_price = 120.0
+        signal = self._create_real_domain_trade_signal(
+            action=RecommendationAction.BUY,
+            direction=ThesisDirection.BULLISH,
+            entry_price=102.0,
+            stop_loss=95.0,
+            target_price=120.0,
+            position_size=10
+        )
 
-        thesis = MagicMock()
-        t_record = MagicMock()
-        t_record.thesis_direction = None
-        decision = MagicMock()
-        decision.action = RecommendationAction.BUY
-        decision.risk_assessment = risk_ass
-        d_record = MagicMock()
-
-        mock_strategy.evaluate = MagicMock(side_effect=[(thesis, t_record, decision, d_record), None, None])
+        mock_strategy.evaluate = MagicMock(side_effect=[signal, None, None])
         engine._connector.fetch_data = MagicMock(return_value=[bar0, bar1, bar2])
         
         res = engine.run_backtest(mock_strategy, "RELIANCE.NS", "2026-07-01", "2026-07-03", account_size=10000.0)
@@ -328,20 +424,16 @@ class TestBacktestEngine(unittest.TestCase):
         mock_strategy = MagicMock()
         mock_strategy.required_history_bars = 1
 
-        risk_ass = MagicMock()
-        risk_ass.position_size = 10
-        risk_ass.stop_loss_price = 105.0
-        risk_ass.target_price = 80.0
+        signal = self._create_real_domain_trade_signal(
+            action=RecommendationAction.SELL,
+            direction=ThesisDirection.BEARISH,
+            entry_price=98.0,
+            stop_loss=105.0,
+            target_price=80.0,
+            position_size=10
+        )
 
-        thesis = MagicMock()
-        t_record = MagicMock()
-        t_record.thesis_direction = None
-        decision = MagicMock()
-        decision.action = RecommendationAction.SELL
-        decision.risk_assessment = risk_ass
-        d_record = MagicMock()
-
-        mock_strategy.evaluate = MagicMock(side_effect=[(thesis, t_record, decision, d_record), None, None])
+        mock_strategy.evaluate = MagicMock(side_effect=[signal, None, None])
         engine._connector.fetch_data = MagicMock(return_value=[bar0, bar1, bar2])
         
         res = engine.run_backtest(mock_strategy, "RELIANCE.NS", "2026-07-01", "2026-07-03", account_size=10000.0)
