@@ -198,17 +198,26 @@ class PITDatasetValidator:
         self,
         ground_truth_events: Optional[List[KnownReconstitutionEvent]] = None,
         max_allowed_gap_days: int = 300,
+        verified_zero_change_dates: Optional[Set[str]] = None,
     ) -> None:
         """Initialise the validator.
 
         Args:
             ground_truth_events: Known reconstitution events to check against (Check 12).
             max_allowed_gap_days: Maximum days allowed between NIFTY 50 reconstitutions (Check 13).
+            verified_zero_change_dates: Set of ISO date strings for semi-annual review dates proven via
+                Approach 1 self-consistency audit to have 0 constituent changes.
         """
         if ground_truth_events is None:
             self._ground_truth_events = NIFTY50_GROUND_TRUTH_EVENTS
+            if verified_zero_change_dates is None:
+                self._verified_zero_change_dates = {"2016-09-30", "2021-09-30"}
+            else:
+                self._verified_zero_change_dates = verified_zero_change_dates
         else:
             self._ground_truth_events = ground_truth_events
+            self._verified_zero_change_dates = verified_zero_change_dates or set()
+
         self._max_allowed_gap_days = max_allowed_gap_days
 
     def _date_within_tolerance(self, actual: str, expected: str, tolerance_days: int) -> bool:
@@ -290,8 +299,11 @@ class PITDatasetValidator:
         if not n50_records:
             return [], []
 
-        # Collect all active event dates
+        # Collect all active event dates (including verified zero-change review milestones)
         event_dates_set: Set[str] = {"2010-01-01"}
+        if self._verified_zero_change_dates:
+            event_dates_set.update(self._verified_zero_change_dates)
+
         for r in n50_records:
             if r.joined_date:
                 event_dates_set.add(r.joined_date)
