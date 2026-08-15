@@ -9,7 +9,7 @@
     "NIFTY_50",
     "NIFTY_500"
   ],
-  "dataset_status": "PRODUCTION_VALIDATED",
+  "dataset_status": "PARTIAL",
   "records": [
     {
       "ticker": "RELIANCE.NS",
