@@ -72,8 +72,8 @@ class TestPITUniverseIngestion(unittest.TestCase):
     def test_dataset_version_hash_deterministic(self) -> None:
         """Batch 9 - 11 & 12: VersionedPITDataset generates reproducible SHA256 checksums."""
         raw_items = [
-            {"raw_symbol": "RELIANCE", "index_symbol": "NIFTY_50", "joined_date": "2010-01-01"},
-            {"raw_symbol": "TCS", "index_symbol": "NIFTY_50", "joined_date": "2010-01-01"},
+            {"raw_symbol": "RELIANCE", "index_symbol": "NIFTY_50", "joined_date": "2010-01-01", "source_url": "https://example.com", "source_evidence": "Sample evidence string for test"},
+            {"raw_symbol": "TCS", "index_symbol": "NIFTY_50", "joined_date": "2010-01-01", "source_url": "https://example.com", "source_evidence": "Sample evidence string for test"},
         ]
         d1, v1, p1 = self.ingestor.process_raw_records(raw_items)
         d2, v2, p2 = self.ingestor.process_raw_records(raw_items)
@@ -97,7 +97,7 @@ class TestPITUniverseIngestion(unittest.TestCase):
     def test_dataset_status_classification_partial(self) -> None:
         """Batch 10 - 2: Small sample dataset is audited and classified as PARTIAL status."""
         raw_items = [
-            {"raw_symbol": "RELIANCE", "index_symbol": "NIFTY_50", "joined_date": "2010-01-01"},
+            {"raw_symbol": "RELIANCE", "index_symbol": "NIFTY_50", "joined_date": "2010-01-01", "source_url": "https://example.com", "source_evidence": "Sample evidence string for test"},
         ]
         dataset, val_report, provider = self.ingestor.process_raw_records(raw_items)
         self.assertEqual(val_report.dataset_status, PITDatasetStatus.PARTIAL)
@@ -121,12 +121,12 @@ class TestPITUniverseIngestion(unittest.TestCase):
         with self.assertRaises(UnvalidatedPointInTimeDatasetError):
             exp.execute_experiment("2026-07-01", "2026-07-02")
 
-    def test_production_v4_dataset_loads_and_passes_validation(self) -> None:
-        """Production version 4 dataset file loads cleanly and resolves constituents accurately.
-        Dataset built by scripts/build_production_pit_dataset.py: 657 records, 32 sourced NIFTY 50 reconstitutions,
-        Check 12 ground-truth verification passed, Check 13 detected 2 verified zero-change review gaps (PARTIAL status).
+    def test_production_v5_dataset_loads_and_passes_validation(self) -> None:
+        """Production version 5 dataset file loads cleanly and resolves constituents accurately.
+        Dataset built by scripts/build_production_pit_dataset.py: 657 records, 31 verified NIFTY 50 reconstitutions,
+        Check 12 ground-truth verification passed, Check 14 source citations verified, Check 13 detected 2 verified zero-change review gaps (PARTIAL status).
         """
-        dataset_path = "data/pit_universe_production_v4.json"
+        dataset_path = "data/pit_universe_production_v5.json"
         if not os.path.exists(dataset_path):
             dataset_path = "data/pit_universe_production_v1.json"
         self.assertTrue(os.path.exists(dataset_path))
@@ -175,7 +175,10 @@ class TestPITUniverseIngestion(unittest.TestCase):
         )
         validator = PITDatasetValidator(ground_truth_events=[fake_event])
         records = [
-            UniverseConstituentRecord(f"STOCK_{i}.NS", "NIFTY_50", f"2010-01-{(i%28)+1:02d}")
+            UniverseConstituentRecord(
+                f"STOCK_{i}.NS", "NIFTY_50", f"2010-01-{(i%28)+1:02d}",
+                source_url="https://example.com", source_evidence="Valid quoted evidence text for testing"
+            )
             for i in range(50)
         ]
         report = validator.validate(records)
@@ -187,17 +190,30 @@ class TestPITUniverseIngestion(unittest.TestCase):
         validator = PITDatasetValidator(ground_truth_events=[], max_allowed_gap_days=300)
         # Create a list of 50 records with a 400-day gap between 2015-01-01 and 2016-02-05
         records = [
-            UniverseConstituentRecord("A.NS", "NIFTY_50", "2010-01-01"),
-            UniverseConstituentRecord("B.NS", "NIFTY_50", "2015-01-01"),
-            UniverseConstituentRecord("C.NS", "NIFTY_50", "2016-02-05"),  # 400 days gap
+            UniverseConstituentRecord("A.NS", "NIFTY_50", "2010-01-01", source_url="https://a.com", source_evidence="Evidence text sample for A"),
+            UniverseConstituentRecord("B.NS", "NIFTY_50", "2015-01-01", source_url="https://b.com", source_evidence="Evidence text sample for B"),
+            UniverseConstituentRecord("C.NS", "NIFTY_50", "2016-02-05", source_url="https://c.com", source_evidence="Evidence text sample for C"),
         ] + [
-            UniverseConstituentRecord(f"STOCK_{i}.NS", "NIFTY_50", f"2016-03-{(i%28)+1:02d}")
+            UniverseConstituentRecord(
+                f"STOCK_{i}.NS", "NIFTY_50", f"2016-03-{(i%28)+1:02d}",
+                source_url="https://example.com", source_evidence="Evidence text sample for testing gap"
+            )
             for i in range(47)
         ]
         report = validator.validate(records)
         self.assertEqual(report.dataset_status, PITDatasetStatus.PARTIAL)
         self.assertGreater(len(report.detected_gaps), 0)
         self.assertTrue(any(e.check_name == "NIFTY50_COVERAGE_GAP" for e in report.errors))
+
+    def test_check_14_source_citation_requirement(self) -> None:
+        """Check 14: Validator rejects records missing a valid HTTP source_url or quoted evidence."""
+        validator = PITDatasetValidator(ground_truth_events=[], max_allowed_gap_days=300)
+        bad_records = [
+            UniverseConstituentRecord("INVALID.NS", "NIFTY_50", "2020-01-01", source_url="Not A URL", source_evidence="Short"),
+        ]
+        report = validator.validate(bad_records)
+        self.assertFalse(report.is_valid)
+        self.assertTrue(any(e.check_name == "INVALID_SOURCE_CITATION" for e in report.errors))
 
 
 

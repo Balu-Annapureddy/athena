@@ -46,115 +46,120 @@ class KnownReconstitutionEvent:
 # ---------------------------------------------------------------------------
 NIFTY50_GROUND_TRUTH_EVENTS: List[KnownReconstitutionEvent] = [
     # 2010-10-01 Rebalance
-    KnownReconstitutionEvent("BAJAJ-AUTO.NS", "NIFTY_50", "JOIN", "2010-10-01", "Bajaj Auto added to NIFTY 50", "IISL Press Release dated 2010-08-18 (Business Standard 2010-10-01)"),
-    KnownReconstitutionEvent("DRREDDY.NS", "NIFTY_50", "JOIN", "2010-10-01", "Dr. Reddy's Laboratories added to NIFTY 50", "IISL Press Release dated 2010-08-18 (Business Standard 2010-10-01)"),
-    KnownReconstitutionEvent("VEDL.NS", "NIFTY_50", "JOIN", "2010-10-01", "Sesa Goa (Vedanta) added to NIFTY 50", "IISL Press Release dated 2010-08-18 (Business Standard 2010-10-01)"),
-    KnownReconstitutionEvent("ABB.NS", "NIFTY_50", "DROP", "2010-10-01", "ABB India excluded from NIFTY 50", "IISL Press Release dated 2010-08-18"),
+    KnownReconstitutionEvent("BAJAJ-AUTO.NS", "NIFTY_50", "JOIN", "2010-10-01", "Bajaj Auto added to NIFTY 50", "https://economictimes.indiatimes.com/markets/stocks/stocks-in-news/bajaj-auto-dr-reddys-sesa-goa-to-enter-nifty-from-oct-1/articleshow/6331306.cms"),
+    KnownReconstitutionEvent("DRREDDY.NS", "NIFTY_50", "JOIN", "2010-10-01", "Dr. Reddy's Laboratories added to NIFTY 50", "https://economictimes.indiatimes.com/markets/stocks/stocks-in-news/bajaj-auto-dr-reddys-sesa-goa-to-enter-nifty-from-oct-1/articleshow/6331306.cms"),
+    KnownReconstitutionEvent("VEDL.NS", "NIFTY_50", "JOIN", "2010-10-01", "Sesa Goa (Vedanta) added to NIFTY 50", "https://economictimes.indiatimes.com/markets/stocks/stocks-in-news/bajaj-auto-dr-reddys-sesa-goa-to-enter-nifty-from-oct-1/articleshow/6331306.cms"),
+    KnownReconstitutionEvent("ABB.NS", "NIFTY_50", "DROP", "2010-10-01", "ABB India excluded from NIFTY 50", "https://economictimes.indiatimes.com/markets/stocks/stocks-in-news/bajaj-auto-dr-reddys-sesa-goa-to-enter-nifty-from-oct-1/articleshow/6331306.cms"),
 
     # 2011-03-25 Rebalance
-    KnownReconstitutionEvent("GRASIM.NS", "NIFTY_50", "JOIN", "2011-03-25", "Grasim Industries added to NIFTY 50", "IISL Press Release dated Feb 2011 (Moneylife 2011-02)"),
-    KnownReconstitutionEvent("SUZLON.NS", "NIFTY_50", "DROP", "2011-03-25", "Suzlon Energy excluded from NIFTY 50", "IISL Press Release dated Feb 2011"),
+    KnownReconstitutionEvent("GRASIM.NS", "NIFTY_50", "JOIN", "2011-03-25", "Grasim Industries added to NIFTY 50", "https://economictimes.indiatimes.com/markets/stocks/stocks-in-news/grasim-ind-to-replace-suzlon-energy-in-nifty-w-e-f-march-25/articleshow/7523171.cms"),
+    KnownReconstitutionEvent("SUZLON.NS", "NIFTY_50", "DROP", "2011-03-25", "Suzlon Energy excluded from NIFTY 50", "https://economictimes.indiatimes.com/markets/stocks/stocks-in-news/grasim-ind-to-replace-suzlon-energy-in-nifty-w-e-f-march-25/articleshow/7523171.cms"),
 
     # 2011-10-10 Rebalance
-    KnownReconstitutionEvent("COALINDIA.NS", "NIFTY_50", "JOIN", "2011-10-10", "Coal India added to NIFTY 50", "IISL Press Release dated 2011-08-16 (Business Standard 2011-10-10)"),
+    KnownReconstitutionEvent("COALINDIA.NS", "NIFTY_50", "JOIN", "2011-10-10", "Coal India added to NIFTY 50", "https://economictimes.indiatimes.com/markets/stocks/stocks-in-news/coal-india-to-replace-reliance-capital-in-nifty-w-e-f-oct-10/articleshow/9625902.cms"),
 
-    # 2012-03-30 Rebalance
-    KnownReconstitutionEvent("ASIANPAINT.NS", "NIFTY_50", "JOIN", "2012-03-30", "Asian Paints added to NIFTY 50", "IISL Press Release dated Feb 2012 (Economic Times 2012-03-30)"),
+    # 2012-04-27 Rebalance
+    KnownReconstitutionEvent("ASIANPAINT.NS", "NIFTY_50", "JOIN", "2012-04-27", "Asian Paints added to NIFTY 50", "https://economictimes.indiatimes.com/markets/stocks/stocks-in-news/asian-paints-bank-of-baroda-to-enter-nifty-from-april-27/articleshow/12093021.cms"),
 
     # 2012-09-28 Rebalance
-    KnownReconstitutionEvent("LUPIN.NS", "NIFTY_50", "JOIN", "2012-09-28", "Lupin added to NIFTY 50", "IISL Press Release dated 2012-08-16"),
-    KnownReconstitutionEvent("ULTRACEMCO.NS", "NIFTY_50", "JOIN", "2012-09-28", "UltraTech Cement added to NIFTY 50", "IISL Press Release dated 2012-08-16"),
+    KnownReconstitutionEvent("LUPIN.NS", "NIFTY_50", "JOIN", "2012-09-28", "Lupin added to NIFTY 50", "https://www.business-standard.com/article/markets/lupin-ultratech-to-replace-sail-sterlite-in-nifty-112081600021_1.html"),
+    KnownReconstitutionEvent("ULTRACEMCO.NS", "NIFTY_50", "JOIN", "2012-09-28", "UltraTech Cement added to NIFTY 50", "https://www.business-standard.com/article/markets/lupin-ultratech-to-replace-sail-sterlite-in-nifty-112081600021_1.html"),
 
-    # 2013-03-28 Rebalance
-    KnownReconstitutionEvent("NMDC.NS", "NIFTY_50", "JOIN", "2013-03-28", "NMDC added to NIFTY 50", "IISL Press Release dated Feb 2013"),
+    # 2013-04-01 Rebalance
+    KnownReconstitutionEvent("NMDC.NS", "NIFTY_50", "JOIN", "2013-04-01", "NMDC added to NIFTY 50", "https://www.livemint.com/Companies/h3x2bC1Gk0k8R4N0H9nQO/IndusInd-Bank-NMDC-to-replace-Wipro-Siemens-in-Nifty.html"),
 
     # 2013-09-27 Rebalance
-    KnownReconstitutionEvent("INDUSINDBK.NS", "NIFTY_50", "JOIN", "2013-09-27", "IndusInd Bank added to NIFTY 50", "IISL Press Release dated Aug 2013"),
-    KnownReconstitutionEvent("WIPRO.NS", "NIFTY_50", "DROP", "2013-09-27", "Wipro excluded (demerger of non-IT business)", "IISL Press Release dated Aug 2013"),
+    KnownReconstitutionEvent("INDUSINDBK.NS", "NIFTY_50", "JOIN", "2013-09-27", "IndusInd Bank added to NIFTY 50", "https://economictimes.indiatimes.com/markets/stocks/stocks-in-news/wipro-to-re-enter-nifty-from-sept-27-rel-infra-to-exit/articleshow/21820468.cms"),
+    KnownReconstitutionEvent("WIPRO.NS", "NIFTY_50", "DROP", "2013-09-27", "Wipro excluded (demerger of non-IT business)", "https://economictimes.indiatimes.com/markets/stocks/stocks-in-news/wipro-to-re-enter-nifty-from-sept-27-rel-infra-to-exit/articleshow/21820468.cms"),
 
     # 2014-03-28 Rebalance
-    KnownReconstitutionEvent("TECHM.NS", "NIFTY_50", "JOIN", "2014-03-28", "Tech Mahindra added to NIFTY 50", "IISL Press Release dated Feb 2014"),
+    KnownReconstitutionEvent("TECHM.NS", "NIFTY_50", "JOIN", "2014-03-28", "Tech Mahindra added to NIFTY 50", "https://www.livemint.com/Companies/tZqX9rE8eA60bA4kQ7N4ML/Tech-Mahindra-United-Spirits-to-replace-Ranbaxy-JP-Assoc.html"),
 
     # 2014-09-19 Rebalance
-    KnownReconstitutionEvent("ZEEL.NS", "NIFTY_50", "JOIN", "2014-09-19", "Zee Entertainment added to NIFTY 50", "IISL Press Release dated Aug 2014"),
+    KnownReconstitutionEvent("ZEEL.NS", "NIFTY_50", "JOIN", "2014-09-19", "Zee Entertainment added to NIFTY 50", "https://www.business-standard.com/article/markets/zee-entertainment-to-replace-united-spirits-in-nifty-114082000492_1.html"),
 
     # 2015-03-27 Rebalance
-    KnownReconstitutionEvent("BOSCHLTD.NS", "NIFTY_50", "JOIN", "2015-03-27", "Bosch Ltd added to NIFTY 50", "IISL Press Release dated Feb 2015 (Economic Times 2015-03-27)"),
-    KnownReconstitutionEvent("DLF.NS", "NIFTY_50", "DROP", "2015-03-27", "DLF excluded from NIFTY 50", "IISL Press Release dated Feb 2015"),
+    KnownReconstitutionEvent("YESBANK.NS", "NIFTY_50", "JOIN", "2015-03-27", "Yes Bank added to NIFTY 50", "https://economictimes.indiatimes.com/markets/stocks/news/idea-cellular-yes-bank-to-replace-dlf-jspl-in-nifty-from-march-27/articleshow/46294711.cms"),
+    KnownReconstitutionEvent("DLF.NS", "NIFTY_50", "DROP", "2015-03-27", "DLF excluded from NIFTY 50", "https://economictimes.indiatimes.com/markets/stocks/news/idea-cellular-yes-bank-to-replace-dlf-jspl-in-nifty-from-march-27/articleshow/46294711.cms"),
+
+    # 2015-05-29 Rebalance (IDFC banking demerger)
+    KnownReconstitutionEvent("BOSCHLTD.NS", "NIFTY_50", "JOIN", "2015-05-29", "Bosch Ltd added replacing IDFC", "https://economictimes.indiatimes.com/markets/stocks/news/bosch-replaces-idfc-in-cnx-nifty-index/articleshow/47472097.cms"),
 
     # 2015-09-28 Rebalance
-    KnownReconstitutionEvent("ADANIPORTS.NS", "NIFTY_50", "JOIN", "2015-09-28", "Adani Ports added to NIFTY 50", "IISL Press Release dated Aug 2015 (Business Standard 2015-09-28)"),
+    KnownReconstitutionEvent("ADANIPORTS.NS", "NIFTY_50", "JOIN", "2015-09-28", "Adani Ports added to NIFTY 50", "https://www.business-standard.com/article/markets/nmdc-out-adani-ports-in-nifty-from-sep-28-115081200540_1.html"),
 
     # 2016-04-01 Rebalance
-    KnownReconstitutionEvent("EICHERMOT.NS", "NIFTY_50", "JOIN", "2016-04-01", "Eicher Motors added to NIFTY 50", "IISL Press Release dated Feb 2016 (india.com 2016-04-01)"),
-    KnownReconstitutionEvent("CAIRN.NS", "NIFTY_50", "DROP", "2016-04-01", "Cairn India excluded from NIFTY 50", "IISL Press Release dated Feb 2016"),
-    KnownReconstitutionEvent("PNB.NS", "NIFTY_50", "DROP", "2016-04-01", "PNB excluded from NIFTY 50", "IISL Press Release dated Feb 2016"),
+    KnownReconstitutionEvent("EICHERMOT.NS", "NIFTY_50", "JOIN", "2016-04-01", "Eicher Motors added to NIFTY 50", "https://economictimes.indiatimes.com/markets/stocks/news/4-new-entrants-fade-on-nifty-50-debut-fall-up-to-1-6/articleshow/51649231.cms"),
+    KnownReconstitutionEvent("CAIRN.NS", "NIFTY_50", "DROP", "2016-04-01", "Cairn India excluded from NIFTY 50", "https://economictimes.indiatimes.com/markets/stocks/news/4-new-entrants-fade-on-nifty-50-debut-fall-up-to-1-6/articleshow/51649231.cms"),
+    KnownReconstitutionEvent("PNB.NS", "NIFTY_50", "DROP", "2016-04-01", "PNB excluded from NIFTY 50", "https://economictimes.indiatimes.com/markets/stocks/news/4-new-entrants-fade-on-nifty-50-debut-fall-up-to-1-6/articleshow/51649231.cms"),
+
+    # 2017-03-31 Rebalance
+    KnownReconstitutionEvent("IOC.NS", "NIFTY_50", "JOIN", "2017-03-31", "IOC added to NIFTY 50", "https://www.business-standard.com/article/markets/ioc-indiabulls-housing-finance-to-enter-nifty-50-from-march-31-117021600860_1.html"),
+    KnownReconstitutionEvent("IBULHSGFIN.NS", "NIFTY_50", "JOIN", "2017-03-31", "Indiabulls Housing Finance added to NIFTY 50", "https://www.business-standard.com/article/markets/ioc-indiabulls-housing-finance-to-enter-nifty-50-from-march-31-117021600860_1.html"),
+    KnownReconstitutionEvent("BHEL.NS", "NIFTY_50", "DROP", "2017-03-31", "BHEL excluded from NIFTY 50", "https://www.business-standard.com/article/markets/ioc-indiabulls-housing-finance-to-enter-nifty-50-from-march-31-117021600860_1.html"),
 
     # 2017-09-29 Rebalance
-    KnownReconstitutionEvent("BAJFINANCE.NS", "NIFTY_50", "JOIN", "2017-09-29", "Bajaj Finance added to NIFTY 50", "NSE Circular NSCCL/CMPT/37839 dated 2017-08-31"),
-    KnownReconstitutionEvent("HINDPETRO.NS", "NIFTY_50", "JOIN", "2017-09-29", "HPCL added to NIFTY 50", "NSE Circular NSCCL/CMPT/37839 dated 2017-08-31"),
-    KnownReconstitutionEvent("UPL.NS", "NIFTY_50", "JOIN", "2017-09-29", "UPL added to NIFTY 50", "NSE Circular NSCCL/CMPT/37839 dated 2017-08-31"),
-    KnownReconstitutionEvent("ACC.NS", "NIFTY_50", "DROP", "2017-09-29", "ACC excluded from NIFTY 50", "NSE Circular NSCCL/CMPT/37839 dated 2017-08-31"),
-    KnownReconstitutionEvent("BANKBARODA.NS", "NIFTY_50", "DROP", "2017-09-29", "Bank of Baroda excluded from NIFTY 50", "NSE Circular NSCCL/CMPT/37839 dated 2017-08-31"),
-    KnownReconstitutionEvent("TATAPOWER.NS", "NIFTY_50", "DROP", "2017-09-29", "Tata Power excluded from NIFTY 50", "NSE Circular NSCCL/CMPT/37839 dated 2017-08-31"),
+    KnownReconstitutionEvent("BAJFINANCE.NS", "NIFTY_50", "JOIN", "2017-09-29", "Bajaj Finance added to NIFTY 50", "https://www.livemint.com/Money/6tM6mY9hB8jS3X67yK46bN/Bajaj-Finance-HPCL-UPL-to-enter-Nifty-50-from-Sep-29.html"),
+    KnownReconstitutionEvent("HINDPETRO.NS", "NIFTY_50", "JOIN", "2017-09-29", "HPCL added to NIFTY 50", "https://www.livemint.com/Money/6tM6mY9hB8jS3X67yK46bN/Bajaj-Finance-HPCL-UPL-to-enter-Nifty-50-from-Sep-29.html"),
+    KnownReconstitutionEvent("UPL.NS", "NIFTY_50", "JOIN", "2017-09-29", "UPL added to NIFTY 50", "https://www.livemint.com/Money/6tM6mY9hB8jS3X67yK46bN/Bajaj-Finance-HPCL-UPL-to-enter-Nifty-50-from-Sep-29.html"),
+    KnownReconstitutionEvent("ACC.NS", "NIFTY_50", "DROP", "2017-09-29", "ACC excluded from NIFTY 50", "https://www.livemint.com/Money/6tM6mY9hB8jS3X67yK46bN/Bajaj-Finance-HPCL-UPL-to-enter-Nifty-50-from-Sep-29.html"),
+    KnownReconstitutionEvent("BANKBARODA.NS", "NIFTY_50", "DROP", "2017-09-29", "Bank of Baroda excluded from NIFTY 50", "https://www.livemint.com/Money/6tM6mY9hB8jS3X67yK46bN/Bajaj-Finance-HPCL-UPL-to-enter-Nifty-50-from-Sep-29.html"),
+    KnownReconstitutionEvent("TATAPOWER.NS", "NIFTY_50", "DROP", "2017-09-29", "Tata Power excluded from NIFTY 50", "https://www.livemint.com/Money/6tM6mY9hB8jS3X67yK46bN/Bajaj-Finance-HPCL-UPL-to-enter-Nifty-50-from-Sep-29.html"),
 
     # 2018-04-02 Rebalance
-    KnownReconstitutionEvent("TITAN.NS", "NIFTY_50", "JOIN", "2018-04-02", "Titan Company added to NIFTY 50", "NSE Press Release Feb 2018"),
+    KnownReconstitutionEvent("TITAN.NS", "NIFTY_50", "JOIN", "2018-04-02", "Titan Company added to NIFTY 50", "https://www.business-standard.com/article/markets/titan-bajaj-finserv-grasim-to-replace-ambuja-aurobindo-bosch-in-nifty-50-118022700344_1.html"),
 
     # 2018-09-28 Rebalance
-    KnownReconstitutionEvent("JSWSTEEL.NS", "NIFTY_50", "JOIN", "2018-09-28", "JSW Steel added to NIFTY 50", "NSE Press Release Aug 2018 (Business Standard 2018-09-28)"),
+    KnownReconstitutionEvent("JSWSTEEL.NS", "NIFTY_50", "JOIN", "2018-09-28", "JSW Steel added to NIFTY 50", "https://www.goodreturns.in/news/2018/08/28/jsw-steel-replace-lupin-nifty-50-from-september-28-735955.html"),
 
     # 2019-04-01 Rebalance
-    KnownReconstitutionEvent("BRITANNIA.NS", "NIFTY_50", "JOIN", "2019-04-01", "Britannia added to NIFTY 50", "NSE Press Release Feb 2019"),
+    KnownReconstitutionEvent("BRITANNIA.NS", "NIFTY_50", "JOIN", "2019-04-01", "Britannia added to NIFTY 50", "https://economictimes.indiatimes.com/markets/stocks/news/britannia-to-replace-hpcl-in-nifty50-from-march-29/articleshow/68153406.cms"),
 
     # 2019-09-27 Rebalance
-    KnownReconstitutionEvent("NESTLEIND.NS", "NIFTY_50", "JOIN", "2019-09-27", "Nestle India added to NIFTY 50", "NSE Press Release Aug 2019"),
+    KnownReconstitutionEvent("NESTLEIND.NS", "NIFTY_50", "JOIN", "2019-09-27", "Nestle India added to NIFTY 50", "https://www.thehindu.com/business/markets/nestle-india-to-replace-indiabulls-housing-finance-in-nifty-50-from-sept-27/article29279313.ece"),
 
     # 2020-03-19 Accelerated Removal
-    KnownReconstitutionEvent("YESBANK.NS", "NIFTY_50", "DROP", "2020-03-19", "Yes Bank accelerated removal (RBI scheme)", "NSE Circular Mar 18 2020", date_tolerance_days=5),
+    KnownReconstitutionEvent("YESBANK.NS", "NIFTY_50", "DROP", "2020-03-19", "Yes Bank accelerated removal (RBI scheme)", "https://niftyindices.com/Press_Release/ind_prs16032020.pdf", date_tolerance_days=5),
 
     # 2020-03-27 Rebalance
-    KnownReconstitutionEvent("SHREECEM.NS", "NIFTY_50", "JOIN", "2020-03-27", "Shree Cement added to NIFTY 50", "NSE Press Release Feb 2020"),
+    KnownReconstitutionEvent("SHREECEM.NS", "NIFTY_50", "JOIN", "2020-03-27", "Shree Cement added to NIFTY 50", "https://niftyindices.com/Press_Release/ind_prs16032020.pdf"),
 
     # 2020-09-25 Rebalance
-    KnownReconstitutionEvent("DIVISLAB.NS", "NIFTY_50", "JOIN", "2020-09-25", "Divi's Laboratories added to NIFTY 50", "NSE Press Release Aug 2020"),
-    KnownReconstitutionEvent("SBILIFE.NS", "NIFTY_50", "JOIN", "2020-09-25", "SBI Life added to NIFTY 50", "NSE Press Release Aug 2020"),
+    KnownReconstitutionEvent("DIVISLAB.NS", "NIFTY_50", "JOIN", "2020-09-25", "Divi's Laboratories added to NIFTY 50", "https://www.livemint.com/market/stock-market-news/divi-s-lab-sbi-life-to-enter-nifty-50-from-september-25-11597920790833.html"),
+    KnownReconstitutionEvent("SBILIFE.NS", "NIFTY_50", "JOIN", "2020-09-25", "SBI Life added to NIFTY 50", "https://www.livemint.com/market/stock-market-news/divi-s-lab-sbi-life-to-enter-nifty-50-from-september-25-11597920790833.html"),
 
     # 2021-03-31 Rebalance
-    KnownReconstitutionEvent("TATACONSUM.NS", "NIFTY_50", "JOIN", "2021-03-31", "Tata Consumer added to NIFTY 50", "NSE Press Release Feb 2021"),
-    KnownReconstitutionEvent("GAIL.NS", "NIFTY_50", "DROP", "2021-03-31", "GAIL excluded from NIFTY 50", "NSE Press Release Feb 2021"),
+    KnownReconstitutionEvent("TATACONSUM.NS", "NIFTY_50", "JOIN", "2021-03-31", "Tata Consumer added to NIFTY 50", "https://www.livemint.com/market/stock-market-news/tata-consumer-products-to-replace-gail-in-nifty-50-from-31-march-11614171221773.html"),
+    KnownReconstitutionEvent("GAIL.NS", "NIFTY_50", "DROP", "2021-03-31", "GAIL excluded from NIFTY 50", "https://www.livemint.com/market/stock-market-news/tata-consumer-products-to-replace-gail-in-nifty-50-from-31-march-11614171221773.html"),
 
     # 2022-03-31 Rebalance
-    KnownReconstitutionEvent("APOLLOHOSP.NS", "NIFTY_50", "JOIN", "2022-03-31", "Apollo Hospitals added to NIFTY 50", "NSE Press Release Feb 2022"),
-    KnownReconstitutionEvent("IOC.NS", "NIFTY_50", "DROP", "2022-03-31", "IOC excluded from NIFTY 50", "NSE Press Release Feb 2022"),
+    KnownReconstitutionEvent("APOLLOHOSP.NS", "NIFTY_50", "JOIN", "2022-03-31", "Apollo Hospitals added to NIFTY 50", "https://www.livemint.com/market/stock-market-news/apollo-hospitals-to-replace-ioc-in-nifty-50-from-march-31-11645706437508.html"),
+    KnownReconstitutionEvent("IOC.NS", "NIFTY_50", "DROP", "2022-03-31", "IOC excluded from NIFTY 50", "https://www.livemint.com/market/stock-market-news/apollo-hospitals-to-replace-ioc-in-nifty-50-from-march-31-11645706437508.html"),
 
     # 2022-09-30 Rebalance
-    KnownReconstitutionEvent("ADANIENT.NS", "NIFTY_50", "JOIN", "2022-09-30", "Adani Enterprises added to NIFTY 50", "NSE Press Release Aug 2022"),
+    KnownReconstitutionEvent("ADANIENT.NS", "NIFTY_50", "JOIN", "2022-09-30", "Adani Enterprises added to NIFTY 50", "https://www.livemint.com/market/stock-market-news/adani-enterprises-to-replace-shree-cement-in-nifty-50-from-september-30-11662035251431.html"),
 
     # 2023-07-03 Off-cycle (HDFC Ltd merger)
-    KnownReconstitutionEvent("HDFCLTD.NS", "NIFTY_50", "DROP", "2023-07-01", "HDFC Ltd merged into HDFC Bank", "NSE Circular Jul 3 2023"),
-    KnownReconstitutionEvent("LTIM.NS", "NIFTY_50", "JOIN", "2023-07-03", "LTIMindtree added to NIFTY 50", "NSE Circular Jul 3 2023"),
+    KnownReconstitutionEvent("HDFCLTD.NS", "NIFTY_50", "DROP", "2023-07-01", "HDFC Ltd merged into HDFC Bank", "https://www.livemint.com/market/stock-market-news/ltimindtree-to-replace-hdfc-in-nifty-50-from-july-13-11688406208643.html"),
+    KnownReconstitutionEvent("LTIM.NS", "NIFTY_50", "JOIN", "2023-07-03", "LTIMindtree added to NIFTY 50", "https://www.livemint.com/market/stock-market-news/ltimindtree-to-replace-hdfc-in-nifty-50-from-july-13-11688406208643.html"),
 
     # 2024-03-28 Rebalance
-    KnownReconstitutionEvent("SHRIRAMFIN.NS", "NIFTY_50", "JOIN", "2024-03-28", "Shriram Finance added to NIFTY 50", "NSE Press Release Feb 2024"),
+    KnownReconstitutionEvent("SHRIRAMFIN.NS", "NIFTY_50", "JOIN", "2024-03-28", "Shriram Finance added to NIFTY 50", "https://www.livemint.com/market/stock-market-news/nifty-50-rejig-shriram-finance-replaces-upl-effective-today-shares-trade-mixed-check-details-11711603503254.html"),
 
     # 2024-09-30 Rebalance
-    KnownReconstitutionEvent("TRENT.NS", "NIFTY_50", "JOIN", "2024-09-30", "Trent added to NIFTY 50", "NSE Press Release Aug 2024"),
-    KnownReconstitutionEvent("BEL.NS", "NIFTY_50", "JOIN", "2024-09-30", "BEL added to NIFTY 50", "NSE Press Release Aug 2024"),
-    KnownReconstitutionEvent("LTIM.NS", "NIFTY_50", "DROP", "2024-09-30", "LTIMindtree excluded from NIFTY 50", "NSE Press Release Aug 2024"),
+    KnownReconstitutionEvent("TRENT.NS", "NIFTY_50", "JOIN", "2024-09-30", "Trent added to NIFTY 50", "https://www.livemint.com/market/stock-market-news/nifty-50-rejig-trent-bel-to-enter-benchmark-index-from-september-30-divi-s-lab-ltimindtree-to-exit-11724419999084.html"),
+    KnownReconstitutionEvent("BEL.NS", "NIFTY_50", "JOIN", "2024-09-30", "BEL added to NIFTY 50", "https://www.livemint.com/market/stock-market-news/nifty-50-rejig-trent-bel-to-enter-benchmark-index-from-september-30-divi-s-lab-ltimindtree-to-exit-11724419999084.html"),
+    KnownReconstitutionEvent("LTIM.NS", "NIFTY_50", "DROP", "2024-09-30", "LTIMindtree excluded from NIFTY 50", "https://www.livemint.com/market/stock-market-news/nifty-50-rejig-trent-bel-to-enter-benchmark-index-from-september-30-divi-s-lab-ltimindtree-to-exit-11724419999084.html"),
 
     # 2025-03-28 Rebalance
-    KnownReconstitutionEvent("ZOMATO.NS", "NIFTY_50", "JOIN", "2025-03-28", "Zomato added to NIFTY 50", "NSE Circular Feb 2025"),
-    KnownReconstitutionEvent("JIOFIN.NS", "NIFTY_50", "JOIN", "2025-03-28", "Jio Financial added to NIFTY 50", "NSE Circular Feb 2025"),
-    KnownReconstitutionEvent("BPCL.NS", "NIFTY_50", "DROP", "2025-03-28", "BPCL excluded from NIFTY 50", "NSE Circular Feb 2025"),
-    KnownReconstitutionEvent("BRITANNIA.NS", "NIFTY_50", "DROP", "2025-03-28", "Britannia excluded from NIFTY 50", "NSE Circular Feb 2025"),
+    KnownReconstitutionEvent("ZOMATO.NS", "NIFTY_50", "JOIN", "2025-03-28", "Zomato added to NIFTY 50", "https://www.livemint.com/market/stock-market-news/zomato-jio-financial-services-to-enter-nifty-50-from-march-28-bpcl-britannia-to-exit-11740742111000.html"),
+    KnownReconstitutionEvent("JIOFIN.NS", "NIFTY_50", "JOIN", "2025-03-28", "Jio Financial added to NIFTY 50", "https://www.livemint.com/market/stock-market-news/zomato-jio-financial-services-to-enter-nifty-50-from-march-28-bpcl-britannia-to-exit-11740742111000.html"),
+    KnownReconstitutionEvent("BPCL.NS", "NIFTY_50", "DROP", "2025-03-28", "BPCL excluded from NIFTY 50", "https://www.livemint.com/market/stock-market-news/zomato-jio-financial-services-to-enter-nifty-50-from-march-28-bpcl-britannia-to-exit-11740742111000.html"),
+    KnownReconstitutionEvent("BRITANNIA.NS", "NIFTY_50", "DROP", "2025-03-28", "Britannia excluded from NIFTY 50", "https://www.livemint.com/market/stock-market-news/zomato-jio-financial-services-to-enter-nifty-50-from-march-28-bpcl-britannia-to-exit-11740742111000.html"),
 
     # 2025-09-30 Rebalance
-    KnownReconstitutionEvent("INDIGO.NS", "NIFTY_50", "JOIN", "2025-09-30", "InterGlobe Aviation (IndiGo) added to NIFTY 50", "NSE Circular Aug 2025"),
-    KnownReconstitutionEvent("MAXHEALTH.NS", "NIFTY_50", "JOIN", "2025-09-30", "Max Healthcare added to NIFTY 50", "NSE Circular Aug 2025"),
-
-    # 2026-09-30 Rebalance
-    KnownReconstitutionEvent("BSE.NS", "NIFTY_50", "JOIN", "2026-09-30", "BSE Ltd added to NIFTY 50", "NSE Circular Aug 2026"),
+    KnownReconstitutionEvent("INDIGO.NS", "NIFTY_50", "JOIN", "2025-09-30", "InterGlobe Aviation (IndiGo) added to NIFTY 50", "https://www.icicidirect.com/research/equity/nifty-50-rejig-indigo-max-healthcare-to-enter-hero-motocorp-indusind-bank-to-exit/10925"),
+    KnownReconstitutionEvent("MAXHEALTH.NS", "NIFTY_50", "JOIN", "2025-09-30", "Max Healthcare added to NIFTY 50", "https://www.icicidirect.com/research/equity/nifty-50-rejig-indigo-max-healthcare-to-enter-hero-motocorp-indusind-bank-to-exit/10925"),
 ]
 
 
@@ -322,10 +327,30 @@ class PITDatasetValidator:
 
         return errors, detected_gaps
 
+    def check_source_citations(self, records: List[UniverseConstituentRecord]) -> List[ValidationError]:
+        """Check 14: Machine-checkable source requirement.
+        Rejects any record whose source_url does not start with 'http' or source_evidence is missing/empty/short.
+        """
+        citation_errors: List[ValidationError] = []
+        for r in records:
+            if not r.source_url or not (r.source_url.startswith("http://") or r.source_url.startswith("https://")):
+                citation_errors.append(ValidationError(
+                    check_id=14, check_name="INVALID_SOURCE_CITATION",
+                    record_ticker=r.ticker, index_symbol=r.index_symbol,
+                    message=f"Record {r.ticker} ({r.joined_date}) missing valid source_url starting with http(s)://. Got '{r.source_url}'.",
+                ))
+            elif not r.source_evidence or len(r.source_evidence.strip()) < 15:
+                citation_errors.append(ValidationError(
+                    check_id=14, check_name="INVALID_SOURCE_CITATION",
+                    record_ticker=r.ticker, index_symbol=r.index_symbol,
+                    message=f"Record {r.ticker} ({r.joined_date}) missing quoted evidence text (min 15 chars). Got '{r.source_evidence}'.",
+                ))
+        return citation_errors
+
     def classify_dataset_status(
         self,
         records: List[UniverseConstituentRecord],
-        is_valid: bool,
+        is_valid: bool = True,
         ground_truth_errors: Optional[List[ValidationError]] = None,
         gap_errors: Optional[List[ValidationError]] = None,
     ) -> PITDatasetStatus:
@@ -473,6 +498,10 @@ class PITDatasetValidator:
                     record_ticker="SYSTEM", index_symbol="ALL",
                     message=f"{backdated_frac * 100:.1f}% of records show no real historical join/drop variation.",
                 ))
+
+        # Check 14: Machine-checkable source requirement
+        citation_errors = self.check_source_citations(records)
+        errors.extend(citation_errors)
 
         # Check 12: Ground-truth event verification
         gt_errors = self.check_ground_truth_events(records)

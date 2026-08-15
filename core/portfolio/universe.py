@@ -46,6 +46,8 @@ class UniverseConstituentRecord:
     index_symbol: str  # e.g., "NIFTY_50", "NIFTY_100", "NIFTY_500"
     joined_date: str   # ISO date "YYYY-MM-DD"
     dropped_date: Optional[str] = None  # ISO date "YYYY-MM-DD" if dropped from index
+    source_url: Optional[str] = None    # Real HTTP URL of source document/article
+    source_evidence: Optional[str] = None # Short quote or extracted fact from document
 
     def is_active(self, as_of_date: str) -> bool:
         """Return True if constituent is active on as_of_date under the boundary convention."""
@@ -134,6 +136,8 @@ class PointInTimeUniverseProvider:
                 index_symbol=item["index_symbol"],
                 joined_date=item["joined_date"],
                 dropped_date=item.get("dropped_date"),
+                source_url=item.get("source_url"),
+                source_evidence=item.get("source_evidence"),
             )
             for item in raw_records
         ]

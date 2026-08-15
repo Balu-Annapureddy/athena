@@ -100,11 +100,16 @@ class PointInTimeDatasetIngestor:
 
             norm_ticker = self._normalizer.normalize(raw_sym, as_of_date=j_date, source=self.source)
 
+            src_url = item.get("source_url")
+            src_ev = item.get("source_evidence")
+
             rec = UniverseConstituentRecord(
                 ticker=norm_ticker,
                 index_symbol=idx_sym,
                 joined_date=j_date,
                 dropped_date=d_date,
+                source_url=src_url,
+                source_evidence=src_ev,
             )
             recs.append(rec)
             raw_meta.append({"ticker": norm_ticker, "index_symbol": idx_sym, "source": self.source, "provenance": f"{self.source}:{raw_sym}"})
@@ -122,6 +127,8 @@ class PointInTimeDatasetIngestor:
                 "index_symbol": r.index_symbol,
                 "joined_date": r.joined_date,
                 "dropped_date": r.dropped_date,
+                "source_url": r.source_url,
+                "source_evidence": r.source_evidence,
             }
             for r in recs
         ]
