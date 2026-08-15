@@ -25,7 +25,7 @@ class BreakoutVolumeConfirmationStrategy(BaseStrategy):
     def __init__(
         self,
         lookback_period: int = 20,
-        volume_trend_threshold: float = 50.0,
+        volume_trend_threshold: float = 15.0,
         atr_multiplier: float = 2.0,
         target_rr_ratio: float = 3.0,
     ) -> None:

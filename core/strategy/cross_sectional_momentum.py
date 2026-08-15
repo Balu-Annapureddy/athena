@@ -30,13 +30,13 @@ class CrossSectionalRankProvider:
     _instances: Dict[str, "CrossSectionalRankProvider"] = {}
 
     @classmethod
-    def get_instance(cls, fixture_dir: str = "fixtures/yfinance_historical") -> "CrossSectionalRankProvider":
+    def get_instance(cls, fixture_dir: str = "fixtures/yfinance") -> "CrossSectionalRankProvider":
         norm_path = os.path.abspath(fixture_dir)
         if norm_path not in cls._instances:
             cls._instances[norm_path] = cls(fixture_dir=fixture_dir)
         return cls._instances[norm_path]
 
-    def __init__(self, fixture_dir: str = "fixtures/yfinance_historical") -> None:
+    def __init__(self, fixture_dir: str = "fixtures/yfinance") -> None:
         self.fixture_dir = fixture_dir
         self._date_ticker_close: Dict[str, Dict[str, float]] = {}
         self._ticker_dates: Dict[str, List[str]] = {}
@@ -150,7 +150,7 @@ class CrossSectionalMomentumStrategy(BaseStrategy):
         atr_multiplier: float = 2.0,
         target_rr_ratio: float = 3.0,
         min_momentum_pct: float = 0.0,
-        fixture_dir: str = "fixtures/yfinance_historical",
+        fixture_dir: str = "fixtures/yfinance",
         pit_provider: Optional[Any] = None,
         index_symbol: str = "NIFTY_500",
     ) -> None:

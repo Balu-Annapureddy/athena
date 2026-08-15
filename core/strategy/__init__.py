@@ -9,6 +9,7 @@ from core.strategy.macd_cross import MACDSignalCrossStrategy
 from core.strategy.vwap_bias import VWAPBiasStrategy
 from core.strategy.breakout_volume import BreakoutVolumeConfirmationStrategy
 from core.strategy.cross_sectional_momentum import CrossSectionalMomentumStrategy
+from core.strategy.dual_momentum import DualMomentumVolatilityScaledStrategy
 
 __all__ = [
     "BaseStrategy",
@@ -20,4 +21,5 @@ __all__ = [
     "VWAPBiasStrategy",
     "BreakoutVolumeConfirmationStrategy",
     "CrossSectionalMomentumStrategy",
+    "DualMomentumVolatilityScaledStrategy",
 ]
