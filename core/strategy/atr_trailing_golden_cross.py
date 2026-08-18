@@ -108,31 +108,42 @@ class ATRTrailingGoldenCrossStrategy(BaseStrategy):
                     conclusion=(
                         f"Golden Cross entry confirmed in strong trend regime "
                         f"(50 SMA > 200 SMA, ADX {adx_res.adx:.1f} >= {self._min_adx_threshold}). "
-                        f"ATR Trailing Stop set at ₹{stop_price:.2f} (2.5× ATR)."
+                        f"ATR Trailing Stop set at ₹{stop_price:.2f} ({self._atr_multiplier}× ATR)."
                     ),
                     hypothesis_statement=(
                         f"Bullish Golden Cross entry with ADX trend strength {adx_res.adx:.1f} "
-                        f"and 2.5× ATR dynamic trailing exit."
+                        f"and {self._atr_multiplier}× ATR dynamic trailing exit."
                     ),
                     portfolio=portfolio,
                     dec_policy=dec_policy,
                     dec_ctx=dec_ctx,
                     source_obs_id=obs_ids[-1],
                     facts=facts,
+                    target_price=target_price,
+                    atr_multiplier=self._atr_multiplier,
                 )
 
-        # 5. Death Cross or Trailing Exit Signal
-        if is_death_cross:
+        # 5. Death Cross or Dynamic ATR Trailing Exit Signal
+        recent_peak = max(highs[-20:]) if len(highs) >= 20 else max(highs)
+        trailing_stop_breached = curr_close < (recent_peak - self._atr_multiplier * atr_val)
+
+        if is_death_cross or (trailing_stop_breached and fast_curr > slow_curr):
+            exit_reason_desc = (
+                "Death Cross exit signal: 50 SMA crossed below 200 SMA."
+                if is_death_cross
+                else f"ATR Trailing Stop exit: close ₹{curr_close:.2f} fell below trailing threshold ₹{recent_peak - self._atr_multiplier * atr_val:.2f}."
+            )
             return self._create_pipeline_records(
                 entity=entity_id,
                 direction="BEARISH",
-                conclusion="Death Cross exit signal: 50 SMA crossed below 200 SMA.",
-                hypothesis_statement="Bearish trend reversal confirmed by Death Cross.",
+                conclusion=exit_reason_desc,
+                hypothesis_statement="Bearish exit or dynamic trailing stop triggered.",
                 portfolio=portfolio,
                 dec_policy=dec_policy,
                 dec_ctx=dec_ctx,
                 source_obs_id=obs_ids[-1],
                 facts=facts,
+                atr_multiplier=self._atr_multiplier,
             )
 
         return None

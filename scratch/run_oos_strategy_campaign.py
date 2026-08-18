@@ -149,7 +149,7 @@ def main():
     results = []
 
     for name, strat in strategies:
-        print(f"\nEvaluating strategy: {name}...")
+        print(f"\nEvaluating strategy: {name} (instance: {type(strat).__name__} @ {hex(id(strat))})...")
         cost_model = TransactionCostModel()
         engine = MultiAssetPortfolioEngine(
             fixture_dir="fixtures/yfinance_historical",

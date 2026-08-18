@@ -209,11 +209,16 @@ class CrossSectionalMomentumStrategy(BaseStrategy):
         if not entity:
             entity = facts[0].value.source.split("/")[-1] if facts else "Unknown"
 
-        # Resolve date_str from dec_ctx or observation ID
+        # Resolve date_str from dec_ctx, facts, or observation ID
         date_str = None
         dt = getattr(dec_ctx, "current_time", None)
         if dt:
             date_str = str(dt)[:10]
+
+        if not date_str and facts:
+            ts_val = getattr(getattr(facts[-1], "value", None), "timestamp", None)
+            if ts_val:
+                date_str = str(ts_val)[:10]
 
         if not date_str and obs_ids:
             raw_obs_id = str(obs_ids[-1]).split("_")[-1]

@@ -109,6 +109,11 @@ class DualMomentumVolatilityScaledStrategy(BaseStrategy):
         if dt:
             date_str = str(dt)[:10]
 
+        if not date_str and facts:
+            ts_val = getattr(getattr(facts[-1], "value", None), "timestamp", None)
+            if ts_val:
+                date_str = str(ts_val)[:10]
+
         if not date_str and obs_ids:
             raw_obs_id = str(obs_ids[-1]).split("_")[-1]
             if len(raw_obs_id) == 8 and raw_obs_id.isdigit():

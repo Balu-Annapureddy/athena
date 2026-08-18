@@ -29,6 +29,9 @@ from core.patterns.engine import PatternEngine
 from core.portfolio.results import MultiAssetBacktestResult
 from core.portfolio.state import PortfolioPosition, PortfolioStateSnapshot
 from core.portfolio.universe import PointInTimeUniverseProvider, MissingPointInTimeUniverseDataError
+from core.decision_builder.context import DecisionEvaluationContext
+from core.decision_builder.policies import DecisionPolicy
+from core.decision_builder.portfolio import PortfolioState
 from core.risk.engine import RiskEngine
 
 logger = logging.getLogger(__name__)
@@ -328,8 +331,8 @@ class MultiAssetPortfolioEngine:
                         shares=desired_shares,
                         entry_price=entry_p,
                         current_price=entry_p,
-                        stop_loss_price=order["risk_ass"].stop_loss_price,
-                        target_price=order["risk_ass"].target_price,
+                        stop_loss_price=order.get("stop_loss_price") or order["risk_ass"].stop_loss_price,
+                        target_price=order.get("target_price") or order["risk_ass"].target_price,
                         entry_timestamp=ts,
                         signal_timestamp=order["signal_ts"],
                         execution_timestamp=ts,
@@ -394,6 +397,55 @@ class MultiAssetPortfolioEngine:
                     elif price_bar.low <= pos.target_price:
                         exit_reason = "TARGET_PRICE"
                         exit_price = min(pos.target_price, price_bar.open)
+
+                # Check for Strategy-driven Exit Signals (e.g. Death Cross, Bearish MACD, VWAP break, Trailing Stop)
+                if exit_reason is None and hasattr(strategy, "evaluate"):
+                    req_bars = max(1, int(_safe_float(getattr(strategy, "required_history_bars", 1), 1.0)))
+                    hist = ticker_history.get(ticker, [])
+                    curr_ts_idx = next(
+                        (i for i, b in enumerate(hist)
+                         if str(b.provenance.publication_timestamp)[:10] == ts),
+                        None
+                    )
+                    if curr_ts_idx is not None:
+                        start_idx = max(0, curr_ts_idx - req_bars + 1)
+                        fact_slices = ticker_fact_history.get(ticker, [])[start_idx:curr_ts_idx + 1]
+                        pos_facts = [f for b_facts in fact_slices for f in b_facts]
+                    else:
+                        pos_facts = self._payload_to_facts(bar_dict[ticker], ticker)
+
+                    try:
+                        eval_dt = datetime.strptime(ts, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+                    except Exception:
+                        eval_dt = datetime.now(timezone.utc)
+
+                    dec_ctx = DecisionEvaluationContext(
+                        current_time=eval_dt,
+                        active_policy=DecisionPolicy(),
+                        portfolio=PortfolioState(cash_available=cash, total_value=current_equity),
+                        existing_records=[],
+                        target_security_id=ticker
+                    )
+
+                    try:
+                        exit_eval_res = strategy.evaluate(
+                            facts=pos_facts,
+                            portfolio=None,
+                            dec_policy=None,
+                            dec_ctx=dec_ctx
+                        )
+                        if exit_eval_res is not None and isinstance(exit_eval_res, tuple) and len(exit_eval_res) == 4:
+                            _te, t_rec, d_ent, d_rec = exit_eval_res
+                            t_dir = getattr(t_rec, "thesis_direction", None)
+                            d_act = getattr(d_ent, "action", None)
+                            if pos.direction == "LONG" and (d_act == RecommendationAction.SELL or t_dir == ThesisDirection.BEARISH):
+                                exit_reason = getattr(d_rec, "exit_reason", "STRATEGY_EXIT") or "STRATEGY_EXIT"
+                                exit_price = price_bar.close
+                            elif pos.direction == "SHORT" and (d_act == RecommendationAction.BUY or t_dir == ThesisDirection.BULLISH):
+                                exit_reason = getattr(d_rec, "exit_reason", "STRATEGY_EXIT") or "STRATEGY_EXIT"
+                                exit_price = price_bar.close
+                    except Exception as err:
+                        logger.debug("Strategy exit evaluation failed for %s on %s: %s", ticker, ts, err)
 
                 if exit_reason is not None and exit_price is not None:
                     entry_notional = pos.shares * pos.entry_price
@@ -469,15 +521,14 @@ class MultiAssetPortfolioEngine:
 
                     signal_action = None
                     signal_thesis_dir = None
+                    sig_stop_loss = None
+                    sig_target_price = None
+                    sig_risk_ass = None
+                    conf_score = _safe_float(getattr(strategy, "confidence_score", 0.8), 0.8)
 
                     if hasattr(strategy, "evaluate"):
-                        # Build rolling history window: pass up to required_history_bars facts.
-                        # strategy.evaluate() needs historical context (e.g., 200-bar SMA needs
-                        # 200+ bars). Passing just the current bar (the old behaviour) caused all
-                        # indicator-based strategies to always return None (insufficient data).
                         req_bars = max(1, int(_safe_float(getattr(strategy, "required_history_bars", 1), 1.0)))
                         hist = ticker_history.get(ticker, [])
-                        # Find the index of the current bar in the ticker's history list
                         curr_ts_idx = next(
                             (i for i, b in enumerate(hist)
                              if str(b.provenance.publication_timestamp)[:10] == ts),
@@ -489,31 +540,50 @@ class MultiAssetPortfolioEngine:
                             history_facts = [f for b_facts in fact_slices for f in b_facts]
                         else:
                             history_facts = self._payload_to_facts(p, ticker)
+
+                        try:
+                            eval_dt = datetime.strptime(ts, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+                        except Exception:
+                            eval_dt = datetime.now(timezone.utc)
+
+                        dec_ctx = DecisionEvaluationContext(
+                            current_time=eval_dt,
+                            active_policy=DecisionPolicy(),
+                            portfolio=PortfolioState(cash_available=cash, total_value=current_equity),
+                            existing_records=[],
+                            target_security_id=ticker
+                        )
+
                         try:
                             eval_res = strategy.evaluate(
                                 facts=history_facts,
                                 portfolio=None,
                                 dec_policy=None,
-                                dec_ctx=None
+                                dec_ctx=dec_ctx
                             )
                             if eval_res is not None and isinstance(eval_res, tuple) and len(eval_res) == 4:
                                 t_ent, t_rec, d_ent, d_rec = eval_res
                                 if hasattr(d_ent, "action") and isinstance(d_ent.action, RecommendationAction):
                                     signal_action = d_ent.action
                                 signal_thesis_dir = getattr(t_rec, "thesis_direction", None)
+                                sig_stop_loss = getattr(d_rec, "stop_loss_price", None) or getattr(d_ent, "stop_loss_price", None)
+                                sig_target_price = getattr(d_rec, "target_price", None) or getattr(d_ent, "target_price", None)
+                                sig_risk_ass = getattr(d_ent, "risk_assessment", None) or getattr(d_rec, "risk_assessment", None)
+                                conf_obj = getattr(d_ent, "confidence", None) or getattr(t_rec, "confidence", None)
+                                if conf_obj is not None:
+                                    conf_score = _safe_float(getattr(conf_obj, "score", conf_score), conf_score)
                         except (AttributeError, TypeError, ValueError, KeyError) as err:
                             logger.debug("strategy.evaluate() failed for ticker %s on %s: %s", ticker, ts, err)
 
-                    if signal_action is None and cs_rank is not None:
+                    # Only CrossSectionalMomentumStrategy falls back to rank provider if evaluate() returned None
+                    if signal_action is None and cs_rank is not None and getattr(strategy, "name", "") == "CrossSectionalMomentumStrategy":
                         top_n = int(_safe_float(getattr(strategy, "top_n", 10), 10.0))
                         min_mom = _safe_float(getattr(strategy, "min_momentum_pct", 0.0), 0.0)
                         if cs_rank <= top_n and cs_ret is not None and cs_ret > min_mom:
                             signal_action = RecommendationAction.BUY
                             signal_thesis_dir = ThesisDirection.BULLISH
 
-                    # Fall back to default_action if strategy explicitly declares one.
-                    # If no signal was produced by evaluate(), rank provider, or default_action,
-                    # skip this ticker — a None result means "no signal" not "always buy".
+                    # Fall back to default_action if strategy explicitly declares one
                     if signal_action is None:
                         def_act = getattr(strategy, "default_action", None)
                         if isinstance(def_act, RecommendationAction):
@@ -523,7 +593,6 @@ class MultiAssetPortfolioEngine:
                             continue  # No signal produced — do not trade
 
                     if signal_action in (RecommendationAction.BUY, RecommendationAction.SELL):
-                        conf_score = _safe_float(getattr(strategy, "confidence_score", 0.8), 0.8)
                         candidate_signals.append({
                             "ticker": ticker,
                             "price": p.payload.close,
@@ -531,6 +600,9 @@ class MultiAssetPortfolioEngine:
                             "thesis_dir": signal_thesis_dir,
                             "cs_rank": cs_rank if cs_rank is not None else 999999,
                             "confidence": conf_score,
+                            "stop_loss_price": sig_stop_loss,
+                            "target_price": sig_target_price,
+                            "risk_assessment": sig_risk_ass,
                         })
                 except (AttributeError, TypeError, ValueError, KeyError) as err:
                     logger.warning("Skipping candidate signal collection for %s on %s: %s", ticker, ts, err)
@@ -560,19 +632,17 @@ class MultiAssetPortfolioEngine:
 
                 atr_val = entry_p * 0.02
                 atr_mult = _safe_float(getattr(strategy, "atr_multiplier", 2.0), 2.0)
-                # Pass signal_action via SimpleNamespace so RiskEngine resolves the
-                # correct stop-loss direction (LONG vs SHORT). Without this, RiskEngine
-                # defaults to SHORT when decision.action is None, generating oversized
-                # positions that breach the concentration cap and block all entries.
-                _risk_decision = SimpleNamespace(action=signal_action)
-                risk_ass = RiskEngine.calculate(
-                    decision=_risk_decision,
-                    account_size=current_equity,
-                    atr_value=atr_val,
-                    risk_percent=risk_per_trade,
-                    entry_price=entry_p,
-                    atr_multiplier=atr_mult,
-                )
+                _risk_decision = SimpleNamespace(action=act)
+                risk_ass = sig.get("risk_assessment")
+                if risk_ass is None or getattr(risk_ass, "position_size", 0) <= 0:
+                    risk_ass = RiskEngine.calculate(
+                        decision=_risk_decision,
+                        account_size=current_equity,
+                        atr_value=atr_val,
+                        risk_percent=risk_per_trade,
+                        entry_price=entry_p,
+                        atr_multiplier=atr_mult,
+                    )
                 if risk_ass is None or risk_ass.position_size <= 0:
                     rejected_signals_count += 1
                     execution_log.append({
@@ -597,13 +667,13 @@ class MultiAssetPortfolioEngine:
                         "signal_ts": ts,
                         "desired_shares": desired_shares,
                         "risk_ass": risk_ass,
+                        "stop_loss_price": sig.get("stop_loss_price"),
+                        "target_price": sig.get("target_price"),
                     })
                 else:
                     # Immediate Same-Bar Close Execution (execution_delay_bars == 0)
                     max_allowed_notional = current_equity * max_position_equity_pct
                     if entry_notional > max_allowed_notional:
-                        # Clamp position size to concentration cap; only reject if even
-                        # 1 share would exceed the cap (can't subdivide further).
                         capped_shares = int(max_allowed_notional / entry_p)
                         if capped_shares < 1:
                             rejected_signals_count += 1
@@ -638,6 +708,9 @@ class MultiAssetPortfolioEngine:
                     else:  # SHORT
                         cash -= (margin_res + entry_c)
 
+                    pos_stop_loss = sig.get("stop_loss_price") or risk_ass.stop_loss_price
+                    pos_target_price = sig.get("target_price") or risk_ass.target_price
+
                     pos = PortfolioPosition(
                         position_id=f"POS-{position_counter:04d}",
                         ticker=tk,
@@ -645,8 +718,8 @@ class MultiAssetPortfolioEngine:
                         shares=desired_shares,
                         entry_price=entry_p,
                         current_price=entry_p,
-                        stop_loss_price=risk_ass.stop_loss_price,
-                        target_price=risk_ass.target_price,
+                        stop_loss_price=pos_stop_loss,
+                        target_price=pos_target_price,
                         entry_timestamp=ts,
                         signal_timestamp=ts,
                         execution_timestamp=ts,
