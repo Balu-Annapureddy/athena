@@ -32,7 +32,7 @@ class DualMomentumVolatilityScaledStrategy(BaseStrategy):
         atr_period: int = 14,
         atr_multiplier: float = 3.0,
         target_rr_ratio: float = 3.5,
-        fixture_dir: str = "fixtures/yfinance",
+        fixture_dir: str = "fixtures/yfinance_historical",
         pit_provider: Optional[Any] = None,
         index_symbol: str = "NIFTY_50",
     ) -> None:

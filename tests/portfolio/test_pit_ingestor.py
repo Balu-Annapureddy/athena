@@ -4,6 +4,7 @@ import os
 import unittest
 from unittest.mock import MagicMock
 
+from core.domain.enums import RecommendationAction
 from core.portfolio.symbol_normalizer import SymbolNormalizer
 from core.portfolio.pit_validator import PITDatasetValidator, PITDatasetStatus
 from core.portfolio.pit_ingestor import PointInTimeDatasetIngestor, VersionedPITDataset
@@ -110,7 +111,7 @@ class TestPITUniverseIngestion(unittest.TestCase):
         provider.load_records([UniverseConstituentRecord("RELIANCE.NS", "NIFTY_50", "2010-01-01")])
 
         exp = CrossSectionalGeneralizationExperiment(
-            strategy=MagicMock(),
+            strategy=MagicMock(default_action=RecommendationAction.BUY),
             nifty50_tickers=["RELIANCE.NS"],
             nifty100_tickers=["RELIANCE.NS"],
             nifty500_tickers=["RELIANCE.NS"],

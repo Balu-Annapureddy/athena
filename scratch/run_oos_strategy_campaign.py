@@ -1,7 +1,11 @@
 """OOS Strategy Validation Campaign Runner for Athena.
 
-Evaluates all 8 strategies in core/strategy/ plus a NIFTY 50 Buy & Hold benchmark
-over the Out-of-Sample window (2021-01-01 to 2026-08-01) with transaction costs enabled.
+Evaluates all 9 strategies (8 baseline + DualMomentumVolatilityScaledStrategy) plus a
+NIFTY 50 Buy & Hold benchmark over the Out-of-Sample window (2021-01-01 to 2026-08-01)
+with transaction costs enabled.
+
+FIXTURE DIRECTORY: fixtures/yfinance_historical (~150 real NIFTY tickers).
+NOT fixtures/yfinance (3-ticker unit-test stub — invalid for portfolio ranking strategies).
 """
 
 import sys
@@ -27,7 +31,7 @@ def calculate_buy_and_hold_benchmark(
     tickers: List[str],
     start_date: str,
     end_date: str,
-    fixture_dir: str = "fixtures/yfinance"
+    fixture_dir: str = "fixtures/yfinance_historical"
 ) -> Dict[str, Any]:
     """Calculate clean multi-asset buy-and-hold benchmark return over OOS window."""
     from core.data.connectors.yfinance_connector import YFinanceConnector
@@ -40,10 +44,16 @@ def calculate_buy_and_hold_benchmark(
             # Extract daily closing prices
             filtered = [p for p in payloads if start_date <= str(p.provenance.publication_timestamp)[:10] <= end_date]
             if len(filtered) >= 10:
-                all_prices[t] = {
-                    str(p.provenance.publication_timestamp)[:10]: float(p.value.value)
-                    for p in filtered if hasattr(p, 'value') and hasattr(p.value, 'value')
-                }
+                price_dict = {}
+                for p in filtered:
+                    dt = str(p.provenance.publication_timestamp)[:10]
+                    c = getattr(getattr(p, 'payload', None), 'close', None)
+                    if c is None and hasattr(p, 'value'):
+                        c = getattr(p.value, 'value', None)
+                    if c is not None:
+                        price_dict[dt] = float(c)
+                if len(price_dict) >= 10:
+                    all_prices[t] = price_dict
         except Exception:
             pass
 
@@ -120,7 +130,7 @@ def main():
 
     # 1. Compute Buy & Hold Benchmark
     print("\nComputing NIFTY 50 Buy & Hold Benchmark...")
-    benchmark_res = calculate_buy_and_hold_benchmark(tickers, oos_start, oos_end)
+    benchmark_res = calculate_buy_and_hold_benchmark(tickers, oos_start, oos_end, fixture_dir="fixtures/yfinance_historical")
     print(f"Benchmark Return: {benchmark_res['return_pct']:.2f}%, MaxDD: {benchmark_res['max_drawdown_pct']:.2f}%, Sharpe: {benchmark_res['sharpe_ratio']:.2f}, Assets: {benchmark_res['trade_count']}")
 
     # 2. Evaluate Strategies
@@ -142,7 +152,7 @@ def main():
         print(f"\nEvaluating strategy: {name}...")
         cost_model = TransactionCostModel()
         engine = MultiAssetPortfolioEngine(
-            fixture_dir="fixtures/yfinance",
+            fixture_dir="fixtures/yfinance_historical",
             cost_model=cost_model,
             pit_provider=pit_provider,
             index_symbol="NIFTY_50",

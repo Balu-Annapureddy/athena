@@ -10,13 +10,22 @@ import copy
 import logging
 import math
 import os
+from datetime import datetime, timezone
 from types import SimpleNamespace
 from typing import Any, Dict, List, Optional, Set, Tuple
 
 from core.backtest.engine import TransactionCostModel
 from core.backtest.metrics import MetricsCalculator
 from core.data.connectors.yfinance_connector import YFinanceConnector
+from core.data.factory import ObservationFactory
+from core.domain.common import ObservationId, DomainMetadata
+from core.domain.entities import Fact
 from core.domain.enums import RecommendationAction, ThesisDirection
+from core.domain.value_objects import Measurement
+from core.facts.builder import FactBuilder
+from core.facts.rules import PriceFactRule
+from core.facts.taxonomy import FactType
+from core.patterns.engine import PatternEngine
 from core.portfolio.results import MultiAssetBacktestResult
 from core.portfolio.state import PortfolioPosition, PortfolioStateSnapshot
 from core.portfolio.universe import PointInTimeUniverseProvider, MissingPointInTimeUniverseDataError
@@ -61,6 +70,49 @@ class MultiAssetPortfolioEngine:
         self._index_symbol = index_symbol
         self._strict_pit = strict_pit
         self._connector = YFinanceConnector(fixture_dir=fixture_dir)
+        self._obs_factory = ObservationFactory()
+        self._fact_builder = FactBuilder(rules=[PriceFactRule()])
+
+    def _payload_to_facts(self, payload: Any, ticker: str) -> List[Fact]:
+        """Convert a ConnectorPayload or mock bar into domain Fact entities."""
+        if hasattr(payload, "payload_type") and hasattr(payload, "provenance"):
+            try:
+                obs = self._obs_factory.create_observation(payload)
+                facts = self._fact_builder.build_facts(obs)
+                if facts:
+                    return facts
+            except Exception:
+                pass
+
+        obs_id = ObservationId.generate()
+        md = DomainMetadata.create(entity_id=obs_id, source="engine", created_by="MultiAssetPortfolioEngine")
+        p_load = getattr(payload, "payload", payload)
+
+        open_val = float(getattr(p_load, "open", 0.0))
+        high_val = float(getattr(p_load, "high", 0.0))
+        low_val = float(getattr(p_load, "low", 0.0))
+        close_val = float(getattr(p_load, "close", 0.0))
+        vol_val = float(getattr(p_load, "volume", 0.0))
+        tf_val = str(getattr(p_load, "timeframe", "1d"))
+
+        source_uri = f"yfinance/{ticker}"
+        now_dt = datetime.now(timezone.utc)
+
+        meas_open = Measurement(value=open_val, units="currency", quality="VERIFIED", timestamp=now_dt, source=source_uri, confidence_score=1.0)
+        meas_high = Measurement(value=high_val, units="currency", quality="VERIFIED", timestamp=now_dt, source=source_uri, confidence_score=1.0)
+        meas_low = Measurement(value=low_val, units="currency", quality="VERIFIED", timestamp=now_dt, source=source_uri, confidence_score=1.0)
+        meas_close = Measurement(value=close_val, units="currency", quality="VERIFIED", timestamp=now_dt, source=source_uri, confidence_score=1.0)
+        meas_vol = Measurement(value=vol_val, units="shares", quality="VERIFIED", timestamp=now_dt, source=source_uri, confidence_score=1.0)
+        meas_tf = Measurement(value=tf_val, units="timeframe", quality="VERIFIED", timestamp=now_dt, source=source_uri, confidence_score=1.0)
+
+        return [
+            Fact(metadata=md, source_observation_id=obs_id, name=FactType.PRICE_OPEN.value, value=meas_open, extracted_at=now_dt),
+            Fact(metadata=md, source_observation_id=obs_id, name=FactType.PRICE_HIGH.value, value=meas_high, extracted_at=now_dt),
+            Fact(metadata=md, source_observation_id=obs_id, name=FactType.PRICE_LOW.value, value=meas_low, extracted_at=now_dt),
+            Fact(metadata=md, source_observation_id=obs_id, name=FactType.PRICE_CLOSE.value, value=meas_close, extracted_at=now_dt),
+            Fact(metadata=md, source_observation_id=obs_id, name=FactType.PRICE_VOLUME.value, value=meas_vol, extracted_at=now_dt),
+            Fact(metadata=md, source_observation_id=obs_id, name=FactType.PRICE_TIMEFRAME.value, value=meas_tf, extracted_at=now_dt),
+        ]
 
     def _load_ticker_payloads(
         self, ticker: str, start_date: str, end_date: str
@@ -149,8 +201,36 @@ class MultiAssetPortfolioEngine:
 
         # Map timestamp -> ticker -> payload bar
         bar_matrix: Dict[str, Dict[str, Any]] = {ts: {} for ts in sorted_timestamps}
+        # Per-ticker sorted list of all bars and pre-computed facts
+        ticker_history: Dict[str, List[Any]] = {}  # ticker -> [bar0, bar1, ...] in date order
+        ticker_fact_history: Dict[str, List[List[Fact]]] = {}  # ticker -> [[f1, f2, ...], ...]
         for ticker, p_list in ticker_payloads.items():
-            for p in p_list:
+            sorted_bars = sorted(p_list, key=lambda p: str(p.provenance.publication_timestamp)[:10])
+            ticker_history[ticker] = sorted_bars
+
+            # 1. Price facts per bar
+            raw_facts_per_bar = [self._payload_to_facts(b, ticker) for b in sorted_bars]
+            all_price_facts = [f for b_facts in raw_facts_per_bar for f in b_facts]
+
+            # 2. Pattern facts across all bars
+            pattern_engine = PatternEngine(entity=ticker)
+            all_pattern_facts = pattern_engine.compute(all_price_facts)
+
+            pattern_facts_by_obs: Dict[str, List[Fact]] = {}
+            for pf in all_pattern_facts:
+                pattern_facts_by_obs.setdefault(str(pf.source_observation_id), []).append(pf)
+
+            combined_bar_facts = []
+            for b_facts in raw_facts_per_bar:
+                if b_facts:
+                    obs_id_str = str(b_facts[0].source_observation_id)
+                    pfs = pattern_facts_by_obs.get(obs_id_str, [])
+                    combined_bar_facts.append(b_facts + pfs)
+                else:
+                    combined_bar_facts.append([])
+            ticker_fact_history[ticker] = combined_bar_facts
+
+            for p in sorted_bars:
                 ts = str(p.provenance.publication_timestamp)[:10]
                 if ts in bar_matrix:
                     bar_matrix[ts][ticker] = p
@@ -389,18 +469,35 @@ class MultiAssetPortfolioEngine:
 
                     signal_action = None
                     signal_thesis_dir = None
-                    
+
                     if hasattr(strategy, "evaluate"):
-                        mock_facts = [p] if hasattr(p, "value") else []
+                        # Build rolling history window: pass up to required_history_bars facts.
+                        # strategy.evaluate() needs historical context (e.g., 200-bar SMA needs
+                        # 200+ bars). Passing just the current bar (the old behaviour) caused all
+                        # indicator-based strategies to always return None (insufficient data).
+                        req_bars = max(1, int(_safe_float(getattr(strategy, "required_history_bars", 1), 1.0)))
+                        hist = ticker_history.get(ticker, [])
+                        # Find the index of the current bar in the ticker's history list
+                        curr_ts_idx = next(
+                            (i for i, b in enumerate(hist)
+                             if str(b.provenance.publication_timestamp)[:10] == ts),
+                            None
+                        )
+                        if curr_ts_idx is not None:
+                            start_idx = max(0, curr_ts_idx - req_bars + 1)
+                            fact_slices = ticker_fact_history.get(ticker, [])[start_idx:curr_ts_idx + 1]
+                            history_facts = [f for b_facts in fact_slices for f in b_facts]
+                        else:
+                            history_facts = self._payload_to_facts(p, ticker)
                         try:
-                            res = strategy.evaluate(
-                                facts=mock_facts,
+                            eval_res = strategy.evaluate(
+                                facts=history_facts,
                                 portfolio=None,
                                 dec_policy=None,
                                 dec_ctx=None
                             )
-                            if res is not None and isinstance(res, tuple) and len(res) == 4:
-                                t_ent, t_rec, d_ent, d_rec = res
+                            if eval_res is not None and isinstance(eval_res, tuple) and len(eval_res) == 4:
+                                t_ent, t_rec, d_ent, d_rec = eval_res
                                 if hasattr(d_ent, "action") and isinstance(d_ent.action, RecommendationAction):
                                     signal_action = d_ent.action
                                 signal_thesis_dir = getattr(t_rec, "thesis_direction", None)
@@ -414,13 +511,16 @@ class MultiAssetPortfolioEngine:
                             signal_action = RecommendationAction.BUY
                             signal_thesis_dir = ThesisDirection.BULLISH
 
+                    # Fall back to default_action if strategy explicitly declares one.
+                    # If no signal was produced by evaluate(), rank provider, or default_action,
+                    # skip this ticker — a None result means "no signal" not "always buy".
                     if signal_action is None:
                         def_act = getattr(strategy, "default_action", None)
                         if isinstance(def_act, RecommendationAction):
                             signal_action = def_act
+                            signal_thesis_dir = ThesisDirection.BULLISH
                         else:
-                            signal_action = RecommendationAction.BUY
-                        signal_thesis_dir = ThesisDirection.BULLISH
+                            continue  # No signal produced — do not trade
 
                     if signal_action in (RecommendationAction.BUY, RecommendationAction.SELL):
                         conf_score = _safe_float(getattr(strategy, "confidence_score", 0.8), 0.8)

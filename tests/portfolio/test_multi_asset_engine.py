@@ -40,6 +40,7 @@ class TestMultiAssetPortfolioEngine(unittest.TestCase):
         mock_strategy = MagicMock()
         mock_strategy.confidence_score = 0.9
         mock_strategy.atr_multiplier = 2.0
+        mock_strategy.default_action = RecommendationAction.BUY
         
         res = engine.run_portfolio_backtest(
             strategy=mock_strategy,
@@ -64,6 +65,7 @@ class TestMultiAssetPortfolioEngine(unittest.TestCase):
 
         mock_strategy = MagicMock()
         mock_strategy.confidence_score = 0.8
+        mock_strategy.default_action = RecommendationAction.BUY
         
         res = engine.run_portfolio_backtest(
             strategy=mock_strategy,
@@ -95,6 +97,7 @@ class TestMultiAssetPortfolioEngine(unittest.TestCase):
 
         mock_strategy = MagicMock()
         mock_strategy.confidence_score = 0.8
+        mock_strategy.default_action = RecommendationAction.BUY
         
         res = engine.run_portfolio_backtest(
             strategy=mock_strategy,
@@ -124,6 +127,7 @@ class TestMultiAssetPortfolioEngine(unittest.TestCase):
         }.get(tk, []))
 
         mock_strategy = MagicMock()
+        mock_strategy.default_action = RecommendationAction.BUY
         
         res = engine.run_portfolio_backtest(
             strategy=mock_strategy,
@@ -153,7 +157,7 @@ class TestMultiAssetPortfolioEngine(unittest.TestCase):
         engine._load_ticker_payloads = MagicMock(side_effect=lambda tk, s, e: a_bars if tk == "STK_A.NS" else b_bars)
 
         res = engine.run_portfolio_backtest(
-            strategy=MagicMock(),
+            strategy=MagicMock(default_action=RecommendationAction.BUY),
             tickers=["STK_A.NS", "STK_B.NS"],
             start_date="2026-07-01",
             end_date="2026-07-03",
@@ -172,7 +176,7 @@ class TestMultiAssetPortfolioEngine(unittest.TestCase):
         engine._load_ticker_payloads = MagicMock(return_value=[bar0, bar1])
 
         res = engine.run_portfolio_backtest(
-            strategy=MagicMock(),
+            strategy=MagicMock(default_action=RecommendationAction.BUY),
             tickers=["RELIANCE.NS"],
             start_date="2026-07-01",
             end_date="2026-07-02",
@@ -194,7 +198,7 @@ class TestMultiAssetPortfolioEngine(unittest.TestCase):
         engine._load_ticker_payloads = MagicMock(side_effect=lambda tk, s, e: [bar0_a, bar1_a] if tk == "STK_A.NS" else [bar0_b])
 
         res = engine.run_portfolio_backtest(
-            strategy=MagicMock(),
+            strategy=MagicMock(default_action=RecommendationAction.BUY),
             tickers=["STK_A.NS", "STK_B.NS"],
             start_date="2026-07-01",
             end_date="2026-07-02",
@@ -216,7 +220,7 @@ class TestMultiAssetPortfolioEngine(unittest.TestCase):
         engine._load_ticker_payloads = MagicMock(return_value=[bar0, bar1])
 
         res = engine.run_portfolio_backtest(
-            strategy=MagicMock(),
+            strategy=MagicMock(default_action=RecommendationAction.BUY),
             tickers=["LATE.NS"],
             start_date="2026-07-01",
             end_date="2026-07-02",
@@ -238,7 +242,7 @@ class TestMultiAssetPortfolioEngine(unittest.TestCase):
         engine._load_ticker_payloads = MagicMock(return_value=[bar0])
 
         res = engine.run_portfolio_backtest(
-            strategy=MagicMock(),
+            strategy=MagicMock(default_action=RecommendationAction.BUY),
             tickers=["DROPPED.NS"],
             start_date="2026-07-01",
             end_date="2026-07-01",
@@ -257,7 +261,7 @@ class TestMultiAssetPortfolioEngine(unittest.TestCase):
         engine._load_ticker_payloads = MagicMock(side_effect=lambda tk, s, e: [long_bar] if tk == "LONG.NS" else [short_bar])
 
         res = engine.run_portfolio_backtest(
-            strategy=MagicMock(),
+            strategy=MagicMock(default_action=RecommendationAction.BUY),
             tickers=["LONG.NS", "SHORT.NS"],
             start_date="2026-07-01",
             end_date="2026-07-01",
@@ -274,7 +278,7 @@ class TestMultiAssetPortfolioEngine(unittest.TestCase):
         engine._load_ticker_payloads = MagicMock(return_value=[bar0])
 
         res = engine.run_portfolio_backtest(
-            strategy=MagicMock(),
+            strategy=MagicMock(default_action=RecommendationAction.BUY),
             tickers=["RELIANCE.NS"],
             start_date="2026-07-01",
             end_date="2026-07-01",
@@ -291,7 +295,7 @@ class TestMultiAssetPortfolioEngine(unittest.TestCase):
         engine._load_ticker_payloads = MagicMock(return_value=[bar0])
 
         res = engine.run_portfolio_backtest(
-            strategy=MagicMock(),
+            strategy=MagicMock(default_action=RecommendationAction.BUY),
             tickers=["RELIANCE.NS"],
             start_date="2026-07-01",
             end_date="2026-07-01",
@@ -311,7 +315,7 @@ class TestMultiAssetPortfolioEngine(unittest.TestCase):
         engine._load_ticker_payloads = MagicMock(return_value=[bar0, bar1])
 
         res = engine.run_portfolio_backtest(
-            strategy=MagicMock(),
+            strategy=MagicMock(default_action=RecommendationAction.BUY),
             tickers=["RELIANCE.NS"],
             start_date="2026-07-01",
             end_date="2026-07-02",
@@ -332,7 +336,7 @@ class TestMultiAssetPortfolioEngine(unittest.TestCase):
         engine._load_ticker_payloads = MagicMock(side_effect=lambda tk, s, e: [bar0_a] if tk == "AAA.NS" else [bar0_b])
 
         res = engine.run_portfolio_backtest(
-            strategy=MagicMock(),
+            strategy=MagicMock(default_action=RecommendationAction.BUY),
             tickers=["ZZZ.NS", "AAA.NS"],
             start_date="2026-07-01",
             end_date="2026-07-01",
@@ -351,7 +355,7 @@ class TestMultiAssetPortfolioEngine(unittest.TestCase):
         engine._load_ticker_payloads = MagicMock(return_value=[bar0])
 
         res = engine.run_portfolio_backtest(
-            strategy=MagicMock(),
+            strategy=MagicMock(default_action=RecommendationAction.BUY),
             tickers=["EXPENSIVE.NS"],
             start_date="2026-07-01",
             end_date="2026-07-01",
@@ -373,7 +377,7 @@ class TestMultiAssetPortfolioEngine(unittest.TestCase):
         engine._load_ticker_payloads = MagicMock(return_value=[rel_bar0, rel_bar1])
 
         res = engine.run_portfolio_backtest(
-            strategy=MagicMock(),
+            strategy=MagicMock(default_action=RecommendationAction.BUY),
             tickers=["RELIANCE.NS"],
             start_date="2026-07-01",
             end_date="2026-07-02",
@@ -393,7 +397,7 @@ class TestMultiAssetPortfolioEngine(unittest.TestCase):
         engine = MultiAssetPortfolioEngine(fixture_dir="fixtures/yfinance", pit_provider=None)
         with self.assertRaises(MissingPointInTimeUniverseDataError):
             engine.run_portfolio_backtest(
-                strategy=MagicMock(),
+                strategy=MagicMock(default_action=RecommendationAction.BUY),
                 tickers=["RELIANCE.NS"],
                 start_date="2026-07-01",
                 end_date="2026-07-02",
@@ -411,7 +415,7 @@ class TestMultiAssetPortfolioEngine(unittest.TestCase):
         engine._load_ticker_payloads = MagicMock(return_value=[bar0])
 
         res = engine.run_portfolio_backtest(
-            strategy=MagicMock(),
+            strategy=MagicMock(default_action=RecommendationAction.BUY),
             tickers=["RELIANCE.NS"],
             start_date="2026-07-01",
             end_date="2026-07-01",
@@ -424,7 +428,7 @@ class TestMultiAssetPortfolioEngine(unittest.TestCase):
         engine = MultiAssetPortfolioEngine(fixture_dir="fixtures/yfinance", pit_provider=None)
         with self.assertRaises(MissingPointInTimeUniverseDataError):
             engine.run_portfolio_backtest(
-                strategy=MagicMock(),
+                strategy=MagicMock(default_action=RecommendationAction.BUY),
                 tickers=["RELIANCE.NS"],
                 start_date="2026-07-01",
                 end_date="2026-07-02",
@@ -438,7 +442,7 @@ class TestMultiAssetPortfolioEngine(unittest.TestCase):
         engine._load_ticker_payloads = MagicMock(return_value=[bar0])
 
         res = engine.run_portfolio_backtest(
-            strategy=MagicMock(),
+            strategy=MagicMock(default_action=RecommendationAction.BUY),
             tickers=["RELIANCE.NS"],
             start_date="2026-07-01",
             end_date="2026-07-01",
@@ -454,7 +458,7 @@ class TestMultiAssetPortfolioEngine(unittest.TestCase):
         engine._load_ticker_payloads = MagicMock(return_value=[bar0, bar1])
 
         res = engine.run_portfolio_backtest(
-            strategy=MagicMock(),
+            strategy=MagicMock(default_action=RecommendationAction.BUY),
             tickers=["RELIANCE.NS"],
             start_date="2026-07-01",
             end_date="2026-07-02",
@@ -475,7 +479,7 @@ class TestMultiAssetPortfolioEngine(unittest.TestCase):
         engine._load_ticker_payloads = MagicMock(return_value=[bar0])
 
         res = engine.run_portfolio_backtest(
-            strategy=MagicMock(),
+            strategy=MagicMock(default_action=RecommendationAction.BUY),
             tickers=["RELIANCE.NS"],
             start_date="2026-07-01",
             end_date="2026-07-01",

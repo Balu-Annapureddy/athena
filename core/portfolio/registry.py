@@ -84,7 +84,7 @@ class StrategyRegistry:
             - All other 8 baseline strategies: Registered as UNVALIDATED.
         """
         registry = cls()
-        unvalidated_strategies = [
+        strategies = [
             GoldenCrossDeathCrossStrategy(),
             ATRTrailingGoldenCrossStrategy(),
             RegimeFilteredGoldenCrossStrategy(),
@@ -93,20 +93,13 @@ class StrategyRegistry:
             MACDSignalCrossStrategy(),
             RSIMeanReversionStrategy(),
             VWAPBiasStrategy(),
+            DualMomentumVolatilityScaledStrategy(),
         ]
-        for strat in unvalidated_strategies:
+        for strat in strategies:
             registry.register(
                 strategy=strat,
                 status=ValidationStatus.UNVALIDATED,
                 weight=1.0,
                 enabled=True,
             )
-
-        # Promoted strategy surviving OOS net-of-cost campaign
-        registry.register(
-            strategy=DualMomentumVolatilityScaledStrategy(),
-            status=ValidationStatus.BACKTESTED,
-            weight=1.0,
-            enabled=True,
-        )
         return registry

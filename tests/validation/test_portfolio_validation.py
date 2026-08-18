@@ -75,7 +75,7 @@ class TestPortfolioValidationCampaign(unittest.TestCase):
 
         engine._load_ticker_payloads = MagicMock(return_value=[bar0, bar1])
         res = engine.run_portfolio_backtest(
-            strategy=MagicMock(),
+            strategy=MagicMock(default_action=RecommendationAction.BUY),
             tickers=["RELIANCE.NS"],
             start_date="2026-07-01",
             end_date="2026-07-02",
@@ -92,7 +92,7 @@ class TestPortfolioValidationCampaign(unittest.TestCase):
         engine._load_ticker_payloads = MagicMock(return_value=a_bars)
 
         res = engine.run_portfolio_backtest(
-            strategy=MagicMock(),
+            strategy=MagicMock(default_action=RecommendationAction.BUY),
             tickers=["STK_A.NS"],
             start_date="2026-07-01",
             end_date="2026-07-02",
@@ -108,7 +108,7 @@ class TestPortfolioValidationCampaign(unittest.TestCase):
         engine._load_ticker_payloads = MagicMock(return_value=[bar0])
 
         res = engine.run_portfolio_backtest(
-            strategy=MagicMock(),
+            strategy=MagicMock(default_action=RecommendationAction.BUY),
             tickers=["EXPENSIVE.NS"],
             start_date="2026-07-01",
             end_date="2026-07-01",
@@ -161,7 +161,7 @@ class TestPortfolioValidationCampaign(unittest.TestCase):
         engine._load_ticker_payloads = MagicMock(side_effect=lambda tk, s, e: bars.get(tk, []))
 
         res = engine.run_portfolio_backtest(
-            strategy=MagicMock(),
+            strategy=MagicMock(default_action=RecommendationAction.BUY),
             tickers=[f"TK{i}.NS" for i in range(5)],
             start_date="2026-07-01",
             end_date="2026-07-01",

@@ -30,13 +30,13 @@ class CrossSectionalRankProvider:
     _instances: Dict[str, "CrossSectionalRankProvider"] = {}
 
     @classmethod
-    def get_instance(cls, fixture_dir: str = "fixtures/yfinance") -> "CrossSectionalRankProvider":
+    def get_instance(cls, fixture_dir: str = "fixtures/yfinance_historical") -> "CrossSectionalRankProvider":
         norm_path = os.path.abspath(fixture_dir)
         if norm_path not in cls._instances:
             cls._instances[norm_path] = cls(fixture_dir=fixture_dir)
         return cls._instances[norm_path]
 
-    def __init__(self, fixture_dir: str = "fixtures/yfinance") -> None:
+    def __init__(self, fixture_dir: str = "fixtures/yfinance_historical") -> None:
         self.fixture_dir = fixture_dir
         self._date_ticker_close: Dict[str, Dict[str, float]] = {}
         self._ticker_dates: Dict[str, List[str]] = {}
@@ -45,7 +45,7 @@ class CrossSectionalRankProvider:
 
     def _load_data(self) -> None:
         pattern = os.path.join(self.fixture_dir, "YFinanceConnector_*.jsonl")
-        files = [f for f in glob.glob(pattern) if not f.endswith("_15m.jsonl")]
+        files = [f for f in glob.glob(pattern) if not f.endswith("_15m.jsonl") and not f.endswith("_1h.jsonl")]
 
         for fpath in files:
             ticker = os.path.basename(fpath).replace("YFinanceConnector_", "").replace(".jsonl", "")

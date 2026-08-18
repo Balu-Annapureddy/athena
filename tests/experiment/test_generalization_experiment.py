@@ -3,6 +3,7 @@
 import unittest
 from unittest.mock import MagicMock, patch
 
+from core.domain.enums import RecommendationAction
 from core.experiment.generalization import (
     UniversePartition,
     CrossSectionalGeneralizationExperiment,
@@ -40,7 +41,7 @@ class TestCrossSectionalGeneralizationExperiment(unittest.TestCase):
         """Batch 8 - 17: Missing production PIT provider raises MissingPointInTimeUniverseDataError when require_pit=True."""
         cfg = PortfolioResearchConfig(require_pit=True)
         exp = CrossSectionalGeneralizationExperiment(
-            strategy=MagicMock(),
+            strategy=MagicMock(default_action=RecommendationAction.BUY),
             nifty50_tickers=["RELIANCE.NS"],
             nifty100_tickers=["TCS.NS"],
             nifty500_tickers=["INFY.NS"],
@@ -55,7 +56,7 @@ class TestCrossSectionalGeneralizationExperiment(unittest.TestCase):
         """Batch 8 - 17: Synthetic mode flags explicit research integrity data limitation warning."""
         cfg = PortfolioResearchConfig(require_pit=False, allow_synthetic=True)
         exp = CrossSectionalGeneralizationExperiment(
-            strategy=MagicMock(),
+            strategy=MagicMock(default_action=RecommendationAction.BUY),
             nifty50_tickers=["RELIANCE.NS"],
             nifty100_tickers=["TCS.NS"],
             nifty500_tickers=["INFY.NS"],
@@ -77,7 +78,7 @@ class TestCrossSectionalGeneralizationExperiment(unittest.TestCase):
         """Batch 8 - 8, 9, 10: Shared capital & 10% concentration cap remain enforced in generalization experiment."""
         cfg = PortfolioResearchConfig(initial_capital=100_000.0, max_position_equity_pct=0.10)
         exp = CrossSectionalGeneralizationExperiment(
-            strategy=MagicMock(),
+            strategy=MagicMock(default_action=RecommendationAction.BUY),
             nifty50_tickers=["EXPENSIVE.NS"],
             nifty100_tickers=["EXPENSIVE.NS"],
             nifty500_tickers=["EXPENSIVE.NS"],
@@ -94,13 +95,13 @@ class TestCrossSectionalGeneralizationExperiment(unittest.TestCase):
     def test_reproducibility_hash_deterministic(self) -> None:
         """Batch 8 - 15: Identical generalization experiment runs produce identical reproducibility hash."""
         exp1 = CrossSectionalGeneralizationExperiment(
-            strategy=MagicMock(),
+            strategy=MagicMock(default_action=RecommendationAction.BUY),
             nifty50_tickers=["RELIANCE.NS"],
             nifty100_tickers=["TCS.NS"],
             nifty500_tickers=["INFY.NS"],
         )
         exp2 = CrossSectionalGeneralizationExperiment(
-            strategy=MagicMock(),
+            strategy=MagicMock(default_action=RecommendationAction.BUY),
             nifty50_tickers=["RELIANCE.NS"],
             nifty100_tickers=["TCS.NS"],
             nifty500_tickers=["INFY.NS"],

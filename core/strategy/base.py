@@ -250,6 +250,19 @@ class BaseStrategy(ABC):
             from core.intelligence.indicators import atr
             atr_value = atr(highs, lows, closes)
 
+        if dec_policy is None:
+            dec_policy = DecisionPolicy()
+        if portfolio is None:
+            portfolio = PortfolioState(cash_available=1000000.0, total_value=1000000.0)
+        if dec_ctx is None:
+            dec_ctx = DecisionEvaluationContext(
+                current_time=now,
+                active_policy=dec_policy,
+                portfolio=portfolio,
+                existing_records=[],
+                target_security_id=entity
+            )
+
         # 5. Assemble Decision via DecisionAssembler
         dec_assembler = DecisionAssembler(
             builder=DecisionCandidateBuilder(rules=[QualityBuyDecisionRule(), RiskSellDecisionRule()])
