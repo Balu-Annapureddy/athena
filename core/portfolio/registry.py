@@ -14,6 +14,7 @@ from core.strategy.dual_momentum import DualMomentumVolatilityScaledStrategy
 from core.strategy.macd_cross import MACDSignalCrossStrategy
 from core.strategy.rsi_mean_reversion import RSIMeanReversionStrategy
 from core.strategy.vwap_bias import VWAPBiasStrategy
+from core.strategy.breakout_volume_atr_hybrid import BreakoutVolumeATRTrailingHybridStrategy
 
 
 class StrategyRegistry:
@@ -81,6 +82,8 @@ class StrategyRegistry:
         Validation Campaign Evidence (2021–2026 NIFTY 50 PIT Universe net-of-cost):
             - ATRTrailingGoldenCrossStrategy: PROMOTED to RISK_ADJUSTED_VALIDATED
               (0.86 Sharpe vs Benchmark 0.81, 10.98% MaxDD vs Benchmark 21.68%, 680 trades).
+            - BreakoutVolumeATRTrailingHybridStrategy: PROMOTED to RISK_ADJUSTED_VALIDATED
+              (0.96 Sharpe vs Benchmark 0.81, 11.24% MaxDD vs Benchmark 21.68%, 960 trades).
             - All other 8 strategies: Registered as UNVALIDATED.
         """
         registry = cls()
@@ -94,6 +97,7 @@ class StrategyRegistry:
             (RSIMeanReversionStrategy(), ValidationStatus.UNVALIDATED),
             (VWAPBiasStrategy(), ValidationStatus.UNVALIDATED),
             (DualMomentumVolatilityScaledStrategy(), ValidationStatus.UNVALIDATED),
+            (BreakoutVolumeATRTrailingHybridStrategy(), ValidationStatus.RISK_ADJUSTED_VALIDATED),
         ]
         for strat, status in strategies:
             registry.register(

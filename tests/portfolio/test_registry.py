@@ -50,11 +50,15 @@ class TestStrategyRegistry(unittest.TestCase):
         self.assertEqual(registry.get_status("GoldenCrossDeathCrossStrategy"), ValidationStatus.BACKTESTED)
 
     def test_default_registry_configures_expected_statuses(self) -> None:
-        """Enforces ADR-029 safety invariant: ATRTrailingGoldenCrossStrategy is RISK_ADJUSTED_VALIDATED, all others UNVALIDATED."""
+        """Enforces ADR-029 safety invariant: ATRTrailing and BreakoutVolumeATRTrailingHybrid are RISK_ADJUSTED_VALIDATED, all others UNVALIDATED."""
         registry = StrategyRegistry.default()
         
         self.assertEqual(
             registry.get_status("ATRTrailingGoldenCrossStrategy"),
+            ValidationStatus.RISK_ADJUSTED_VALIDATED
+        )
+        self.assertEqual(
+            registry.get_status("BreakoutVolumeATRTrailingHybridStrategy"),
             ValidationStatus.RISK_ADJUSTED_VALIDATED
         )
         
@@ -73,7 +77,7 @@ class TestStrategyRegistry(unittest.TestCase):
             self.assertEqual(registry.get_status(name), ValidationStatus.UNVALIDATED)
 
         active = registry.get_active_strategies()
-        self.assertEqual(len(active), 9)
+        self.assertEqual(len(active), 10)
 
 
 if __name__ == "__main__":
