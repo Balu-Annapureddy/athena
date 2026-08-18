@@ -1,21 +1,14 @@
-"""ATR Trailing Stop Golden Cross Strategy.
+"""Test Pullback Re-entry on the 2015-2020 Training Window.
 
-Combines 50/200-day SMA Golden Cross entries with Wilder's ADX trend strength filter
-and a dynamic ATR (Average True Range) trailing stop exit.
-
-Rationale:
-    Standard moving average crossover strategies suffer from massive gain givebacks
-    because they wait for the slow 200-day SMA to cross back down before exiting.
-    A trailing stop set at (Highest Close since Entry - N × ATR) locks in peak gains
-    during strong trends and exits long before a Death Cross occurs.
-
-Reference:
-    - Murphy, *Technical Analysis of the Financial Markets*, 1999, Chapter 9 & 10.
-    - Wilder, *New Concepts in Technical Trading Systems*, 1978, Chapter 4 (ATR/ADX).
+Explore whether allowing trend continuation re-entries (entering when 50 SMA > 200 SMA
+and price breaks back above 50 SMA / 20 SMA with ADX confirmation) improves trend capture
+without increasing drawdown beyond the benchmark.
 """
 
-from typing import List, Optional, Tuple
+import sys
+sys.path.insert(0, ".")
 
+from typing import List, Optional, Tuple
 from core.domain.entities import Decision, Fact, InvestmentThesis
 from core.decision_builder.context import DecisionEvaluationContext
 from core.decision_builder.ledger import DecisionRecord
@@ -24,10 +17,13 @@ from core.decision_builder.portfolio import PortfolioState
 from core.intelligence import adx, atr, sma
 from core.strategy.base import BaseStrategy
 from core.thesis_builder.ledger import ThesisRecord
+from core.backtest.engine import TransactionCostModel
+from core.portfolio.engine import MultiAssetPortfolioEngine
+from core.portfolio.universe import PointInTimeUniverseProvider
 
 
-class ATRTrailingGoldenCrossStrategy(BaseStrategy):
-    """Golden Cross strategy with ADX regime filter and dynamic ATR trailing stop exit."""
+class TrendPullbackATRTrailingStrategy(BaseStrategy):
+    """Enhanced Golden Cross + Trend Pullback Re-entry with ATR Trailing Stop."""
 
     def __init__(
         self,
@@ -51,15 +47,11 @@ class ATRTrailingGoldenCrossStrategy(BaseStrategy):
 
     @property
     def name(self) -> str:
-        return "ATRTrailingGoldenCrossStrategy"
+        return "TrendPullbackATRTrailingStrategy"
 
     @property
     def version(self) -> str:
-        return "1.1.0"
-
-    @property
-    def required_lookback_days(self) -> int:
-        return int(self._slow_period * 1.5) + 10
+        return "1.0.0"
 
     @property
     def required_history_bars(self) -> int:
@@ -72,13 +64,12 @@ class ATRTrailingGoldenCrossStrategy(BaseStrategy):
         dec_policy: DecisionPolicy,
         dec_ctx: DecisionEvaluationContext,
     ) -> Optional[Tuple[InvestmentThesis, ThesisRecord, Decision, DecisionRecord]]:
-        """Evaluate crossover entry or ATR trailing stop exit at the most recent bar."""
         opens, highs, lows, closes, volumes, obs_ids = self._extract_ohlcv(facts)
 
         if len(closes) < self.required_history_bars:
             return None
 
-        # 1. Compute Fast/Slow SMA for current and previous bar
+        # 1. Moving Averages
         fast_curr = sma(closes, self._fast_period)
         fast_prev = sma(closes[:-1], self._fast_period)
         slow_curr = sma(closes, self._slow_period)
@@ -87,7 +78,7 @@ class ATRTrailingGoldenCrossStrategy(BaseStrategy):
         if None in (fast_curr, fast_prev, slow_curr, slow_prev):
             return None
 
-        # 2. Compute current ATR
+        # 2. ATR
         atr_val = atr(highs, lows, closes, period=self._atr_period)
         if atr_val is None or atr_val == 0.0:
             return None
@@ -96,7 +87,7 @@ class ATRTrailingGoldenCrossStrategy(BaseStrategy):
         curr_close = closes[-1]
         prev_close = closes[-2]
 
-        # 3. Check for Crossover Signals
+        # 3. Crossover Checks
         is_golden_cross = (fast_prev <= slow_prev) and (fast_curr > slow_curr)
         is_death_cross = (fast_prev >= slow_prev) and (fast_curr < slow_curr)
 
@@ -124,14 +115,11 @@ class ATRTrailingGoldenCrossStrategy(BaseStrategy):
                     entity=entity_id,
                     direction="BULLISH",
                     conclusion=(
-                        f"{entry_type} entry confirmed in strong trend regime "
+                        f"{entry_type} in strong trend regime "
                         f"(50 SMA > 200 SMA, ADX {adx_res.adx:.1f} >= {self._min_adx_threshold}). "
                         f"ATR Trailing Stop set at ₹{stop_price:.2f} ({self._atr_multiplier}× ATR)."
                     ),
-                    hypothesis_statement=(
-                        f"Bullish {entry_type} with ADX trend strength {adx_res.adx:.1f} "
-                        f"and {self._atr_multiplier}× ATR dynamic trailing exit."
-                    ),
+                    hypothesis_statement=f"{entry_type} with ADX {adx_res.adx:.1f} and ATR dynamic trailing stop.",
                     portfolio=portfolio,
                     dec_policy=dec_policy,
                     dec_ctx=dec_ctx,
@@ -141,13 +129,13 @@ class ATRTrailingGoldenCrossStrategy(BaseStrategy):
                     atr_multiplier=self._atr_multiplier,
                 )
 
-        # 6. Exit Signal (Death Cross OR Dynamic ATR Trailing Exit Signal)
+        # 6. Exit Signal (Death Cross OR Trailing Stop Breached)
         recent_peak = max(highs[-20:]) if len(highs) >= 20 else max(highs)
         trailing_stop_breached = curr_close < (recent_peak - self._atr_multiplier * atr_val)
 
         if is_death_cross or (trailing_stop_breached and fast_curr > slow_curr):
             exit_reason_desc = (
-                "Death Cross exit signal: 50 SMA crossed below 200 SMA."
+                "Death Cross exit: 50 SMA crossed below 200 SMA."
                 if is_death_cross
                 else f"ATR Trailing Stop exit: close ₹{curr_close:.2f} fell below trailing threshold ₹{recent_peak - self._atr_multiplier * atr_val:.2f}."
             )
@@ -165,3 +153,57 @@ class ATRTrailingGoldenCrossStrategy(BaseStrategy):
             )
 
         return None
+
+
+def main() -> None:
+    train_start = "2015-01-01"
+    train_end = "2020-12-31"
+    initial_capital = 1_000_000.0
+
+    pit_provider = PointInTimeUniverseProvider(strict_mode=False)
+    pit_provider.load_from_json("data/pit_universe_production_v5.json")
+    tickers = sorted(list(pit_provider.get_constituents("NIFTY_50", "2018-01-01")))
+
+    print(f"Comparing Pure Golden Cross vs Pullback Re-entry on 2015-2020 Training Window:")
+
+    variants = [
+        # (name, fast, slow, pb, adx_th, atr_m, reentry, max_pos, risk_per_trade)
+        ("Baseline GC Only (atr=2.5, r=0.01)", 50, 200, 20, 20.0, 2.5, False, 10, 0.01),
+        ("GC Only (atr=3.0, r=0.01)", 50, 200, 20, 20.0, 3.0, False, 10, 0.01),
+        ("GC + Pullback Re-entry (atr=2.5, r=0.01)", 50, 200, 20, 20.0, 2.5, True, 10, 0.01),
+        ("GC + Pullback Re-entry (atr=3.0, r=0.01)", 50, 200, 20, 20.0, 3.0, True, 10, 0.01),
+        ("GC + Pullback Re-entry (atr=3.0, r=0.015, pos=12)", 50, 200, 20, 20.0, 3.0, True, 12, 0.015),
+        ("GC + Pullback Re-entry (atr=3.0, r=0.02, pos=10)", 50, 200, 20, 20.0, 3.0, True, 10, 0.02),
+        ("GC + Pullback Re-entry (atr=3.5, r=0.02, pos=10)", 50, 200, 20, 20.0, 3.5, True, 10, 0.02),
+    ]
+
+    print(f"{'Variant':<48} | {'Return':<8} | {'Max DD':<8} | {'Sharpe':<7} | {'WinRate':<8} | {'Trades'}")
+    print("-" * 94)
+
+    for vname, f, s, pb, adx_th, atr_m, re, max_p, r_tr in variants:
+        strat = TrendPullbackATRTrailingStrategy(
+            fast_period=f, slow_period=s, pullback_period=pb,
+            min_adx_threshold=adx_th, atr_multiplier=atr_m,
+            enable_pullback_reentry=re
+        )
+        eng = MultiAssetPortfolioEngine(
+            fixture_dir="fixtures/yfinance_historical",
+            cost_model=TransactionCostModel(),
+            pit_provider=pit_provider,
+            index_symbol="NIFTY_50",
+            strict_pit=False
+        )
+        res = eng.run_portfolio_backtest(
+            strategy=strat,
+            tickers=tickers,
+            start_date=train_start,
+            end_date=train_end,
+            initial_capital=initial_capital,
+            risk_per_trade=r_tr,
+            max_positions=max_p
+        )
+        print(f"{vname:<48} | {res.total_return*100:>7.2f}% | {res.metrics.max_drawdown*100:>7.2f}% | {res.metrics.sharpe_ratio:>7.2f} | {res.metrics.win_rate*100:>7.2f}% | {len(res.trades):>6}")
+
+
+if __name__ == "__main__":
+    main()
