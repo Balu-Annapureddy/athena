@@ -48,7 +48,7 @@ class PatternEngine:
                 bar_map[obs_id] = {}
                 bar_order.append(obs_id)
                 observation_ids[obs_id] = fact.source_observation_id
-            
+
             # Unpack float, int, or bool measurements
             val = fact.value.value
             if isinstance(val, bool):
@@ -68,7 +68,7 @@ class PatternEngine:
         highs: List[float] = []
         lows: List[float] = []
         closes: List[float] = []
-        
+
         for oid in bar_order:
             opens.append(bar_map[oid].get(FactType.PRICE_OPEN.value, 0.0))
             highs.append(bar_map[oid].get(FactType.PRICE_HIGH.value, 0.0))
@@ -82,9 +82,9 @@ class PatternEngine:
         def _emit_fact(fact_type: FactType, obs_id_str: str, properties: dict) -> None:
             fact_id = FactId.generate()
             obs_id = observation_ids[obs_id_str]
-            
+
             # Serialize properties in the measurement rationale or source metadata
-            ctx_str = ", ".join(f"{k}={v}" for k, v in properties.items())
+            ", ".join(f"{k}={v}" for k, v in properties.items())
             meas = Measurement(
                 value=True,
                 units="pattern",
@@ -93,13 +93,13 @@ class PatternEngine:
                 source=f"PatternEngine/{self._entity}",
                 confidence_score=0.8
             )
-            
+
             metadata = DomainMetadata.create(
                 entity_id=fact_id,
                 source="PatternEngine",
                 created_by=fact_type.value
             )
-            
+
             fact = Fact(
                 metadata=metadata,
                 source_observation_id=obs_id,
@@ -111,28 +111,28 @@ class PatternEngine:
 
         # Iterate over bars to compute patterns
         for i, oid in enumerate(bar_order):
-            o, h, l, c = opens[i], highs[i], lows[i], closes[i]
-            
+            o, h, lo, c = opens[i], highs[i], lows[i], closes[i]
+
             # Skip degenerate zero-range candles
-            if h - l <= 0.0:
+            if h - lo <= 0.0:
                 continue
 
             # ------------------------------------------------------------------
             # A. Single-Candle Shape Detection
             # ------------------------------------------------------------------
-            if nd.is_doji(o, h, l, c):
-                _emit_fact(FactType.PATTERN_DOJI, oid, {"ratio": abs(c - o) / (h - l)})
+            if nd.is_doji(o, h, lo, c):
+                _emit_fact(FactType.PATTERN_DOJI, oid, {"ratio": abs(c - o) / (h - lo)})
 
-            if nd.is_marubozu(o, h, l, c):
-                _emit_fact(FactType.PATTERN_MARUBOZU, oid, {"body_ratio": abs(c - o) / (h - l)})
+            if nd.is_marubozu(o, h, lo, c):
+                _emit_fact(FactType.PATTERN_MARUBOZU, oid, {"body_ratio": abs(c - o) / (h - lo)})
 
             # Hammer Shape (Hammer / Hanging Man)
-            is_ham_shape = nd.is_hammer_shape(o, h, l, c)
+            is_ham_shape = nd.is_hammer_shape(o, h, lo, c)
             if is_ham_shape:
                 _emit_fact(FactType.PATTERN_HAMMER_SHAPE, oid, {})
 
             # Shooting Star Shape (Shooting Star / Inverted Hammer)
-            is_star_shape = nd.is_shooting_star_shape(o, h, l, c)
+            is_star_shape = nd.is_shooting_star_shape(o, h, lo, c)
             if is_star_shape:
                 _emit_fact(FactType.PATTERN_SHOOTING_STAR_SHAPE, oid, {})
 
@@ -159,9 +159,9 @@ class PatternEngine:
             # ------------------------------------------------------------------
             # Two-candle patterns (require index >= 1)
             if i >= 1:
-                prev_oid = bar_order[i - 1]
+                bar_order[i - 1]
                 prev_ohlc = (opens[i - 1], highs[i - 1], lows[i - 1], closes[i - 1])
-                curr_ohlc = (o, h, l, c)
+                curr_ohlc = (o, h, lo, c)
 
                 if nd.is_bullish_engulfing(prev_ohlc, curr_ohlc):
                     _emit_fact(FactType.PATTERN_BULLISH_ENGULFING, oid, {"prev_close": prev_ohlc[3]})
@@ -177,12 +177,12 @@ class PatternEngine:
                 # Candle 3: index i
                 o1, h1, l1, c1 = opens[i - 2], highs[i - 2], lows[i - 2], closes[i - 2]
                 o2, h2, l2, c2 = opens[i - 1], highs[i - 1], lows[i - 1], closes[i - 1]
-                
+
                 # Check ranges
                 r1 = h1 - l1
                 r2 = h2 - l2
-                r3 = h - l
-                
+                r3 = h - lo
+
                 if r1 > 0.0 and r2 > 0.0 and r3 > 0.0:
                     # Morning Star:
                     # 1. Bearish trend candle (c1 < o1, body >= 40% of range)
@@ -190,15 +190,15 @@ class PatternEngine:
                     # 3. Bullish candle (c > o) closing beyond midpoint of candle 1 body
                     body1 = o1 - c1
                     body2 = abs(c2 - o2)
-                    body3 = c - o
-                    
+                    c - o
+
                     is_c1_bearish = c1 < o1 and (body1 / r1) >= 0.40
                     is_c2_small = (body2 / r2) <= 0.35 or nd.is_doji(o2, h2, l2, c2)
                     is_c3_bullish = c > o
-                    
+
                     # Morning Star close condition: close > midpoint of candle 1's body
                     midpoint1 = (o1 + c1) / 2.0
-                    
+
                     if is_c1_bearish and is_c2_small and is_c3_bullish and c > midpoint1:
                         _emit_fact(FactType.PATTERN_MORNING_STAR, oid, {})
 
@@ -208,7 +208,7 @@ class PatternEngine:
                     # 3. Bearish candle (c < o) closing below midpoint of candle 1 body
                     is_c1_bullish = c1 > o1 and (body1 / r1) >= 0.40
                     is_c3_bearish = c < o
-                    
+
                     if is_c1_bullish and is_c2_small and is_c3_bearish and c < midpoint1:
                         _emit_fact(FactType.PATTERN_EVENING_STAR, oid, {})
 

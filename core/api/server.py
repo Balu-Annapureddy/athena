@@ -1,16 +1,15 @@
 """Zero-dependency HTTP REST Server using built-in http.server module."""
 
 import json
-import time
 import logging
 import urllib.parse
+from datetime import datetime
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from datetime import datetime, timezone
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Optional
 
-from core.api.models import APIResponse, APIError
-from core.api.services import AthenaAPIService
 from core.api.auth import APIKeyAuthenticator
+from core.api.models import APIError, APIResponse
+from core.api.services import AthenaAPIService
 from core.operations import OperationsContext
 
 
@@ -251,7 +250,7 @@ class AthenaRESTServer:
     def start(self) -> None:
         """Start serving REST requests synchronously."""
         logging.info(f"Athena REST Server running at http://{self.host}:{self.port}/")
-        
+
         try:
             self._server.serve_forever()
         except KeyboardInterrupt:

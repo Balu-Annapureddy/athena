@@ -1,8 +1,16 @@
 """Evidence entity representing information supporting or contradicting a hypothesis."""
 
 from typing import List
+
+from core.domain.common import (
+    DomainMetadata,
+    HypothesisId,
+    ObservationId,
+    SignalId,
+    validate_range,
+)
 from core.domain.entities.base import BaseEntity
-from core.domain.common import DomainMetadata, HypothesisId, ObservationId, SignalId, validate_range
+
 
 class Evidence(BaseEntity):
     """Represents a set of verified Observations and Signals interpreted to evaluate a Hypothesis.

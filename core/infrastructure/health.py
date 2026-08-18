@@ -28,7 +28,7 @@ class HealthRecord:
 
 class HealthTracker:
     """Tracks connector health as infrastructure metadata.
-    
+
     This information is infrastructure metadata only.
     It must not influence reasoning decisions.
     """

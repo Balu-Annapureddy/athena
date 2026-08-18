@@ -40,7 +40,7 @@ class RetryDecision:
 
 class RetryManager:
     """Manages retry policies and tracks retry attempts.
-    
+
     No external backoff libraries. Self-contained.
     """
 

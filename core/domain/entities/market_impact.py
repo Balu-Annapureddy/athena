@@ -1,7 +1,13 @@
 """MarketImpact entity representing the economic impact of an event on market sectors or companies."""
 
+from core.domain.common import (
+    DomainMetadata,
+    EventId,
+    validate_non_empty_string,
+    validate_range,
+)
 from core.domain.entities.base import BaseEntity
-from core.domain.common import DomainMetadata, EventId, validate_range, validate_non_empty_string
+
 
 class MarketImpact(BaseEntity):
     """Represents a targeted market reaction assessment resulting from a specific Event."""

@@ -1,10 +1,9 @@
 """IMetricsCollector interface, InMemoryMetricsCollector, and Timer context manager."""
 
-import time
 import threading
+import time
 from abc import ABC, abstractmethod
-from contextlib import contextmanager
-from typing import Any, Dict, List, Optional, Generator
+from typing import Any, Dict, List, Optional
 
 
 class Timer:
@@ -80,7 +79,7 @@ class InMemoryMetricsCollector(IMetricsCollector):
         with self._lock:
             req_count = self._counters.get("athena.api.requests", 0)
             err_count = self._counters.get("athena.api.errors", 0)
-            
+
             latencies = self._latencies.get("athena.api.requests", [])
             avg_lat_ms = 0.0
             if latencies:

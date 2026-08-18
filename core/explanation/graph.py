@@ -1,14 +1,15 @@
 """ProvenanceGraphBuilder traversing all ledgers to reconstruct explanation nodes and links."""
 
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Set, Tuple
+from datetime import datetime
+from typing import Any, Dict, Set, Tuple
+
+from core.explanation.context import IExplanationContext
 from core.explanation.models import (
+    ProvenanceLink,
     ProvenanceNode,
     ProvenanceNodeType,
-    ProvenanceLink,
     ProvenancePredicate,
 )
-from core.explanation.context import IExplanationContext
 
 
 class ProvenanceGraphBuilder:
@@ -56,7 +57,7 @@ class ProvenanceGraphBuilder:
             "executed_at": decision.executed_at.isoformat() if isinstance(decision.executed_at, datetime) else str(decision.executed_at),
             "parameters": dict(decision.execution_parameters)
         }
-        
+
         risk_assessment = getattr(decision, "risk_assessment", None)
         if risk_assessment:
             props["risk_assessment"] = {
@@ -69,7 +70,7 @@ class ProvenanceGraphBuilder:
                 "entry_price": risk_assessment.entry_price,
                 "target_price": risk_assessment.target_price
             }
-        
+
         self._nodes[graph_node_id] = ProvenanceNode(
             node_id=graph_node_id,
             node_type=ProvenanceNodeType.DECISION,
@@ -123,7 +124,7 @@ class ProvenanceGraphBuilder:
         snap_id = getattr(thesis, "configuration_snapshot_id", None)
         if not snap_id and hasattr(thesis, "metadata") and thesis.metadata:
             snap_id = getattr(thesis.metadata, "configuration_snapshot_id", None)
-            
+
         if snap_id:
             snap_node_id = f"CONFIG_SNAPSHOT:{snap_id}"
             self._links.add(ProvenanceLink(graph_node_id, snap_node_id, ProvenancePredicate.CONFIGURED_BY))

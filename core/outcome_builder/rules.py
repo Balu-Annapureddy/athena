@@ -3,10 +3,12 @@
 from abc import ABC, abstractmethod
 from datetime import datetime, timezone
 from typing import List
-from core.domain.common import OutcomeId, DecisionId, SecurityId
+
 from core.decision_builder import DecisionRecord
+from core.domain.common import DecisionId, SecurityId
 from core.outcome_builder.candidate import OutcomeCandidate, OutcomeEventType
 from core.outcome_builder.policies import OutcomePolicy
+
 
 class OutcomeCandidateRule(ABC):
     """Abstract base for pluggable rules translating Decisions and events to OutcomeCandidates."""
@@ -106,7 +108,7 @@ class ReconciliationOutcomeRule(OutcomeCandidateRule):
 
         filled_quantity = execution_details.get("filled_quantity", 0.0)
         filled_price = execution_details.get("filled_price", 0.0)
-        
+
         expected_price = execution_details.get("expected_price", 100.0)
         expected_quantity = execution_details.get("expected_quantity", 0.0)
 

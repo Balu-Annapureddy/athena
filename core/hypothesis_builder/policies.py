@@ -2,6 +2,7 @@
 
 from dataclasses import dataclass
 
+
 @dataclass(frozen=True)
 class HypothesisPolicy:
     """Configurable parameter set for hypothesis generation and evaluation."""

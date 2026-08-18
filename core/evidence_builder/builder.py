@@ -1,12 +1,13 @@
 """EvidenceCandidateBuilder — orchestrates candidate assembly with error isolation and determinism."""
 
 import logging
-from typing import List, Dict, Tuple
+from typing import Dict, List, Tuple
+
 from core.domain.entities import Fact
-from core.measurements.factory import DerivedMeasurement
-from core.measurements.taxonomy import FormulaId
 from core.evidence_builder.candidate import EvidenceCandidate
 from core.evidence_builder.rules import EvidenceCandidateRule
+from core.measurements.factory import DerivedMeasurement
+from core.measurements.taxonomy import FormulaId
 
 
 class EvidenceCandidateBuilder:

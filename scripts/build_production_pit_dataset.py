@@ -7,18 +7,13 @@ reconstitution dates from official NSE India circulars (archives.nseindia.com)
 and verified financial press reports. Every record contains an explicit `source` field.
 """
 
-import json
-import os
-from datetime import datetime
 from typing import Dict, List, Optional, Tuple
 
 from core.portfolio.pit_ingestor import PointInTimeDatasetIngestor
 from core.portfolio.pit_validator import (
-    PITDatasetValidator,
-    PITDatasetStatus,
     NIFTY50_GROUND_TRUTH_EVENTS,
+    PITDatasetValidator,
 )
-from core.portfolio.symbol_normalizer import SymbolNormalizer
 
 
 def build_raw_constituent_records() -> List[Dict]:
@@ -380,7 +375,7 @@ def main() -> None:
     raw_items = build_raw_constituent_records()
     print(f"Total raw constituent records generated: {len(raw_items)}")
 
-    validator = PITDatasetValidator(ground_truth_events=NIFTY50_GROUND_TRUTH_EVENTS, max_allowed_gap_days=300)
+    PITDatasetValidator(ground_truth_events=NIFTY50_GROUND_TRUTH_EVENTS, max_allowed_gap_days=300)
 
     ingestor = PointInTimeDatasetIngestor(dataset_version="5.0.0", source="NSE_OFFICIAL_ARCHIVES")
     versioned_ds, report, provider = ingestor.process_raw_records(raw_items, strict_validation=True)

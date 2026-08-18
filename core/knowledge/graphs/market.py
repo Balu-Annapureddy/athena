@@ -1,7 +1,13 @@
 """Market Knowledge Graph implementation mapping Exchanges, Sectors, Industries, and Companies."""
 
+from core.knowledge.graphs.base import (
+    Concept,
+    KnowledgeGraph,
+    PredicateType,
+    Relationship,
+)
 from core.knowledge.taxonomy import TaxonomyCategory
-from core.knowledge.graphs.base import KnowledgeGraph, Concept, Relationship, PredicateType
+
 
 class MarketGraph(KnowledgeGraph):
     """Represents structural market organization and asset hierarchies."""

@@ -19,13 +19,13 @@ Key Design Decision (Anti-overfitting):
 """
 
 import logging
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Sequence
+from dataclasses import dataclass
+from typing import Any, Dict, List, Optional
 
-from core.intelligence.asset_classifier import AssetClassifier, AssetRegime
-from core.intelligence.allocator import InverseVolatilityAllocator
-from core.portfolio.engine import MultiAssetPortfolioEngine, MultiAssetBacktestResult
 from core.backtest.engine import TransactionCostModel
+from core.intelligence.allocator import InverseVolatilityAllocator
+from core.intelligence.asset_classifier import AssetClassifier, AssetRegime
+from core.portfolio.engine import MultiAssetBacktestResult, MultiAssetPortfolioEngine
 from core.portfolio.universe import PointInTimeUniverseProvider
 
 logger = logging.getLogger(__name__)

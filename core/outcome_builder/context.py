@@ -2,8 +2,10 @@
 
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import List, Dict, Any
+from typing import Any, Dict, List
+
 from core.outcome_builder.policies import OutcomePolicy
+
 
 @dataclass(frozen=True)
 class OutcomeEvaluationContext:

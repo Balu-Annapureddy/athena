@@ -1,20 +1,22 @@
 """LearningCandidate and AdjustmentType definitions."""
 
 import hashlib
-from enum import Enum
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime
+from enum import Enum
 from typing import List
+
 from core.domain.common import (
-    LearningId,
-    OutcomeId,
     DecisionId,
-    ThesisId,
+    EvidenceId,
     HypothesisId,
     InferenceId,
-    EvidenceId,
+    LearningId,
+    OutcomeId,
+    ThesisId,
 )
-from core.learning_builder.target import LearningTarget, LearningChange
+from core.learning_builder.target import LearningChange, LearningTarget
+
 
 class AdjustmentType(Enum):
     """The categories of adjustments recommended by the learning rules."""

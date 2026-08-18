@@ -80,7 +80,7 @@ class MetricsCalculator:
             eff_periods_per_year = 252.0  # Backward-compatible daily default
 
         total_trades = len(trade_pnls)
-        
+
         # 1. Total Return:
         # Formula: (Ending Equity - Starting Equity) / Starting Equity
         if starting_equity > 0:

@@ -1,11 +1,13 @@
 """Inference ledger and version tracking history models."""
 
-from enum import Enum
+from dataclasses import dataclass
 from datetime import datetime, timezone
-from dataclasses import dataclass, field
-from typing import List, Dict, Tuple
-from core.domain.common import InferenceId, EvidenceId
+from enum import Enum
+from typing import Dict, List
+
+from core.domain.common import EvidenceId, InferenceId
 from core.domain.entities.inference import ReasoningStep
+
 
 class InferenceState(Enum):
     """Lifecycle states of an inference record."""
@@ -82,7 +84,7 @@ class InferenceLedger:
 
         if inference_id in self._active_records:
             existing = self._active_records[inference_id]
-            
+
             # Supersede old active record state in ledger
             superseded_record = InferenceRecord(
                 id=existing.id,

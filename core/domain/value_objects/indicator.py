@@ -2,8 +2,10 @@
 
 from dataclasses import dataclass, field
 from types import MappingProxyType
-from core.domain.interfaces import IValueObject
+
 from core.domain.common import validate_non_empty_string
+from core.domain.interfaces import IValueObject
+
 
 @dataclass(frozen=True)
 class Indicator(IValueObject):

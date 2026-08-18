@@ -1,10 +1,12 @@
 """Financial dictionary registry and metadata definitions for Athena."""
 
-from datetime import datetime, timezone
 from dataclasses import dataclass, field
-from typing import List, Dict
-from core.knowledge.taxonomy import TaxonomyCategory
+from datetime import datetime, timezone
+from typing import Dict, List
+
 from core.domain.common import validate_non_empty_string, validate_range
+from core.knowledge.taxonomy import TaxonomyCategory
+
 
 @dataclass(frozen=True)
 class DictionaryEntry:

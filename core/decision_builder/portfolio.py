@@ -2,8 +2,10 @@
 
 from dataclasses import dataclass, field
 from typing import List
+
 from core.domain.common import SecurityId
 from core.domain.interfaces import IValueObject
+
 
 @dataclass(frozen=True)
 class Position(IValueObject):

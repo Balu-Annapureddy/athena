@@ -5,17 +5,18 @@ prevents lookahead bias, enforces Point-In-Time universe validation, and constru
 pure Out-of-Sample (OOS) portfolio equity curves.
 """
 
-import dataclasses
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 
-from core.backtest.engine import BacktestEngine, TransactionCostModel
-from core.backtest.metrics import MetricsCalculator, BacktestMetrics
+from core.backtest.engine import TransactionCostModel
+from core.backtest.metrics import BacktestMetrics, MetricsCalculator
 from core.backtest.validation import PortfolioResearchConfig
-from core.domain.enums import ValidationStatus
 from core.portfolio.engine import MultiAssetPortfolioEngine
-from core.portfolio.universe import PointInTimeUniverseProvider, MissingPointInTimeUniverseDataError
+from core.portfolio.universe import (
+    MissingPointInTimeUniverseDataError,
+    PointInTimeUniverseProvider,
+)
 
 
 class InvalidWalkForwardWindowError(ValueError):

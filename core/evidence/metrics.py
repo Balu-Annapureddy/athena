@@ -1,13 +1,15 @@
 """Engine operational metrics for the Athena Evidence Engine."""
 
 from typing import Dict, List
+
 from core.evidence.accumulator import EvidenceAccumulator, EvidenceState
 from core.evidence.agreement import calculate_conflict, calculate_diversity
+
 
 def calculate_engine_metrics(accumulator: EvidenceAccumulator) -> Dict[str, float]:
     """Calculate operational telemetry parameters of the accumulated evidence graph state."""
     active_evidences = [ev for ev in accumulator.list_active() if ev.state in (EvidenceState.NEW, EvidenceState.VERIFIED, EvidenceState.ACTIVE)]
-    
+
     if not active_evidences:
         return {
             "evidence_count": 0.0,

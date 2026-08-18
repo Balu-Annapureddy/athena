@@ -1,15 +1,17 @@
 """OutcomeAssembler materializing candidates to Outcome domain entities."""
 
 from typing import List, Tuple
+
+from core.decision_builder import DecisionRecord
 from core.domain.common import DomainMetadata
 from core.domain.entities import Outcome
-from core.decision_builder import DecisionRecord
-from core.outcome_builder.candidate import OutcomeCandidate, OutcomeEventType
-from core.outcome_builder.policies import OutcomePolicy
-from core.outcome_builder.context import OutcomeEvaluationContext
 from core.outcome_builder.builder import OutcomeCandidateBuilder
+from core.outcome_builder.candidate import OutcomeEventType
+from core.outcome_builder.context import OutcomeEvaluationContext
 from core.outcome_builder.evaluator import OutcomeEvaluator
 from core.outcome_builder.ledger import OutcomeLedger, OutcomeRecord
+from core.outcome_builder.policies import OutcomePolicy
+
 
 class OutcomeAssembler:
     """Orchestrates candidate reconciliation, set-based evaluation, and domain model materialization."""
@@ -49,7 +51,7 @@ class OutcomeAssembler:
     ) -> List[Tuple[Outcome, OutcomeRecord]]:
         """Synthesize candidate outcomes, evaluate performance, and return materialized domain entities."""
         candidates = self._builder.build_candidates(decision, event_type, execution_details, policy)
-        
+
         # Perform set-based evaluation
         assessments = self._evaluator.evaluate(candidates, context)
 

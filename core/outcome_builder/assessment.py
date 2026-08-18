@@ -1,7 +1,9 @@
 """Value objects representing execution quality and investment outcome assessments."""
 
 from dataclasses import dataclass
+
 from core.domain.interfaces import IValueObject
+
 
 @dataclass(frozen=True)
 class ExecutionQuality(IValueObject):

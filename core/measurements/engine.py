@@ -1,14 +1,16 @@
 """Measurement engine orchestrating dynamic formula calculations."""
 
 import logging
-from typing import List, Dict, Set
+from typing import Dict, List
+
 from core.domain.entities import Fact
 from core.domain.value_objects import Measurement
 from core.mathematics.formulas import Formula
-from core.measurements.taxonomy import FormulaId
-from core.measurements.resolver import FormulaDependencyResolver
 from core.measurements.executor import FormulaExecutor
 from core.measurements.factory import DerivedMeasurement, MeasurementFactory
+from core.measurements.resolver import FormulaDependencyResolver
+from core.measurements.taxonomy import FormulaId
+
 
 class MeasurementEngine:
     """Orchestrates DAG-based formula calculations with topological sorting and lineage audits."""
@@ -29,7 +31,7 @@ class MeasurementEngine:
         """Resolve dependency sequences and calculate derived measurements, logging lineage."""
         # 1. Map available input fact names
         fact_names = {fact.name.upper() for fact in facts}
-        
+
         # 2. Topologically sort the executable order of formulas
         try:
             execution_order = self._resolver.resolve_execution_order(fact_names, self._formulas)
@@ -44,7 +46,7 @@ class MeasurementEngine:
         # 3. Process execution order
         for fid in execution_order:
             formula = self._formulas[fid]
-            
+
             # Resolve inputs from facts or preceding calculations
             inputs: Dict[str, Measurement] = {}
             source_facts = []
@@ -53,7 +55,7 @@ class MeasurementEngine:
 
             for inp in formula.inputs:
                 inp_upper = inp.upper()
-                
+
                 # Check facts first
                 if inp_upper in fact_lookup:
                     fact = fact_lookup[inp_upper]
@@ -82,7 +84,7 @@ class MeasurementEngine:
             # Execute calculation with error isolation
             try:
                 result_vo = self._executor.execute(formula, inputs)
-                
+
                 # Uniquify source IDs
                 unique_facts = list(set(source_facts))
                 unique_meas = list(set(source_measurements))
@@ -94,9 +96,9 @@ class MeasurementEngine:
                     source_fact_ids=unique_facts,
                     source_measurement_ids=unique_meas
                 )
-                
+
                 derived_results[fid] = derived
-                
+
                 # Propagate output key as available fact input for subsequent calculations
                 fact_names.add(formula.output.upper())
             except Exception as e:

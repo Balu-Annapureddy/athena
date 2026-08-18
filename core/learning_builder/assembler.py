@@ -1,13 +1,15 @@
 """LearningAssembler materializing candidates to Learning domain entities."""
 
-from typing import List, Tuple
 from datetime import datetime, timezone
+from typing import List, Tuple
+
 from core.domain.common import DomainMetadata
 from core.domain.entities import Learning
-from core.learning_builder.context import LearningEvaluationContext
 from core.learning_builder.builder import LearningCandidateBuilder
+from core.learning_builder.context import LearningEvaluationContext
 from core.learning_builder.evaluator import LearningEvaluator
 from core.learning_builder.ledger import LearningLedger, LearningRecord
+
 
 class LearningAssembler:
     """Orchestrates candidate generation, statistical analysis, and domain model materialization."""
@@ -43,7 +45,7 @@ class LearningAssembler:
     ) -> List[Tuple[Learning, LearningRecord]]:
         """Synthesize recommendations, evaluate confidence, and return materialized domain entities."""
         candidates = self._builder.build_candidates(context)
-        
+
         # Perform set-based evaluation
         assessments = self._evaluator.evaluate(candidates, context)
 

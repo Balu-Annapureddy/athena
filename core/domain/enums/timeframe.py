@@ -2,6 +2,7 @@
 
 from enum import Enum
 
+
 class Timeframe(Enum):
     """Supported market aggregation periods."""
     M1 = "1m"

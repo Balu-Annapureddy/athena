@@ -1,15 +1,15 @@
 """Base strategy class and interfaces for Athena's Strategy Engine."""
 
 from abc import ABC, abstractmethod
-from typing import List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
-from core.domain.entities import Fact, InvestmentThesis, Decision
-from core.domain.common import ObservationId
-from core.thesis_builder.ledger import ThesisRecord
-from core.decision_builder.ledger import DecisionRecord
-from core.decision_builder.portfolio import PortfolioState
-from core.decision_builder.policies import DecisionPolicy
 from core.decision_builder.context import DecisionEvaluationContext
+from core.decision_builder.ledger import DecisionRecord
+from core.decision_builder.policies import DecisionPolicy
+from core.decision_builder.portfolio import PortfolioState
+from core.domain.common import ObservationId
+from core.domain.entities import Decision, Fact, InvestmentThesis
+from core.thesis_builder.ledger import ThesisRecord
 
 
 class BaseStrategy(ABC):
@@ -118,27 +118,36 @@ class BaseStrategy(ABC):
     ) -> Optional[Tuple[InvestmentThesis, ThesisRecord, Decision, DecisionRecord]]:
         """Orchestrate standard pipeline creation to materialize thesis/decision records."""
         from datetime import datetime, timezone
-        from core.domain.common import (
-            DomainMetadata,
-            InferenceId,
-            HypothesisId,
-            ThesisId,
-            SecurityId
-        )
-        from core.domain.entities import Inference, InvestmentThesis, Decision
-        from core.domain.enums import ThesisDirection
-        from core.domain.value_objects import Confidence
-        from core.hypothesis_builder import HypothesisRecord, HypothesisType, HypothesisState
-        from core.hypothesis_builder.evaluator import HypothesisAssessment
-        from core.thesis_builder.ledger import ThesisRecord, ThesisState
-        from core.thesis_builder.candidate import TimeHorizon, StrategyStyle
-        from core.thesis_builder.assumptions import Assumption, AssumptionCriticality, AssumptionStatus
+
         from core.decision_builder import (
             DecisionAssembler,
             DecisionCandidateBuilder,
             QualityBuyDecisionRule,
-            RiskSellDecisionRule
+            RiskSellDecisionRule,
         )
+        from core.domain.common import (
+            DomainMetadata,
+            HypothesisId,
+            InferenceId,
+            SecurityId,
+            ThesisId,
+        )
+        from core.domain.entities import Inference, InvestmentThesis
+        from core.domain.enums import ThesisDirection
+        from core.domain.value_objects import Confidence
+        from core.hypothesis_builder import (
+            HypothesisRecord,
+            HypothesisState,
+            HypothesisType,
+        )
+        from core.hypothesis_builder.evaluator import HypothesisAssessment
+        from core.thesis_builder.assumptions import (
+            Assumption,
+            AssumptionCriticality,
+            AssumptionStatus,
+        )
+        from core.thesis_builder.candidate import StrategyStyle, TimeHorizon
+        from core.thesis_builder.ledger import ThesisRecord, ThesisState
 
         now = datetime.now(timezone.utc)
         dir_enum = ThesisDirection(direction)
@@ -150,7 +159,7 @@ class BaseStrategy(ABC):
             source="StrategyEngine",
             created_by=self.name
         )
-        inference = Inference(
+        Inference(
             metadata=inf_metadata,
             evidence_ids=[],
             reasoning_path=[f"Strategy rule {self.name} v{self.version} triggered."],
@@ -159,7 +168,7 @@ class BaseStrategy(ABC):
 
         # 2. Create HypothesisRecord
         hyp_id = HypothesisId.generate()
-        hyp_record = HypothesisRecord(
+        HypothesisRecord(
             id=hyp_id,
             entity_id=entity,
             hypothesis_type=HypothesisType.PRICE_TREND,
@@ -209,7 +218,7 @@ class BaseStrategy(ABC):
             inference_ids=[inf_id],
             assumptions=assumptions,
             identified_risks=[],
-            invalidation_conditions=[f"Opposite crossover or indicator threshold breach."],
+            invalidation_conditions=["Opposite crossover or indicator threshold breach."],
             scenarios=[],
             time_horizon=TimeHorizon.MEDIUM_TERM,
             strategy_style=StrategyStyle.BLEND,

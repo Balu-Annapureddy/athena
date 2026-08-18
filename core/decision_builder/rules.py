@@ -3,12 +3,14 @@
 from abc import ABC, abstractmethod
 from datetime import datetime, timezone
 from typing import List
-from core.domain.common import DecisionId, ThesisId
-from core.domain.enums import ThesisDirection, RecommendationAction
-from core.thesis_builder import ThesisRecord
-from core.decision_builder.portfolio import PortfolioState
-from core.decision_builder.policies import DecisionPolicy
+
 from core.decision_builder.candidate import DecisionCandidate, DecisionRationale
+from core.decision_builder.policies import DecisionPolicy
+from core.decision_builder.portfolio import PortfolioState
+from core.domain.common import ThesisId
+from core.domain.enums import RecommendationAction, ThesisDirection
+from core.thesis_builder import ThesisRecord
+
 
 class DecisionCandidateRule(ABC):
     """Abstract base for pluggable rules translating InvestmentTheses to DecisionCandidates."""

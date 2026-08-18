@@ -1,10 +1,12 @@
 """InferenceCandidate model representing a proposed inference stage conclusion."""
 
 import hashlib
-from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from dataclasses import dataclass
+from datetime import datetime
 from typing import List
-from core.domain.common import InferenceId, EvidenceId
+
+from core.domain.common import EvidenceId, InferenceId
+
 
 @dataclass(frozen=True)
 class InferenceCandidate:

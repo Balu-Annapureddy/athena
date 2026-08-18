@@ -37,7 +37,7 @@ class ScheduleResult:
 
 class Scheduler:
     """Deterministic task scheduler for connector execution.
-    
+
     No cron integration. No async. No multiprocessing.
     """
 

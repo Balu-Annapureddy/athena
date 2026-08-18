@@ -1,7 +1,7 @@
 """SignalReport dataclass representing a strategy signal decision."""
 
-from dataclasses import dataclass
 import datetime
+from dataclasses import dataclass
 from typing import Optional
 
 from core.domain.enums import RecommendationAction, ValidationStatus

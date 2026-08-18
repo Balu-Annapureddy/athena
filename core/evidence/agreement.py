@@ -1,7 +1,9 @@
 """Agreement, Conflict, Coverage, and Diversity logic for the Athena Evidence Engine."""
 
 from typing import List, Set
+
 from core.evidence.accumulator import EvidenceRecord, EvidenceState
+
 
 def calculate_agreement(evidences: List[EvidenceRecord]) -> float:
     """Calculate the agreement index (0.0 to 1.0) of a collection of evidence.
@@ -63,7 +65,7 @@ def calculate_diversity(evidences: List[EvidenceRecord]) -> float:
     Categories tracked: REGULATORY, FINANCIAL_STATEMENT, MARKET_DATA, NEWS, SOCIAL, INTERNAL.
     """
     possible_categories = {"REGULATORY", "FINANCIAL_STATEMENT", "MARKET_DATA", "NEWS", "SOCIAL", "INTERNAL"}
-    
+
     active_categories = set()
     for ev in evidences:
         if ev.state in (EvidenceState.NEW, EvidenceState.VERIFIED, EvidenceState.ACTIVE):

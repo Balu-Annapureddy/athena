@@ -9,14 +9,14 @@ Note: This is a commonly-used rule, not a proven-profitable trading strategy.
 
 from typing import List, Optional, Tuple
 
-from core.domain.entities import Fact, InvestmentThesis, Decision
-from core.thesis_builder.ledger import ThesisRecord
-from core.decision_builder.ledger import DecisionRecord
-from core.decision_builder.portfolio import PortfolioState
-from core.decision_builder.policies import DecisionPolicy
 from core.decision_builder.context import DecisionEvaluationContext
-from core.strategy.base import BaseStrategy
+from core.decision_builder.ledger import DecisionRecord
+from core.decision_builder.policies import DecisionPolicy
+from core.decision_builder.portfolio import PortfolioState
+from core.domain.entities import Decision, Fact, InvestmentThesis
 from core.intelligence import volume_trend
+from core.strategy.base import BaseStrategy
+from core.thesis_builder.ledger import ThesisRecord
 
 
 class BreakoutVolumeConfirmationStrategy(BaseStrategy):
@@ -63,7 +63,7 @@ class BreakoutVolumeConfirmationStrategy(BaseStrategy):
             return None
 
         curr_close = closes[-1]
-        curr_vol = volumes[-1]
+        volumes[-1]
 
         # Calculate volume trend
         vol_t = volume_trend(volumes, self._lookback_period)

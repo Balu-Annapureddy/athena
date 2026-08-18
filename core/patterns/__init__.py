@@ -2,12 +2,12 @@
 
 from core.patterns.candlestick import (
     DOJI_BODY_RATIO_THRESHOLD,
+    is_bearish_engulfing,
+    is_bullish_engulfing,
     is_doji,
     is_hammer_shape,
-    is_shooting_star_shape,
-    is_bullish_engulfing,
-    is_bearish_engulfing,
     is_marubozu,
+    is_shooting_star_shape,
 )
 from core.patterns.engine import PatternEngine
 

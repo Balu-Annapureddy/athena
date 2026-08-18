@@ -1,7 +1,8 @@
 """EvidenceEngine facade — the single public interface for the Sprint 8 integration layer."""
 
 from typing import List
-from core.evidence.accumulator import EvidenceRecord, EvidenceAccumulator
+
+from core.evidence.accumulator import EvidenceAccumulator, EvidenceRecord
 from core.evidence.context import EvidenceEvaluationContext
 from core.evidence.evaluator import EvidenceEvaluator
 from core.evidence_builder.candidate import EvidenceCandidate

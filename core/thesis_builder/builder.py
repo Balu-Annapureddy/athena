@@ -2,10 +2,12 @@
 
 import logging
 from typing import List, Tuple
+
 from core.hypothesis_builder import HypothesisRecord
 from core.thesis_builder.candidate import ThesisCandidate
 from core.thesis_builder.policies import ThesisPolicy
 from core.thesis_builder.rules import ThesisCandidateRule
+
 
 class ThesisCandidateBuilder:
     """Orchestrates candidate thesis generation with error isolation and determinism."""

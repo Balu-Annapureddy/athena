@@ -1,7 +1,13 @@
 """Strategy Knowledge Graph mapping objective strategy profiles."""
 
+from core.knowledge.graphs.base import (
+    Concept,
+    KnowledgeGraph,
+    PredicateType,
+    Relationship,
+)
 from core.knowledge.taxonomy import TaxonomyCategory
-from core.knowledge.graphs.base import KnowledgeGraph, Concept, Relationship, PredicateType
+
 
 class StrategyGraph(KnowledgeGraph):
     """Represents investment styles, strategic classes, and categorization parameters."""

@@ -1,14 +1,16 @@
 """OutcomeEvaluator calculating execution and performance assessment metrics."""
 
-from typing import List, Dict
+from typing import Dict, List
+
 from core.domain.common import OutcomeId
-from core.outcome_builder.candidate import OutcomeCandidate
-from core.outcome_builder.context import OutcomeEvaluationContext
 from core.outcome_builder.assessment import (
     ExecutionQuality,
     InvestmentOutcome,
     OutcomeAssessment,
 )
+from core.outcome_builder.candidate import OutcomeCandidate
+from core.outcome_builder.context import OutcomeEvaluationContext
+
 
 class OutcomeEvaluator:
     """Performs set-based compliance and return assessments for outcomes."""
@@ -25,12 +27,12 @@ class OutcomeEvaluator:
             # 1. Compute Execution Quality metrics
             expected_qty = max(0.001, candidate.expected_quantity)
             fill_ratio = candidate.filled_quantity / expected_qty
-            
+
             slippage = candidate.filled_price - candidate.expected_price
             tracking_error = candidate.market_price_at_execution - candidate.market_price_at_decision
-            
+
             # Mock timeliness of execution (latency in seconds)
-            timeliness = 15.0  
+            timeliness = 15.0
             policy_adherence = 1.0 if abs(slippage) <= context.active_policy.max_slippage_tolerance else 0.0
 
             eq = ExecutionQuality(

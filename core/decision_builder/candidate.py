@@ -1,11 +1,13 @@
 """DecisionCandidate and DecisionRationale Value Objects."""
 
 import hashlib
-from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from dataclasses import dataclass
+from datetime import datetime
 from typing import List
+
 from core.domain.common import DecisionId, ThesisId
 from core.domain.enums import RecommendationAction
+
 
 @dataclass(frozen=True)
 class DecisionRationale:

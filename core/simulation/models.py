@@ -2,17 +2,15 @@
 
 import copy
 import hashlib
-import json
 from dataclasses import dataclass, field
 from datetime import datetime
-from types import MappingProxyType
 from typing import Any, Dict, List, Optional, Tuple
 
+from core.config import ConfigurationSnapshot
 from core.domain.common import DomainMetadata
 from core.domain.entities import Fact, Observation
 from core.domain.enums import ThesisDirection
 from core.memory import MemoryStore
-from core.config import ConfigurationSnapshot, VersionedConfig
 
 
 @dataclass(frozen=True)
@@ -45,7 +43,7 @@ class Scenario:
         facts_repr = sorted([(fo.fact_name, str(fo.override_value)) for fo in self.fact_overrides])
         events_repr = sorted([getattr(ev, "event_id", str(ev)) for ev in self.temporal_event_injections])
         configs_repr = sorted([(co.policy_name, co.parameter_key, str(co.override_value)) for co in self.configuration_overrides])
-        
+
         canonical_str = f"FACTS:{facts_repr}|EVENTS:{events_repr}|CONFIGS:{configs_repr}"
         return hashlib.sha256(canonical_str.encode("utf-8")).hexdigest()
 
@@ -64,7 +62,7 @@ class SimulationContext:
         """Perform a deep-clone copy of the context database."""
         # Deep copy facts dict
         cloned_facts = {k: copy.deepcopy(v) for k, v in self.facts.items()}
-        
+
         # Clone MemoryStore
         cloned_memory = MemoryStore()
         for entity, events in self.memory._events_by_entity.items():

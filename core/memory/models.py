@@ -1,11 +1,12 @@
 """MemoryEventType, MemoryEventCategory, and MemoryEvent models for Temporal Memory."""
 
 import copy
-from enum import Enum
 from dataclasses import dataclass
 from datetime import datetime
+from enum import Enum
 from types import MappingProxyType
-from typing import Any, Dict, Optional
+from typing import Any
+
 from core.domain.common import validate_non_empty_string
 
 
@@ -73,7 +74,7 @@ class MemoryEvent:
         validate_non_empty_string(self.entity_id, "entity_id")
         validate_non_empty_string(self.source_observation_id, "source_observation_id")
         validate_non_empty_string(self.source_connector, "source_connector")
-        
+
         # Deep freeze properties to prevent modification of nested structures
         frozen_props = _deep_freeze(copy.deepcopy(dict(self.properties)))
         object.__setattr__(self, "properties", frozen_props)

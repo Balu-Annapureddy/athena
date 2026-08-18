@@ -1,14 +1,19 @@
 """Unified Knowledge Graph Engine for querying taxonomies and instances."""
 
 from typing import Dict, List, Optional, Set, Tuple
-from core.knowledge.graphs.base import KnowledgeGraph, Concept, Relationship, PredicateType
+
 from core.domain.exceptions.validation import DomainValidationError
-from core.domain.common import validate_non_empty_string
+from core.knowledge.graphs.base import (
+    Concept,
+    KnowledgeGraph,
+    PredicateType,
+    Relationship,
+)
 
 
 class KnowledgeGraphEngine:
     """Read-only query interface for all taxonomy and instance knowledge graphs.
-    
+
     Ensures structural templates (taxonomies) are separated from dynamic business entities.
     """
 
@@ -32,7 +37,7 @@ class KnowledgeGraphEngine:
     def get_concept(self, concept_id: str) -> Concept:
         """Look up a concept by ID across the instance graph and registered taxonomies."""
         key = concept_id.upper()
-        
+
         # Check instance graph first
         try:
             return self._instance_graph.get_concept(key)
@@ -50,7 +55,7 @@ class KnowledgeGraphEngine:
 
     def get_relationships(self, concept_id: str, predicate: Optional[PredicateType] = None) -> Tuple[Relationship, ...]:
         """Find all relationship edges where concept_id is the source or target.
-        
+
         Optionally filter by a specific PredicateType.
         """
         key = concept_id.upper()
@@ -73,7 +78,7 @@ class KnowledgeGraphEngine:
 
     def get_related_entities(self, concept_id: str, predicate: Optional[PredicateType] = None) -> Tuple[Concept, ...]:
         """Get all target concept nodes linked from/to the given concept_id.
-        
+
         Optionally filter by relationship predicate.
         """
         key = concept_id.upper()
@@ -99,7 +104,7 @@ class KnowledgeGraphEngine:
         """Retrieve the immediate supply chain participants of a company (where supplier or buyer)."""
         key = company_id.upper()
         suppliers = set()
-        
+
         # Supplier relation is directed: supplier_id SUPPLIER_OF buyer_id
         for rel in self._instance_graph.list_relationships():
             if rel.predicate == PredicateType.SUPPLIER_OF:
@@ -122,15 +127,15 @@ class KnowledgeGraphEngine:
 
     def find_paths(self, source_id: str, target_id: str, max_depth: int = 3) -> Tuple[Tuple[Relationship, ...], ...]:
         """Find connection paths from source_id to target_id using BFS.
-        
+
         Cycle-safe and order-independent search.
-        
+
         Returns:
             A tuple of connection paths, where each path is a tuple of Relationship edges.
         """
         src = source_id.upper()
         dst = target_id.upper()
-        
+
         # Verify both concepts exist first
         try:
             self.get_concept(src)
@@ -161,7 +166,7 @@ class KnowledgeGraphEngine:
             for rel in all_rels:
                 source_key = rel.source_id.upper()
                 target_key = rel.target_id.upper()
-                
+
                 # Check directed/undirected traversal
                 if source_key == curr and target_key not in visited:
                     new_visited = visited | {target_key}

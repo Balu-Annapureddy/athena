@@ -3,8 +3,10 @@
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import List
+
 from core.data.payloads import IPayload
 from core.domain.common import validate_non_empty_string
+
 
 @dataclass(frozen=True)
 class NewsPayload(IPayload):
@@ -24,6 +26,6 @@ class NewsPayload(IPayload):
         validate_non_empty_string(self.url, "url")
         validate_non_empty_string(self.author, "author")
         validate_non_empty_string(self.publisher, "publisher")
-        
+
         # Enforce list copy
         object.__setattr__(self, "mentioned_entities", list(self.mentioned_entities))

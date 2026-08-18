@@ -3,8 +3,10 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import List
+
 from core.data.contract import ConnectorPayload
 from core.domain.common import validate_non_empty_string
+
 
 @dataclass(frozen=True)
 class Capabilities:

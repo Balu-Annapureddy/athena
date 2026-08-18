@@ -1,12 +1,14 @@
 """Hypothesis ledger tracking history logs and transitions."""
 
-from enum import Enum
-from datetime import datetime, timezone
 from dataclasses import dataclass
-from typing import List, Dict
+from datetime import datetime, timezone
+from enum import Enum
+from typing import Dict, List
+
 from core.domain.common import HypothesisId, InferenceId
 from core.hypothesis_builder.candidate import HypothesisCandidate, HypothesisType
 from core.hypothesis_builder.evaluator import HypothesisAssessment
+
 
 class HypothesisState(Enum):
     """Lifecycle states of a hypothesis."""
@@ -79,7 +81,7 @@ class HypothesisLedger:
 
         if hid in self._active_records:
             existing = self._active_records[hid]
-            
+
             # Supersede old active record state in ledger
             superseded_record = HypothesisRecord(
                 id=existing.id,

@@ -1,13 +1,15 @@
 """Learning ledger tracking versioned history logs and recommendation states."""
 
-from enum import Enum
+from dataclasses import dataclass
 from datetime import datetime, timezone
-from dataclasses import dataclass, field
-from typing import List, Dict
-from core.domain.common import LearningId, OutcomeId, DecisionId
-from core.learning_builder.target import LearningTarget, LearningChange
-from core.learning_builder.candidate import LearningCandidate, AdjustmentType
+from enum import Enum
+from typing import Dict, List
+
+from core.domain.common import DecisionId, LearningId, OutcomeId
+from core.learning_builder.candidate import AdjustmentType, LearningCandidate
 from core.learning_builder.policies import LearningAssessment
+from core.learning_builder.target import LearningChange, LearningTarget
+
 
 class LearningState(Enum):
     """Lifecycle states of a learning recommendation proposal."""
@@ -86,7 +88,7 @@ class LearningLedger:
 
         if lid in self._active_records:
             existing = self._active_records[lid]
-            
+
             # Supersede old active record state in ledger
             superseded_record = LearningRecord(
                 id=existing.id,

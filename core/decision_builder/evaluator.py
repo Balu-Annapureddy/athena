@@ -1,16 +1,18 @@
 """DecisionEvaluator auditing candidates against portfolio allocations and cash constraints."""
 
-from typing import List, Dict
-from core.domain.common import DecisionId
-from core.domain.enums import RecommendationAction
+from typing import Dict, List
+
 from core.decision_builder.candidate import DecisionCandidate
 from core.decision_builder.context import DecisionEvaluationContext
 from core.decision_builder.policies import (
-    Priority,
-    PolicyViolation,
-    DecisionPolicyResult,
     DecisionAssessment,
+    DecisionPolicyResult,
+    PolicyViolation,
+    Priority,
 )
+from core.domain.common import DecisionId
+from core.domain.enums import RecommendationAction
+
 
 class DecisionEvaluator:
     """Performs set-based compliance auditing on decision candidates."""
@@ -57,7 +59,7 @@ class DecisionEvaluator:
             priority = Priority.NORMAL
             if candidate.proposed_action in (RecommendationAction.BUY, RecommendationAction.SELL):
                 priority = Priority.HIGH
-            
+
             overall_score = 1.0 if passed else 0.0
 
             assessments[candidate.candidate_id] = DecisionAssessment(

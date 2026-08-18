@@ -1,7 +1,7 @@
 """Reusable rate limiter abstraction for provider-independent throttling."""
 
 from dataclasses import dataclass
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Dict, List
 
 
@@ -22,7 +22,7 @@ class RateLimitDecision:
 
 class RateLimiter:
     """Provider-independent rate limiter using sliding window.
-    
+
     Deterministic: given the same sequence of check() calls
     with the same timestamps, produces the same decisions.
     """

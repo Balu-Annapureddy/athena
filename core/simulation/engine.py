@@ -3,12 +3,12 @@
 import hashlib
 from abc import ABC, abstractmethod
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, List, Tuple
 
-from core.domain.common import FactId, ObservationId, DomainMetadata
-from core.domain.value_objects import Measurement
-from core.domain.entities import Fact
 from core.config import ConfigurationSnapshot, VersionedConfig
+from core.domain.common import DomainMetadata, FactId, ObservationId
+from core.domain.entities import Fact
+from core.domain.value_objects import Measurement
 from core.simulation.models import (
     Scenario,
     SimulationContext,
@@ -18,14 +18,14 @@ from core.simulation.models import (
 
 class AthenaRunner(ABC):
     """Abstract base class for executing the Athena cognitive reasoning loop.
-    
+
     Decouples the Simulation Engine from direct rule registry or pipeline imports.
     """
 
     @abstractmethod
     def run(self, context: SimulationContext) -> Tuple[List[Any], List[Any], List[Any], List[Any]]:
         """Run the reasoning pipeline under a given context.
-        
+
         Returns:
             Tuple: (List[Inference], List[Hypothesis], List[InvestmentThesis], List[Decision])
         """
@@ -79,7 +79,7 @@ class SimulationEngine:
                     vc = mutable_configs[p_key]
                     params = dict(vc.parameters)
                     params[co.parameter_key] = co.override_value
-                    
+
                     updated_vc = VersionedConfig.from_policy(
                         config_name=vc.config_name,
                         version=vc.version,

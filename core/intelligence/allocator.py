@@ -10,7 +10,7 @@ Reference:
 """
 
 import math
-from typing import Dict, List, Optional, Sequence
+from typing import Dict, Optional, Sequence
 
 
 def _annualised_vol(closes: Sequence[float], window: int = 63) -> Optional[float]:

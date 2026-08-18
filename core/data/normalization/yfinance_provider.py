@@ -43,7 +43,6 @@ from core.data.normalization.base import (
 )
 from core.data.payloads.price import PricePayload
 
-
 # ---------------------------------------------------------------------------
 # FieldMapping for yfinance .history() row (dict representation)
 # ---------------------------------------------------------------------------

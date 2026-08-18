@@ -2,6 +2,7 @@
 
 from enum import Enum
 
+
 class FormulaId(Enum):
     """Stable identifiers for standard mathematical formulas."""
     EBITDA = "EBITDA"

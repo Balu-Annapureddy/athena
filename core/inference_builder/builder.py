@@ -2,10 +2,12 @@
 
 import logging
 from typing import List, Tuple
+
 from core.evidence import EvidenceRecord
 from core.inference_builder.candidate import InferenceCandidate
 from core.inference_builder.policies import InferencePolicy
 from core.inference_builder.rules import InferenceCandidateRule
+
 
 class InferenceCandidateBuilder:
     """Orchestrates candidate inference generation with error isolation and determinism."""

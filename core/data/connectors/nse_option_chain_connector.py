@@ -10,13 +10,14 @@ Invariants:
 import time
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
+
 import requests
 
 from core.data.connectors.base import BaseConnector, Capabilities
 from core.data.contract import ConnectorPayload
 from core.data.normalization.nse_option_chain_provider import NSEOptionChainNormalizer
-from core.infrastructure.recorder import PayloadRecorder
 from core.infrastructure.rate_limiter import RateLimiter, RateLimitPolicy
+from core.infrastructure.recorder import PayloadRecorder
 
 
 class NSEOptionChainConnector(BaseConnector):
@@ -110,7 +111,7 @@ class NSEOptionChainConnector(BaseConnector):
         raw_data = self.fetch_raw_option_chain(entity)
         records = raw_data.get("records", {})
         data_rows = records.get("data", [])
-        
+
         # Dynamic expiries extraction
         expiry_dates = records.get("expiryDates", [])
 

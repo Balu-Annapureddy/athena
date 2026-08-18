@@ -1,8 +1,10 @@
 """Base entity class for all domain models in Athena."""
 
 from abc import ABC
-from core.domain.interfaces import IEntity
+
 from core.domain.common import DomainMetadata
+from core.domain.interfaces import IEntity
+
 
 class BaseEntity(IEntity, ABC):
     """Abstract base class implementing default identification and audit capabilities for entities."""

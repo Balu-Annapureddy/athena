@@ -1,7 +1,9 @@
 """Policies and statistical LearningAssessment structures."""
 
 from dataclasses import dataclass
+
 from core.domain.interfaces import IValueObject
+
 
 @dataclass(frozen=True)
 class LearningAssessment(IValueObject):

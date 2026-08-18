@@ -4,9 +4,17 @@ import hashlib
 from abc import ABC
 from datetime import datetime, timezone
 from typing import List
+
 from core.data.connectors.base import BaseConnector, Capabilities
-from core.data.contract import ConnectorPayload, PayloadType, SourceType, VerificationStatus, Provenance
+from core.data.contract import (
+    ConnectorPayload,
+    PayloadType,
+    Provenance,
+    SourceType,
+    VerificationStatus,
+)
 from core.data.payloads.fundamental import FundamentalPayload
+
 
 class CorporateConnector(BaseConnector, ABC):
     """Abstract base connector for receiving corporate fundamentals and reports."""
@@ -29,7 +37,7 @@ class MockCorporateConnector(CorporateConnector):
 
     def fetch_data(self, entity: str, **kwargs) -> List[ConnectorPayload]:
         now = datetime.now(timezone.utc)
-        
+
         # Build simulated corporate fundamentals payload
         fundamental = FundamentalPayload(
             balance_sheet={"ASSETS": 1000000.0, "LIABILITIES": 400000.0, "EQUITY": 600000.0},

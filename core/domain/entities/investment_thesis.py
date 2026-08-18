@@ -1,18 +1,20 @@
 """InvestmentThesis entity representing the primary structured output case of Athena."""
 
-from typing import List
 from types import MappingProxyType
-from core.domain.entities.base import BaseEntity
+from typing import List
+
 from core.domain.common import (
     DomainMetadata,
-    SecurityId,
-    HypothesisId,
     EvidenceId,
+    HypothesisId,
     InferenceId,
-    validate_non_empty_string
+    SecurityId,
+    validate_non_empty_string,
 )
+from core.domain.entities.base import BaseEntity
 from core.domain.enums import ThesisDirection
 from core.domain.value_objects import Confidence, RiskAssessment
+
 
 class InvestmentThesis(BaseEntity):
     """Represents a structured, evidence-backed investment thesis.

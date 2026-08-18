@@ -7,17 +7,18 @@ Strictly enforces Point-In-Time survivorship safety, capital isolation, executio
 and explicit partitioning of development vs. unseen tickers.
 """
 
-import dataclasses
 import hashlib
-import json
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Set, Tuple
+from dataclasses import dataclass
+from typing import Any, Dict, List, Optional
 
 from core.backtest.metrics import BacktestMetrics
 from core.backtest.validation import PortfolioResearchConfig
-from core.backtest.walk_forward import WalkForwardCampaign, WalkForwardWindow, WalkForwardCampaignResult
+from core.backtest.walk_forward import WalkForwardWindow
 from core.portfolio.engine import MultiAssetPortfolioEngine
-from core.portfolio.universe import PointInTimeUniverseProvider, MissingPointInTimeUniverseDataError
+from core.portfolio.universe import (
+    MissingPointInTimeUniverseDataError,
+    PointInTimeUniverseProvider,
+)
 
 
 @dataclass(frozen=True)

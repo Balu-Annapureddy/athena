@@ -1,10 +1,12 @@
 """Immutable Measurement value object representing quantified financial metrics with unit, quality, and origin parameters."""
 
-from datetime import datetime
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Union
+
+from core.domain.common import validate_non_empty_string, validate_range
 from core.domain.interfaces import IValueObject
-from core.domain.common import validate_range, validate_non_empty_string
+
 
 @dataclass(frozen=True)
 class Measurement(IValueObject):

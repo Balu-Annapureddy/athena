@@ -1,9 +1,15 @@
 """Immutable Confidence value object detailing quantitative and qualitative confidence attributes."""
 
-from datetime import datetime
 from dataclasses import dataclass
+from datetime import datetime
+
+from core.domain.common import (
+    validate_non_empty_string,
+    validate_non_negative,
+    validate_range,
+)
 from core.domain.interfaces import IValueObject
-from core.domain.common import validate_range, validate_non_negative, validate_non_empty_string
+
 
 @dataclass(frozen=True)
 class Confidence(IValueObject):

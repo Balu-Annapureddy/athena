@@ -1,9 +1,11 @@
 """Observation factory interface and concrete mapping pipeline."""
 
 from abc import ABC, abstractmethod
+
 from core.data.contract import ConnectorPayload, PayloadType
+from core.domain.common import DomainMetadata, ObservationId
 from core.domain.entities import Observation
-from core.domain.common import ObservationId, DomainMetadata
+
 
 class IObservationFactory(ABC):
     """Abstract interface defining the observation translation factory."""
@@ -19,7 +21,7 @@ class ObservationFactory(IObservationFactory):
 
     def create_observation(self, payload: ConnectorPayload) -> Observation:
         obs_id = ObservationId.generate()
-        
+
         # Build metadata utilizing the immutable provenance
         metadata = DomainMetadata.create(
             entity_id=obs_id,

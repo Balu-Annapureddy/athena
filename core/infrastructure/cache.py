@@ -1,8 +1,8 @@
 """In-memory cache for connector payloads with configurable expiration."""
 
 from dataclasses import dataclass
-from datetime import datetime, timezone, timedelta
-from typing import Any, Dict, Optional, Tuple
+from datetime import datetime, timedelta, timezone
+from typing import Any, Dict, Tuple
 
 
 @dataclass(frozen=True)
@@ -30,7 +30,7 @@ class CacheResult:
 
 class InMemoryCache:
     """In-memory cache with configurable expiration.
-    
+
     No Redis. No databases. Memory only.
     """
 

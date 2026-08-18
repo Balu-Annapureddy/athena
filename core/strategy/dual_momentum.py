@@ -8,13 +8,13 @@ Reference:
     - Jegadeesh & Titman, *Returns to Buying Winners and Selling Losers*, Journal of Finance, 1993.
 """
 
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, List, Optional, Tuple
 
-from core.domain.entities import Decision, Fact, InvestmentThesis
 from core.decision_builder.context import DecisionEvaluationContext
 from core.decision_builder.ledger import DecisionRecord
 from core.decision_builder.policies import DecisionPolicy
 from core.decision_builder.portfolio import PortfolioState
+from core.domain.entities import Decision, Fact, InvestmentThesis
 from core.intelligence import atr, sma
 from core.strategy.base import BaseStrategy
 from core.strategy.cross_sectional_momentum import CrossSectionalRankProvider

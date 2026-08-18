@@ -1,10 +1,12 @@
 """Mathematical formulas and metrics calculation definitions for Athena."""
 
 from dataclasses import dataclass, field
-from typing import List, Callable, Dict, Any
-from core.domain.value_objects import Measurement
-from core.domain.exceptions import DomainValidationError
+from typing import Callable, Dict, List
+
 from core.domain.common import validate_non_empty_string
+from core.domain.exceptions import DomainValidationError
+from core.domain.value_objects import Measurement
+
 
 @dataclass(frozen=True)
 class Formula:

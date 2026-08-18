@@ -1,11 +1,13 @@
 """OutcomeCandidate and OutcomeEventType definitions."""
 
 import hashlib
-from enum import Enum
 from dataclasses import dataclass
 from datetime import datetime
+from enum import Enum
 from typing import List
-from core.domain.common import OutcomeId, DecisionId, SecurityId
+
+from core.domain.common import DecisionId, OutcomeId, SecurityId
+
 
 class OutcomeEventType(Enum):
     """The real-world event response types matched to recommendations."""

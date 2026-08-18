@@ -8,7 +8,7 @@ Reference:
 """
 
 import math
-from typing import Dict, Union
+from typing import Dict
 
 
 def norm_cdf(x: float) -> float:

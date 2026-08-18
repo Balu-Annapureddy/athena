@@ -2,6 +2,7 @@
 
 from enum import Enum
 
+
 class TaxonomyCategory(Enum):
     """Broad objective classification categories for all knowledge concepts in Athena."""
     MARKETS = "MARKETS"          # Global venues, cycles, indices, asset classes

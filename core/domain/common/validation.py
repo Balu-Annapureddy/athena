@@ -2,6 +2,7 @@
 
 from core.domain.exceptions import DomainValidationError
 
+
 def validate_positive(value: float, name: str) -> None:
     """Ensure a numeric value is strictly positive (> 0)."""
     if value <= 0:

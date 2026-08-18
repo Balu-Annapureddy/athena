@@ -6,9 +6,9 @@ import os
 import uuid
 from typing import Any, Dict, List
 
+from core.data.connectors.yfinance_connector import YFinanceConnector
 from core.domain.enums import RecommendationAction
 from core.pipeline.signal_report import SignalReport
-from core.data.connectors.yfinance_connector import YFinanceConnector
 
 
 class PaperLedger:

@@ -4,20 +4,20 @@ Bridges the objective computation stack (Facts + Measurements) into the
 evaluative Evidence Engine via explicit EvidenceCandidate intermediate objects.
 """
 
+from core.evidence_builder.builder import EvidenceCandidateBuilder
 from core.evidence_builder.candidate import EvidenceCandidate
 from core.evidence_builder.policies import (
-    ThresholdPolicy,
     FundamentalThresholdPolicy,
-    PriceThresholdPolicy,
     MacroThresholdPolicy,
+    PriceThresholdPolicy,
+    ThresholdPolicy,
 )
 from core.evidence_builder.rules import (
     EvidenceCandidateRule,
     FundamentalCandidateRule,
-    PriceCandidateRule,
     MacroCandidateRule,
+    PriceCandidateRule,
 )
-from core.evidence_builder.builder import EvidenceCandidateBuilder
 
 __all__ = [
     "EvidenceCandidate",

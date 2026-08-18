@@ -1,13 +1,12 @@
 """ConfigurationRegistry: authoritative store of runtime policies and version metadata."""
 
 import copy
-from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Tuple
 
-from core.config.versioning import VersionedConfig
-from core.config.snapshot import ConfigurationSnapshot
 from core.config.reference import ConfigurationReference
+from core.config.snapshot import ConfigurationSnapshot
+from core.config.versioning import VersionedConfig
 
 
 def _extract_params(config: Any) -> dict:
@@ -36,7 +35,7 @@ class ConfigurationRegistry:
 
     def register(self, name: str, config: Any) -> VersionedConfig:
         """Register a runtime policy object and store its versioned metadata.
-        
+
         The runtime object is deep-copied to prevent external mutation.
         """
         now = datetime.now(timezone.utc)

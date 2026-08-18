@@ -5,8 +5,8 @@ from dataclasses import dataclass
 from typing import Optional, Type
 
 from core.operations.metrics import IMetricsCollector, InMemoryMetricsCollector
-from core.operations.tracing import TracingContext
 from core.operations.secrets import SecretsRepository
+from core.operations.tracing import TracingContext
 
 
 @dataclass(frozen=True)

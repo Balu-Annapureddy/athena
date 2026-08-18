@@ -3,10 +3,12 @@
 from abc import ABC, abstractmethod
 from datetime import datetime, timezone
 from typing import List
+
 from core.domain.common import EvidenceId
 from core.evidence import EvidenceRecord, EvidenceState
 from core.inference_builder.candidate import InferenceCandidate
 from core.inference_builder.policies import InferencePolicy
+
 
 class InferenceCandidateRule(ABC):
     """Abstract base for pluggable rules that synthesize multiple evidence records."""
@@ -85,10 +87,10 @@ class FundamentalStrengthInferenceRule(InferenceCandidateRule):
             ev for ev in evidence_records
             if ev.source_category == "FINANCIAL_STATEMENT" and ev.state in (EvidenceState.NEW, EvidenceState.ACTIVE, EvidenceState.VERIFIED)
         ]
-        
+
         stmt = "Fundamental evidence consistently indicates metrics fall within configured profitability and leverage threshold limits."
         source_ids = [ev.id for ev in matching]
-        
+
         return [self._make_candidate("FUNDAMENTAL", stmt, source_ids, policy)]
 
 

@@ -1,11 +1,19 @@
 """Data ingestion contracts, source metadata, and provenance tracking for Athena."""
 
-from enum import Enum
-from datetime import datetime
 from dataclasses import dataclass
-from core.data.payloads import IPayload, PricePayload, FundamentalPayload, NewsPayload, EconomicPayload
+from datetime import datetime
+from enum import Enum
+
+from core.data.payloads import (
+    EconomicPayload,
+    FundamentalPayload,
+    IPayload,
+    NewsPayload,
+    PricePayload,
+)
 from core.domain.common import validate_non_empty_string
 from core.domain.exceptions import DomainValidationError
+
 
 class PayloadType(Enum):
     """Enums representing standard categories of external data payloads."""
@@ -77,7 +85,7 @@ class ConnectorPayload:
     def __post_init__(self) -> None:
         validate_non_empty_string(self.source_id, "source_id")
         validate_non_empty_string(self.entity, "entity")
-        
+
         from core.data.payloads.options import OptionContractPayload
 
         # Cross-validate that the payload type matches the concrete value object class

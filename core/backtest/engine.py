@@ -6,24 +6,23 @@ Guarantees no lookahead bias by slicing data and derived pattern facts bar-by-ba
 import math
 from collections import deque
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Any, Deque, Dict, List, Optional, Tuple
+
+from core.backtest.metrics import MetricsCalculator
+from core.data.connectors.yfinance_connector import YFinanceConnector
+from core.data.factory import ObservationFactory
+from core.decision_builder.context import DecisionEvaluationContext
+from core.decision_builder.policies import DecisionPolicy
+from core.decision_builder.portfolio import PortfolioState
+from core.domain.enums import RecommendationAction
+from core.facts.builder import FactBuilder
+from core.facts.rules import PriceFactRule
+from core.patterns.engine import PatternEngine
 
 # Maximum number of recent bars' facts passed to strategy.evaluate() per bar.
 # Covers the longest indicator lookback (GoldenCross 200-SMA) with headroom.
 _STRATEGY_WINDOW = 300
-
-from core.data.connectors.yfinance_connector import YFinanceConnector
-from core.data.factory import ObservationFactory
-from core.facts.builder import FactBuilder
-from core.facts.rules import PriceFactRule
-from core.patterns.engine import PatternEngine
-from core.domain.enums import RecommendationAction, ValidationStatus
-from core.decision_builder.portfolio import PortfolioState, Position
-from core.decision_builder.policies import DecisionPolicy
-from core.decision_builder.context import DecisionEvaluationContext
-from core.domain.common import SecurityId
-from core.backtest.metrics import MetricsCalculator, BacktestMetrics
 
 
 @dataclass(frozen=True)
@@ -263,7 +262,7 @@ class BacktestEngine:
             current_payload = payloads[i]
             price = current_payload.payload
             current_date = current_payload.provenance.publication_timestamp
-            
+
             # Update equity value before checking entries/exits
             if active_position is None:
                 current_equity = cash
@@ -272,17 +271,17 @@ class BacktestEngine:
                     current_equity = cash + active_position["shares"] * price.close
                 else:
                     current_equity = cash + active_position["shares"] * (active_position["entry_price"] - price.close)
-            
+
             # Check exit conditions first if we have an active position
             if active_position is not None:
                 exit_price = None
                 exit_reason = ""
-                
+
                 pos_dir = active_position["direction"]
                 sl = active_position["stop_loss_price"]
                 tp = active_position["target_price"]
                 shares = active_position["shares"]
-                
+
                 if pos_dir == "LONG":
                     # Conservative Same-Bar Exit tie-breaker:
                     # If both stop-loss and target-price are touched on the same bar,
@@ -302,7 +301,7 @@ class BacktestEngine:
                     elif price.low <= tp:
                         exit_price = tp
                         exit_reason = "TARGET_PRICE"
-                
+
                 if exit_price is not None:
                     # Calculate gross PnL
                     if pos_dir == "LONG":
@@ -350,12 +349,12 @@ class BacktestEngine:
                 # No-lookahead guaranteed: cumulative_facts only contains facts
                 # up to and including bar i (appended at the top of this iteration).
 
-                
+
                 # Build simulated portfolio state
                 sim_positions = []
                 # (No active position, so positions list is empty)
                 sim_portfolio = PortfolioState(cash_available=cash, total_value=current_equity, positions=sim_positions)
-                
+
                 dec_ctx = DecisionEvaluationContext(
                     current_time=current_date,
                     active_policy=dec_policy,
@@ -363,7 +362,7 @@ class BacktestEngine:
                     existing_records=[],
                     target_security_id=ticker
                 )
-                
+
                 # Flatten recent window into a flat list for strategy evaluation.
                 # This is O(window_size) not O(total_bars), keeping the loop linear.
                 window_facts = [f for bar in facts_window for f in bar]
@@ -375,14 +374,14 @@ class BacktestEngine:
                     dec_policy=dec_policy,
                     dec_ctx=dec_ctx
                 )
-                
+
                 if result is not None:
                     thesis, thesis_rec, decision, decision_rec = result
-                    
+
                     # Accumulate records for tracking/validation
                     thesis_records.append(thesis_rec)
                     decision_records.append(decision_rec)
-                    
+
                     # Determine entry direction from thesis direction, not decision action.
                     # RiskSellDecisionRule returns AVOID (not SELL) when no position is held —
                     # correct for production but would suppress all SHORT entries in backtest.

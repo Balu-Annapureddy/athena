@@ -1,7 +1,9 @@
 """Base interfaces for Athena domain types."""
 
 from abc import ABC, abstractmethod
+
 from core.domain.common.metadata import DomainMetadata
+
 
 class IEntity(ABC):
     """Interface for all domain entities, asserting they carry metadata and identity."""

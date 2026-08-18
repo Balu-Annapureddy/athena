@@ -3,15 +3,15 @@
 Parses observations and extracts standardized, non-derived facts.
 """
 
-from core.facts.taxonomy import FactType
-from core.facts.rules import (
-    FactExtractionRule,
-    PriceFactRule,
-    FundamentalFactRule,
-    EconomicFactRule,
-    NewsFactRule,
-)
 from core.facts.builder import FactBuilder, FactValidator
+from core.facts.rules import (
+    EconomicFactRule,
+    FactExtractionRule,
+    FundamentalFactRule,
+    NewsFactRule,
+    PriceFactRule,
+)
+from core.facts.taxonomy import FactType
 
 __all__ = [
     "FactType",

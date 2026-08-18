@@ -2,10 +2,12 @@
 
 import logging
 from typing import List, Tuple
+
 from core.decision_builder import DecisionRecord
 from core.outcome_builder.candidate import OutcomeCandidate, OutcomeEventType
 from core.outcome_builder.policies import OutcomePolicy
 from core.outcome_builder.rules import OutcomeCandidateRule
+
 
 class OutcomeCandidateBuilder:
     """Orchestrates candidate outcome generation with error isolation and determinism."""

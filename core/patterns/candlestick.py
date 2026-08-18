@@ -4,7 +4,7 @@ Separates visual/geometric shape detection from trend/market context interpretat
 No state, no external dependencies, standard library math only.
 """
 
-from typing import Dict, Tuple
+from typing import Tuple
 
 # Doji threshold is a common convention (open ≈ close), not a universal standard.
 # Sources and trading systems vary on the exact percentage (e.g. some use 1% to 10%

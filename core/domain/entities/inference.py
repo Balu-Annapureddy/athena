@@ -1,9 +1,11 @@
 """Inference entity representing a structured reasoning step."""
 
-from typing import List, Union
 from dataclasses import dataclass
-from core.domain.entities.base import BaseEntity
+from typing import List, Union
+
 from core.domain.common import DomainMetadata, EvidenceId, validate_non_empty_string
+from core.domain.entities.base import BaseEntity
+
 
 @dataclass(frozen=True)
 class ReasoningStep:

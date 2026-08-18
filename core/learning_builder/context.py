@@ -2,8 +2,10 @@
 
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import List, Any
+from typing import Any, List
+
 from core.learning_builder.policies import LearningPolicy
+
 
 @dataclass(frozen=True)
 class LearningEvaluationContext:

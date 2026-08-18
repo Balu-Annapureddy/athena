@@ -2,8 +2,10 @@
 
 from datetime import datetime
 from types import MappingProxyType
+
+from core.domain.common import DecisionId, DomainMetadata, validate_non_empty_string
 from core.domain.entities.base import BaseEntity
-from core.domain.common import DomainMetadata, DecisionId, validate_non_empty_string
+
 
 class Outcome(BaseEntity):
     """Represents the real-world outcome and metrics realized following a specific Decision execution."""

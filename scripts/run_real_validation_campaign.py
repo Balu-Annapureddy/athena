@@ -12,9 +12,16 @@ if sys.platform == "win32":
     except Exception:
         pass
 
-from core.strategy.golden_cross import GoldenCrossDeathCrossStrategy
-from core.backtest.engine import TransactionCostModel, ZERO_COST_MODEL
+import argparse
+
+from core.backtest.engine import TransactionCostModel
 from core.backtest.validation import ValidationCampaign
+from core.strategy.atr_trailing_golden_cross import ATRTrailingGoldenCrossStrategy
+from core.strategy.breakout_volume import BreakoutVolumeConfirmationStrategy
+from core.strategy.cross_sectional_momentum import CrossSectionalMomentumStrategy
+from core.strategy.golden_cross import GoldenCrossDeathCrossStrategy
+from core.strategy.regime_filtered_golden_cross import RegimeFilteredGoldenCrossStrategy
+from core.strategy.rsi_mean_reversion import RSIMeanReversionStrategy
 
 NIFTY_50_TICKERS = [
     "ADANIENT.NS", "ADANIPORTS.NS", "APOLLOHOSP.NS", "ASIANPAINT.NS",
@@ -81,13 +88,7 @@ def _print_run_table(label: str, run_details: list, use_gross: bool = False) -> 
     print("-" * 115)
 
 
-import argparse
 
-from core.strategy.regime_filtered_golden_cross import RegimeFilteredGoldenCrossStrategy
-from core.strategy.atr_trailing_golden_cross import ATRTrailingGoldenCrossStrategy
-from core.strategy.rsi_mean_reversion import RSIMeanReversionStrategy
-from core.strategy.breakout_volume import BreakoutVolumeConfirmationStrategy
-from core.strategy.cross_sectional_momentum import CrossSectionalMomentumStrategy
 
 
 def main() -> None:
@@ -135,7 +136,7 @@ def main() -> None:
     print(f"Training Windows  : {TRAINING_DATE_RANGES} (2010–2022)")
     print(f"Reserved OOS      : {RESERVED_OOS_WINDOW} (2023–2025)")
     print(f"Starting Capital  : INR {ACCOUNT_SIZE:,.2f}")
-    print(f"Strict Gates      : min_total_trades=100, min_passing_ratio=0.70 (70%)")
+    print("Strict Gates      : min_total_trades=100, min_passing_ratio=0.70 (70%)")
     print()
     print("Cost Model (Zerodha delivery rates + 8 bps slippage):")
     print(f"  Brokerage       : {DEFAULT_COST_MODEL.brokerage_pct*100:.4f}% per side, capped at Rs {DEFAULT_COST_MODEL.brokerage_cap:.0f}")

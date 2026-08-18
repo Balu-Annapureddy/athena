@@ -3,10 +3,12 @@
 from abc import ABC, abstractmethod
 from datetime import datetime, timezone
 from typing import List
-from core.domain.entities import Inference
+
 from core.domain.common import InferenceId
+from core.domain.entities import Inference
 from core.hypothesis_builder.candidate import HypothesisCandidate, HypothesisType
 from core.hypothesis_builder.policies import HypothesisPolicy
+
 
 class HypothesisCandidateRule(ABC):
     """Abstract base for pluggable rules that compile inferences to HypothesisCandidates."""

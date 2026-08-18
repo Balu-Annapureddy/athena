@@ -1,8 +1,10 @@
 """Common metadata structure for all Athena domain entities."""
 
+from dataclasses import dataclass
 from datetime import datetime, timezone
-from dataclasses import dataclass, field
+
 from core.domain.common.identifiers import DomainId
+
 
 @dataclass(frozen=True)
 class DomainMetadata:

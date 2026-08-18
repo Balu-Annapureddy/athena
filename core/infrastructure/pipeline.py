@@ -6,7 +6,6 @@ from typing import List, Tuple
 
 from core.data.contract import ConnectorPayload
 from core.data.factory import IObservationFactory
-from core.domain.entities import Observation
 
 
 @dataclass(frozen=True)
@@ -19,9 +18,9 @@ class PipelineResult:
 
 class ObservationPipelineAdapter:
     """Adapter connecting infrastructure connectors to the existing observation pipeline.
-    
+
     Flow: Connector -> ConnectorPayload -> ObservationFactory -> Observation
-    
+
     The adapter invokes existing Observation creation logic without modifying it.
     """
 

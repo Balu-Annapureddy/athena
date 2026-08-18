@@ -7,7 +7,7 @@ import sys
 from datetime import datetime
 from typing import Any, List, Optional
 
-from core.api.sdk import AthenaClient, AthenaAPIException
+from core.api.sdk import AthenaAPIException, AthenaClient
 
 
 def _print_json(data: Any) -> None:
@@ -38,7 +38,7 @@ def main(args: Optional[List[str]] = None) -> int:
     # 3. Knowledge Command
     kw_parser = subparsers.add_parser("knowledge", help="Query Knowledge Graph details.")
     kw_sub = kw_parser.add_subparsers(dest="subcommand", required=True)
-    
+
     ent_parser = kw_sub.add_parser("entity", help="Fetch details for a concept entity ID.")
     ent_parser.add_argument("entity_id", help="Concept Entity ID.")
 

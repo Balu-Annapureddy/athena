@@ -2,21 +2,21 @@
 
 import argparse
 import datetime
-import sys
 
 # Ensure project root is on path
 import os
+import sys
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from core.domain.enums import RecommendationAction
-from core.portfolio.registry import StrategyRegistry
-from core.portfolio.universe import NIFTY_500
 from core.pipeline.daily_runner import DailySignalRunner
-from core.pipeline.paper_ledger import PaperLedger
 from core.pipeline.notifier import TelegramNotifier
+from core.pipeline.paper_ledger import PaperLedger
 from core.pipeline.signal_deduplicator import SignalDeduplicator
+from core.portfolio.registry import StrategyRegistry
 from core.portfolio.trade_journal import TradeJournal
-
+from core.portfolio.universe import NIFTY_500
 
 # ── NSE Trading Holiday Calendar ──────────────────────────────────────────────
 # Official NSE equity segment trading holidays (source: NSE India circular).
@@ -204,7 +204,7 @@ def main() -> None:
         reports = batch_result.reports
 
         print()
-        print(f"Evaluation Batch Summary:")
+        print("Evaluation Batch Summary:")
         print(f"  - Total Tickers Evaluated : {batch_result.total_tickers}")
         print(f"  - Successful Evaluated    : {batch_result.success_count}")
         print(f"  - Failed Evaluated        : {batch_result.failed_count}")
@@ -226,7 +226,7 @@ def main() -> None:
         print("-" * 115)
         print(f"{'Trade ID':<10} | {'Strategy':<20} | {'Ticker':<12} | {'Action':<6} | {'Entry':>10} | {'Stop':>10} | {'Target':>10} | {'Conf%':>6} | {'Quality':<7}")
         print("-" * 115)
-        
+
         for r_orig in reports:
             if len(tickers) > 10 and r_orig.action == RecommendationAction.HOLD:
                 continue

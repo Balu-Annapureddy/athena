@@ -5,7 +5,7 @@ import datetime
 import json
 import os
 from dataclasses import asdict, dataclass
-from typing import Dict, List, Optional, Tuple
+from typing import List, Tuple
 
 from core.domain.enums import RecommendationAction
 from core.pipeline.signal_report import SignalReport

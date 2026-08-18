@@ -1,7 +1,13 @@
 """Event Knowledge Graph mapping dynamic events and their market impact categories."""
 
+from core.knowledge.graphs.base import (
+    Concept,
+    KnowledgeGraph,
+    PredicateType,
+    Relationship,
+)
 from core.knowledge.taxonomy import TaxonomyCategory
-from core.knowledge.graphs.base import KnowledgeGraph, Concept, Relationship, PredicateType
+
 
 class EventGraph(KnowledgeGraph):
     """Represents dynamic, real-world events and their logical classification mappings."""

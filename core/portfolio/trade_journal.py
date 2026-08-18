@@ -4,7 +4,7 @@ import datetime
 import json
 import os
 from dataclasses import asdict, dataclass
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 
 from core.pipeline.signal_report import SignalReport
 

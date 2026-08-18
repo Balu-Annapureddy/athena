@@ -10,9 +10,10 @@ Responsibilities:
 
 import logging
 from datetime import timedelta
-from typing import List, Tuple, Optional
+from typing import List, Tuple
+
 from core.domain.common import EvidenceId
-from core.evidence.accumulator import EvidenceRecord, EvidenceState, EvidenceAccumulator
+from core.evidence.accumulator import EvidenceAccumulator, EvidenceRecord, EvidenceState
 from core.evidence.agreement import calculate_conflict
 from core.evidence.context import EvidenceEvaluationContext
 from core.evidence_builder.candidate import EvidenceCandidate
@@ -71,9 +72,9 @@ class EvidenceEvaluator:
         # Freshness: use decay strategy for this source_category if configured
         decay = context.decay_strategies.get(candidate.source_category)
         if decay:
-            freshness = decay.calculate_freshness(candidate.assembled_at, context.current_time)
+            decay.calculate_freshness(candidate.assembled_at, context.current_time)
         else:
-            freshness = 1.0  # No decay configured — evidence is fully fresh
+            pass  # No decay configured — evidence is fully fresh
 
         # Conflict detection: does this candidate contradict existing active evidence?
         supports = self._determine_supports(candidate, context)

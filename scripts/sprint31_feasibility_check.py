@@ -3,7 +3,6 @@
 Probes yfinance index and stock option listings.
 """
 
-import sys
 import yfinance as yf
 
 
@@ -22,16 +21,16 @@ def check_ticker(ticker_name: str) -> None:
             nearest = expiries[0]
             print(f"Fetching option chain for nearest expiry: {nearest}")
             chain = t.option_chain(nearest)
-            
+
             print("\nCALLS Sample (First 3 rows):")
             print(chain.calls.head(3).to_string())
-            
+
             print("\nPUTS Sample (First 3 rows):")
             print(chain.puts.head(3).to_string())
-            
+
             print("\nCALLS Columns and Types:")
             print(chain.calls.dtypes)
-            
+
             # Check for non-null/non-zero values in key columns
             cols = ["openInterest", "impliedVolatility", "bid", "ask", "lastPrice"]
             for col in cols:

@@ -1,8 +1,10 @@
 """Hypothesis entity representing testable market theories."""
 
 from datetime import datetime
-from core.domain.entities.base import BaseEntity
+
 from core.domain.common import DomainMetadata, validate_non_empty_string
+from core.domain.entities.base import BaseEntity
+
 
 class Hypothesis(BaseEntity):
     """Represents a falsifiable market statement subject to evidence collection."""

@@ -1,7 +1,7 @@
 """In-memory synchronous event bus for infrastructure events."""
 
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import datetime
 from enum import Enum
 from typing import Any, Callable, Dict, List, Tuple
 
@@ -31,7 +31,7 @@ class Event:
 
 class EventBus:
     """In-memory synchronous event bus.
-    
+
     Deterministic ordering: handlers invoked in subscription order.
     No Kafka. No RabbitMQ. No external messaging.
     """

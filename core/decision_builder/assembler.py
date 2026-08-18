@@ -1,17 +1,19 @@
 """DecisionAssembler materializing candidates to Decision domain entities."""
 
-from typing import List, Tuple, Optional
 from datetime import datetime, timezone
-from core.domain.common import DomainMetadata
-from core.domain.entities import Decision
-from core.thesis_builder import ThesisRecord
-from core.decision_builder.portfolio import PortfolioState
-from core.decision_builder.policies import DecisionPolicy
-from core.decision_builder.context import DecisionEvaluationContext
+from typing import List, Optional, Tuple
+
 from core.decision_builder.builder import DecisionCandidateBuilder
+from core.decision_builder.context import DecisionEvaluationContext
 from core.decision_builder.evaluator import DecisionEvaluator
 from core.decision_builder.ledger import DecisionLedger, DecisionRecord
-from core.risk.engine import RiskEngine, RiskAssessment
+from core.decision_builder.policies import DecisionPolicy
+from core.decision_builder.portfolio import PortfolioState
+from core.domain.common import DomainMetadata
+from core.domain.entities import Decision
+from core.risk.engine import RiskEngine
+from core.thesis_builder import ThesisRecord
+
 
 class DecisionAssembler:
     """Orchestrates candidate synthesis, set-based evaluation, and domain model materialization."""
@@ -55,7 +57,7 @@ class DecisionAssembler:
     ) -> List[Tuple[Decision, DecisionRecord]]:
         """Synthesize candidate decisions, evaluate compliance, and return materialized domain entities."""
         candidates = self._builder.build_candidates(thesis, portfolio, policy)
-        
+
         # Perform set-based evaluation
         assessments = self._evaluator.evaluate(candidates, context)
 

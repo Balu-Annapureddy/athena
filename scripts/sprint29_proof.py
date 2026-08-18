@@ -18,10 +18,10 @@ DATA NOTE (see ADR-029, ADR-030):
   both gates and is committed to the repository as evidence.
 """
 
-import sys
-import os
-import math
 import hashlib
+import math
+import os
+import sys
 from datetime import datetime, timedelta, timezone
 from typing import List
 
@@ -32,12 +32,16 @@ if hasattr(sys.stdout, "reconfigure"):
 # Ensure project root is on path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from core.strategy.golden_cross import GoldenCrossDeathCrossStrategy
-from core.backtest.engine import BacktestEngine
 from core.backtest.validation import ValidationCampaign
-from core.data.contract import ConnectorPayload, Provenance, PayloadType, SourceType, VerificationStatus
+from core.data.contract import (
+    ConnectorPayload,
+    PayloadType,
+    Provenance,
+    SourceType,
+    VerificationStatus,
+)
 from core.data.payloads.price import PricePayload
-
+from core.strategy.golden_cross import GoldenCrossDeathCrossStrategy
 
 # ---------------------------------------------------------------------------
 # Mock connector — no network, no yfinance, filters by entity + date range
@@ -114,7 +118,7 @@ def generate_synthetic_payloads(ticker: str, start_str: str, end_str: str) -> Li
         o = price * (1.0 - (_rng(f"{ticker}:{ds}:open") - 0.5) * 0.005)
         c = price
         h = max(o, c) * (1.0 + _rng(f"{ticker}:{ds}:high") * 0.01)
-        l = min(o, c) * (1.0 - _rng(f"{ticker}:{ds}:low")  * 0.01)
+        lo = min(o, c) * (1.0 - _rng(f"{ticker}:{ds}:low")  * 0.01)
         v = 500_000.0 + _rng(f"{ticker}:{ds}:vol") * 1_500_000.0
 
         pub_dt = datetime(curr.year, curr.month, curr.day, tzinfo=timezone.utc)
@@ -130,7 +134,7 @@ def generate_synthetic_payloads(ticker: str, start_str: str, end_str: str) -> Li
             ingestion_run_id="run-synth-sprint29",
         )
         price_payload = PricePayload(
-            open=o, high=h, low=l, close=c, volume=v, timeframe="1D"
+            open=o, high=h, low=lo, close=c, volume=v, timeframe="1D"
         )
         payload = ConnectorPayload(
             source_id=f"SYNTH_{ticker}_{curr.strftime('%Y%m%d')}",
@@ -191,9 +195,9 @@ def main() -> None:
     strategy = GoldenCrossDeathCrossStrategy(fast_period=50, slow_period=200)
 
     print("Running ValidationCampaign through real BacktestEngine + GoldenCrossDeathCrossStrategy...")
-    print(f"  Strategy : GoldenCrossDeathCrossStrategy(fast=50, slow=200)")
-    print(f"  Account  : Rs. 1,000,000")
-    print(f"  Risk/trade: 1%  |  Stop: 2xATR  |  Target: 3xATR")
+    print("  Strategy : GoldenCrossDeathCrossStrategy(fast=50, slow=200)")
+    print("  Account  : Rs. 1,000,000")
+    print("  Risk/trade: 1%  |  Stop: 2xATR  |  Target: 3xATR")
     print(f"  Gates    : min {min_total_trades} trades AND >= {min_passing_ratio} pass ratio")
     print()
 

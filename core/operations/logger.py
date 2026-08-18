@@ -14,7 +14,7 @@ class JSONFormatter(logging.Formatter):
     def format(self, record: logging.LogRecord) -> str:
         """Format log records with thread-local correlation-IDs and metadata."""
         timestamp = datetime.fromtimestamp(record.created, tz=timezone.utc).isoformat()
-        
+
         # Build standard log payload
         payload: Dict[str, Any] = {
             "timestamp": timestamp,

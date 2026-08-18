@@ -2,8 +2,10 @@
 
 import math
 from abc import ABC, abstractmethod
-from datetime import datetime, timezone
+from datetime import datetime
+
 from core.domain.common import validate_non_negative
+
 
 class DecayStrategy(ABC):
     """Abstract base class for evidence temporal decay calculations."""

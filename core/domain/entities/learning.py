@@ -1,10 +1,12 @@
 """Learning entity representing insights and system parameter adjustments from an Outcome."""
 
 from datetime import datetime
-from typing import List
 from types import MappingProxyType
-from core.domain.entities.base import BaseEntity
+from typing import List
+
 from core.domain.common import DomainMetadata, OutcomeId
+from core.domain.entities.base import BaseEntity
+
 
 class Learning(BaseEntity):
     """Represents a learning outcome node linking a verified Outcome to system adjustments/lessons."""

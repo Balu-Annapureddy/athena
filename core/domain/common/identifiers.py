@@ -3,6 +3,7 @@
 import uuid
 from dataclasses import dataclass
 
+
 @dataclass(frozen=True)
 class DomainId:
     """Base class for all strongly typed domain identifiers."""

@@ -1,12 +1,14 @@
 """Outcome ledger tracking versioned history logs and state updates."""
 
-from enum import Enum
-from datetime import datetime, timezone
 from dataclasses import dataclass
-from typing import List, Dict
-from core.domain.common import OutcomeId, DecisionId, SecurityId
-from core.outcome_builder.candidate import OutcomeCandidate, OutcomeEventType
+from datetime import datetime, timezone
+from enum import Enum
+from typing import Dict, List
+
+from core.domain.common import DecisionId, OutcomeId, SecurityId
 from core.outcome_builder.assessment import OutcomeAssessment
+from core.outcome_builder.candidate import OutcomeCandidate, OutcomeEventType
+
 
 class OutcomeState(Enum):
     """Lifecycle states of a reconciled outcome."""
@@ -79,7 +81,7 @@ class OutcomeLedger:
 
         if oid in self._active_records:
             existing = self._active_records[oid]
-            
+
             # Supersede old active record state in ledger
             superseded_record = OutcomeRecord(
                 id=existing.id,

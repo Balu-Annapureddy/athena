@@ -4,9 +4,17 @@ import hashlib
 from abc import ABC
 from datetime import datetime, timezone
 from typing import List
+
 from core.data.connectors.base import BaseConnector, Capabilities
-from core.data.contract import ConnectorPayload, PayloadType, SourceType, VerificationStatus, Provenance
+from core.data.contract import (
+    ConnectorPayload,
+    PayloadType,
+    Provenance,
+    SourceType,
+    VerificationStatus,
+)
 from core.data.payloads.economic import EconomicPayload
+
 
 class EconomicConnector(BaseConnector, ABC):
     """Abstract base connector for receiving macroeconomic indicator updates."""
@@ -29,7 +37,7 @@ class MockEconomicConnector(EconomicConnector):
 
     def fetch_data(self, entity: str, **kwargs) -> List[ConnectorPayload]:
         now = datetime.now(timezone.utc)
-        
+
         # Build simulated economic payload
         economic = EconomicPayload(
             indicator_name="GDP",

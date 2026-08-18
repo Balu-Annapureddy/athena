@@ -1,20 +1,21 @@
 """Evidence accumulator and append-only ledger implementations for Athena."""
 
-from enum import Enum
+from dataclasses import dataclass
 from datetime import datetime, timezone
-from dataclasses import dataclass, field
-from typing import List, Dict, Any, Optional
-from types import MappingProxyType
+from enum import Enum
+from typing import Dict, List, Optional
+
 from core.domain.common import (
-    EvidenceId,
-    HypothesisId,
-    FactId,
     CandidateId,
-    validate_range,
+    EvidenceId,
+    FactId,
+    HypothesisId,
     validate_non_empty_string,
+    validate_range,
 )
 from core.domain.exceptions import DomainValidationError
 from core.evidence.decay import DecayStrategy, NeverDecay
+
 
 class EvidenceState(Enum):
     """Lifecycle states of an evidence item."""
@@ -106,14 +107,14 @@ class EvidenceAccumulator:
     ) -> EvidenceRecord:
         """Create or merge new facts into the accumulator, logging the transaction to the ledger."""
         now = datetime.now(timezone.utc)
-        
+
         # Check if record already exists (to update or merge)
         if evidence_id in self._active_records:
             existing = self._active_records[evidence_id]
             # Merge hypotheses and facts lists ensuring uniqueness
             merged_hyps = list(set(existing.hypothesis_ids + hypothesis_ids))
             merged_facts = list(set(existing.source_fact_ids + source_fact_ids))
-            
+
             # Formulate updated record
             updated = EvidenceRecord(
                 id=evidence_id,
@@ -178,7 +179,7 @@ class EvidenceAccumulator:
             # Resolve decay strategy
             strategy = decay_strategies.get(record.source_category, NeverDecay())
             new_freshness = strategy.calculate_freshness(record.occurred_at, current_time)
-            
+
             # Transition triggers
             has_expired = (current_time >= record.expires_at) or (new_freshness <= 0.0)
             target_state = EvidenceState.EXPIRED if has_expired else record.state
@@ -225,7 +226,7 @@ class EvidenceAccumulator:
 
         existing = self._active_records[evidence_id]
         now = datetime.now(timezone.utc)
-        
+
         updated = EvidenceRecord(
             id=existing.id,
             hypothesis_ids=existing.hypothesis_ids,
@@ -241,7 +242,7 @@ class EvidenceAccumulator:
             source_category=existing.source_category,
             version=existing.version + 1
         )
-        
+
         self._active_records[evidence_id] = updated
         self._ledger.append(
             LedgerEntry(

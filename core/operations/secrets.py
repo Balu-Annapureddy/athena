@@ -1,8 +1,8 @@
 """SecretsRepository providing secure, immutable credentials loading with fail-fast validation."""
 
-import os
 import json
-from typing import Any, Dict, Optional
+import os
+from typing import Dict, Optional
 
 
 class ConfigurationError(Exception):
@@ -15,7 +15,7 @@ class SecretsRepository:
 
     def __init__(self, secrets_filepath: Optional[str] = None) -> None:
         self._secrets: Dict[str, str] = {}
-        
+
         # Load from file if specified and exists
         if secrets_filepath and os.path.exists(secrets_filepath):
             try:
@@ -23,7 +23,7 @@ class SecretsRepository:
                     data = json.load(f)
                     if isinstance(data, dict):
                         self._secrets.update({k.upper(): str(v) for k, v in data.items()})
-            except Exception as e:
+            except Exception:
                 # Log or handle read failure
                 pass
 
@@ -33,7 +33,7 @@ class SecretsRepository:
 
     def get_secret(self, key: str) -> str:
         """Fetch credentials or raise ConfigurationError if missing.
-        
+
         Secrets are read-only.
         """
         k_upper = key.upper()

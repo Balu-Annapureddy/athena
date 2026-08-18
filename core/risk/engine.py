@@ -92,7 +92,7 @@ class RiskEngine:
         if action is None:
             # Fallback for DecisionRecord or DecisionCandidate properties
             action = getattr(decision, "proposed_action", None)
-        
+
         is_long = action == RecommendationAction.BUY
 
         # Calculate ATR-based stop loss

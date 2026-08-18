@@ -3,12 +3,16 @@
 from abc import ABC, abstractmethod
 from datetime import datetime, timezone
 from typing import List
-from core.domain.common import ThesisId, HypothesisId, EvidenceId, InferenceId, SecurityId
-from core.domain.enums import ThesisDirection, RiskSeverity
+
+from core.domain.common import (
+    EvidenceId,
+    HypothesisId,
+    InferenceId,
+    SecurityId,
+)
+from core.domain.enums import RiskSeverity, ThesisDirection
 from core.domain.value_objects import RiskAssessment
 from core.hypothesis_builder import HypothesisRecord, HypothesisType
-from core.thesis_builder.candidate import ThesisCandidate, TimeHorizon, StrategyStyle
-from core.thesis_builder.policies import ThesisPolicy
 from core.thesis_builder.assumptions import (
     Assumption,
     AssumptionCriticality,
@@ -16,6 +20,9 @@ from core.thesis_builder.assumptions import (
     Scenario,
     ScenarioType,
 )
+from core.thesis_builder.candidate import StrategyStyle, ThesisCandidate, TimeHorizon
+from core.thesis_builder.policies import ThesisPolicy
+
 
 class ThesisCandidateRule(ABC):
     """Abstract base for pluggable rules synthesizing Hypotheses to ThesisCandidates."""
@@ -117,7 +124,7 @@ class LongTermGrowthThesisRule(ThesisCandidateRule):
 
         primary_hyp = quality_hyps[0]
         supporting_ids = [h.id for h in quality_hyps]
-        
+
         # Pull associated inferences
         inf_ids = []
         for h in quality_hyps:
@@ -172,8 +179,8 @@ class LongTermGrowthThesisRule(ThesisCandidateRule):
             "Corporate debt exceeds leverage ratio criteria limits."
         ]
 
-        import uuid
         import hashlib
+        import uuid
         sec_uuid = uuid.UUID(hashlib.md5(primary_hyp.entity_id.encode()).hexdigest())
         sec_id = SecurityId(sec_uuid)
 

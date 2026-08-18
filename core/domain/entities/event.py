@@ -1,8 +1,10 @@
 """Event entity representing discrete occurrences in the real world."""
 
 from datetime import datetime
-from core.domain.entities.base import BaseEntity
+
 from core.domain.common import DomainMetadata, validate_non_empty_string
+from core.domain.entities.base import BaseEntity
+
 
 class Event(BaseEntity):
     """Represents a significant external market-influencing event (e.g. Federal Reserve Rate Decision)."""

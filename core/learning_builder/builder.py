@@ -2,9 +2,11 @@
 
 import logging
 from typing import List, Tuple
+
 from core.learning_builder.candidate import LearningCandidate
 from core.learning_builder.context import LearningEvaluationContext
 from core.learning_builder.rules import LearningCandidateRule
+
 
 class LearningCandidateBuilder:
     """Orchestrates candidate learning recommendation generation with error isolation and determinism."""

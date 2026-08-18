@@ -1,15 +1,16 @@
 """Knowledge loader for validating and populating KnowledgeGraphEngine."""
 
 from typing import Any, Dict, List
-from core.knowledge.taxonomy import TaxonomyCategory
-from core.knowledge.graphs.base import Concept, Relationship, PredicateType
-from core.knowledge.engine import KnowledgeGraphEngine
+
 from core.domain.exceptions.validation import DomainValidationError
+from core.knowledge.engine import KnowledgeGraphEngine
+from core.knowledge.graphs.base import Concept, PredicateType, Relationship
+from core.knowledge.taxonomy import TaxonomyCategory
 
 
 class KnowledgeLoader:
     """Ingests and validates raw dict payload data into the KnowledgeGraphEngine.
-    
+
     Validates:
     - Referenced concepts exist
     - Predicate types are valid
@@ -19,7 +20,7 @@ class KnowledgeLoader:
     @staticmethod
     def load_from_dict(engine: KnowledgeGraphEngine, data: Dict[str, List[Dict[str, Any]]]) -> None:
         """Parse structured payload dict into engine instance graph.
-        
+
         Format:
         {
             "concepts": [
@@ -54,7 +55,7 @@ class KnowledgeLoader:
             instance_graph = engine.instance_graph
             concept_key = concept_id.upper()
             if concept_key in instance_graph._concepts:
-                # Handle duplicates consistently: log/skip or update properties if safe. 
+                # Handle duplicates consistently: log/skip or update properties if safe.
                 # According to constraints, we keep the original concept and avoid duplicate registration.
                 continue
 

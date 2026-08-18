@@ -1,8 +1,10 @@
 """LearningTarget and LearningChange definitions."""
 
-from enum import Enum
 from dataclasses import dataclass
+from enum import Enum
+
 from core.domain.interfaces import IValueObject
+
 
 class LearningTarget(Enum):
     """The configurable system components targetable for adaptation."""

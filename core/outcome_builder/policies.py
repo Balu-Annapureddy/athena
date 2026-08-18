@@ -2,6 +2,7 @@
 
 from dataclasses import dataclass
 
+
 @dataclass(frozen=True)
 class OutcomePolicy:
     """Configurable parameter set for execution outcome audits."""

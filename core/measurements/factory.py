@@ -3,9 +3,11 @@
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import List
-from core.domain.value_objects import Measurement
+
 from core.domain.common import FactId
+from core.domain.value_objects import Measurement
 from core.measurements.taxonomy import FormulaId
+
 
 @dataclass(frozen=True)
 class DerivedMeasurement:

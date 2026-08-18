@@ -1,8 +1,10 @@
 """Formula executor executing mathematical calculations on metrics."""
 
 from typing import Dict
-from core.mathematics.formulas import Formula
+
 from core.domain.value_objects import Measurement
+from core.mathematics.formulas import Formula
+
 
 class FormulaExecutor:
     """Executes formula calculations deterministically, removing subjective confidence assessments."""

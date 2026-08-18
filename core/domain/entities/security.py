@@ -1,7 +1,13 @@
 """Security entity representing publicly traded financial instruments."""
 
+from core.domain.common import (
+    CompanyId,
+    DomainMetadata,
+    ExchangeId,
+    validate_non_empty_string,
+)
 from core.domain.entities.base import BaseEntity
-from core.domain.common import DomainMetadata, ExchangeId, CompanyId, validate_non_empty_string
+
 
 class Security(BaseEntity):
     """Represents a tradeable equity instrument (e.g. Stock, ETF)."""

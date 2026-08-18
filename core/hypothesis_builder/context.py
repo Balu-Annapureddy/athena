@@ -2,9 +2,11 @@
 
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import List, Dict, Any
+from typing import Any, Dict, List
+
 from core.domain.entities import Inference
 from core.hypothesis_builder.policies import HypothesisPolicy
+
 
 @dataclass(frozen=True)
 class HypothesisEvaluationContext:

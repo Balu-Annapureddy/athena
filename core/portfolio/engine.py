@@ -5,20 +5,20 @@ enforcing exact financial accounting, PointInTime universe validation, signal ra
 all-or-nothing cash gating, and a 10% equity concentration cap per position.
 """
 
-import json
 import copy
 import logging
-import math
-import os
 from datetime import datetime, timezone
 from types import SimpleNamespace
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Optional, Set
 
 from core.backtest.engine import TransactionCostModel
 from core.backtest.metrics import MetricsCalculator
 from core.data.connectors.yfinance_connector import YFinanceConnector
 from core.data.factory import ObservationFactory
-from core.domain.common import ObservationId, DomainMetadata
+from core.decision_builder.context import DecisionEvaluationContext
+from core.decision_builder.policies import DecisionPolicy
+from core.decision_builder.portfolio import PortfolioState
+from core.domain.common import DomainMetadata, ObservationId
 from core.domain.entities import Fact
 from core.domain.enums import RecommendationAction, ThesisDirection
 from core.domain.value_objects import Measurement
@@ -28,10 +28,10 @@ from core.facts.taxonomy import FactType
 from core.patterns.engine import PatternEngine
 from core.portfolio.results import MultiAssetBacktestResult
 from core.portfolio.state import PortfolioPosition, PortfolioStateSnapshot
-from core.portfolio.universe import PointInTimeUniverseProvider, MissingPointInTimeUniverseDataError
-from core.decision_builder.context import DecisionEvaluationContext
-from core.decision_builder.policies import DecisionPolicy
-from core.decision_builder.portfolio import PortfolioState
+from core.portfolio.universe import (
+    MissingPointInTimeUniverseDataError,
+    PointInTimeUniverseProvider,
+)
 from core.risk.engine import RiskEngine
 
 logger = logging.getLogger(__name__)
@@ -171,7 +171,7 @@ class MultiAssetPortfolioEngine:
         # 1. Load payloads for all tickers
         ticker_payloads: Dict[str, List[Any]] = {}
         all_timestamps: Set[str] = set()
-        
+
         for ticker in tickers:
             p_list = self._load_ticker_payloads(ticker, start_date, end_date)
             if p_list:

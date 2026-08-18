@@ -6,11 +6,12 @@ Passing everything through an explicit context ensures that:
 - No hidden global state is accessed during evaluation.
 """
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Dict, List
+
 from core.evidence.accumulator import EvidenceRecord
-from core.evidence.decay import DecayStrategy, NeverDecay
+from core.evidence.decay import DecayStrategy
 
 
 @dataclass(frozen=True)

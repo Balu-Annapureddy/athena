@@ -2,6 +2,7 @@
 
 from enum import Enum
 
+
 class RecommendationAction(Enum):
     """Actions suggested by an Investment Thesis or execution Decision."""
     BUY = "BUY"

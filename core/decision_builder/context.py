@@ -2,9 +2,11 @@
 
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import List, Any, Optional
-from core.decision_builder.portfolio import PortfolioState
+from typing import Any, List, Optional
+
 from core.decision_builder.policies import DecisionPolicy
+from core.decision_builder.portfolio import PortfolioState
+
 
 @dataclass(frozen=True)
 class DecisionEvaluationContext:

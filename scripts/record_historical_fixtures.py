@@ -6,9 +6,9 @@ import sys
 # Ensure project root is on sys.path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from core.data.connectors.yfinance_connector import YFinanceConnector
-
 import time
+
+from core.data.connectors.yfinance_connector import YFinanceConnector
 
 NIFTY_50_TICKERS = [
     "ADANIENT.NS", "ADANIPORTS.NS", "APOLLOHOSP.NS", "ASIANPAINT.NS",

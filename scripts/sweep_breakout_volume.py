@@ -144,7 +144,8 @@ def main() -> None:
                                 target_rr_ratio=trr,
                             )
 
-                    import io, contextlib
+                    import contextlib
+                    import io
                     with contextlib.redirect_stdout(io.StringIO()):
                         res = campaign.execute(
                             strategy=strategy,

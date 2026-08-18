@@ -1,8 +1,10 @@
 """Structured Value Objects and Enums for Assumptions and Scenarios."""
 
-from enum import Enum
 from dataclasses import dataclass
+from enum import Enum
+
 from core.domain.interfaces import IValueObject
+
 
 class AssumptionCriticality(Enum):
     """How critical the assumption is to the validity of the thesis."""

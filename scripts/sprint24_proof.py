@@ -28,8 +28,10 @@ Run from the project root:
     python scripts/sprint24_proof.py
 """
 
-import sys
+# ruff: noqa: E402
+
 import os
+import sys
 from datetime import datetime, timezone
 
 # Ensure project root is on path
@@ -62,7 +64,7 @@ print(f"  ✓ High:        ₹{price.high:,.2f}")       # type: ignore[union-att
 print(f"  ✓ Low:         ₹{price.low:,.2f}")        # type: ignore[union-attr]
 print(f"  ✓ Close:       ₹{price.close:,.2f}")      # type: ignore[union-attr]
 print(f"  ✓ Volume:      {price.volume:,.0f} shares")  # type: ignore[union-attr]
-print(f"  ✓ Fixture:     fixtures/yfinance/YFinanceConnector_RELIANCE.NS.jsonl")
+print("  ✓ Fixture:     fixtures/yfinance/YFinanceConnector_RELIANCE.NS.jsonl")
 print()
 
 # ── 2. ConnectorPayload → domain Observation ──────────────────────────────────
@@ -113,8 +115,8 @@ print()
 
 print("Step 5: Running EvidenceEngine (accumulator + evaluator)...")
 
-from core.evidence.engine import EvidenceEngine
 from core.evidence.context import EvidenceEvaluationContext
+from core.evidence.engine import EvidenceEngine
 
 evidence_engine = EvidenceEngine()
 evidence_ctx = EvidenceEvaluationContext.default()
@@ -129,8 +131,8 @@ print()
 
 print("Step 6: Running RuleEvaluator (price close > open → bullish inference)...")
 
-from core.reasoning.engine import FactCondition, ReasoningRule, RuleEvaluator
 from core.domain.common import DomainMetadata, InferenceId
+from core.reasoning.engine import FactCondition, ReasoningRule, RuleEvaluator
 
 facts_by_name = {f.name: f for f in facts}
 
@@ -162,12 +164,12 @@ try:
     )
     inferences = [inference]
     print(f"  ✓ Inference conclusion: {inference.conclusion}")
-    print(f"  ✓ Reasoning path:")
+    print("  ✓ Reasoning path:")
     for step in inference.reasoning_path:
         print(f"    - {step}")
-except Exception as e:
+except Exception:
     # If close <= open (bearish day), use a permissive fallback inference
-    print(f"  ℹ Price closed below open — using range inference instead.")
+    print("  ℹ Price closed below open — using range inference instead.")
     range_rule = ReasoningRule(
         rule_id="PRICE_RANGE",
         name="PriceRangeRule",
@@ -195,8 +197,8 @@ print("Step 7: Building HypothesisCandidates via PriceTrendHypothesisRule...")
 
 from core.hypothesis_builder import (
     HypothesisAssembler,
-    PriceTrendHypothesisRule,
     HypothesisPolicy,
+    PriceTrendHypothesisRule,
 )
 from core.hypothesis_builder.builder import HypothesisCandidateBuilder
 from core.hypothesis_builder.context import HypothesisEvaluationContext
@@ -227,19 +229,15 @@ print()
 
 print("Step 8: Building ThesisRecord from price hypothesis...")
 
+from core.domain.common import HypothesisId, ThesisId
+from core.domain.enums import ThesisDirection
+from core.domain.value_objects import Confidence
 from core.thesis_builder import (
-    ThesisAssembler,
-    ThesisPolicy,
-    LongTermGrowthThesisRule,
+    StrategyStyle,
     ThesisRecord,
     ThesisState,
     TimeHorizon,
-    StrategyStyle,
 )
-from core.thesis_builder.context import ThesisEvaluationContext
-from core.domain.enums import ThesisDirection
-from core.domain.common import ThesisId, HypothesisId
-from core.domain.value_objects import Confidence
 
 # Build a ThesisRecord directly — the assembler path requires FINANCIAL_QUALITY
 # hypothesis (not available from price data alone). We construct the record using
@@ -289,8 +287,8 @@ print("Step 9: Assembling Decision via QualityBuyDecisionRule...")
 from core.decision_builder import (
     DecisionAssembler,
     DecisionCandidateBuilder,
-    DecisionPolicy,
     DecisionEvaluationContext,
+    DecisionPolicy,
     PortfolioState,
     QualityBuyDecisionRule,
 )
@@ -325,9 +323,8 @@ print()
 print("Step 10: Generating ExplanationReport via ExplanationEngine...")
 print()
 
-from core.explanation.engine import ExplanationEngine
 from core.explanation.context import IExplanationContext
-from core.explanation.models import ProvenanceNode, ProvenanceLink, ProvenanceNodeType, ProvenancePredicate
+from core.explanation.engine import ExplanationEngine
 
 # Build a minimal ExplanationContext from what we produced above.
 # The ExplanationEngine traverses the context graph starting from the decision_id.

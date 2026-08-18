@@ -22,12 +22,11 @@ No external dependencies — stdlib json, os, pathlib only.
 from __future__ import annotations
 
 import json
-import os
-from dataclasses import asdict, fields
+from dataclasses import fields
 from datetime import datetime, timezone
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from core.data.contract import (
     ConnectorPayload,
@@ -49,7 +48,6 @@ from core.infrastructure.connectors import (
     FetchResult,
     IInfrastructureConnector,
 )
-
 
 # ---------------------------------------------------------------------------
 # Serialization helpers (no third-party deps)

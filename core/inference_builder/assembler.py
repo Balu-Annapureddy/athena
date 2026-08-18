@@ -1,11 +1,13 @@
 """InferenceAssembler materializing candidates to domain Inference models."""
 
 from typing import List
+
+from core.domain.common import DomainMetadata
 from core.domain.entities import Inference
 from core.domain.entities.inference import ReasoningStep
-from core.domain.common import DomainMetadata
 from core.inference_builder.candidate import InferenceCandidate
 from core.inference_builder.ledger import InferenceLedger
+
 
 class InferenceAssembler:
     """Materializes candidates to domain Inference models and records them in the ledger."""

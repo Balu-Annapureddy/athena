@@ -6,7 +6,7 @@ import json
 from dataclasses import dataclass
 from datetime import datetime
 from types import MappingProxyType
-from typing import Any, Dict
+from typing import Any
 
 
 def _deep_freeze(obj: Any) -> Any:

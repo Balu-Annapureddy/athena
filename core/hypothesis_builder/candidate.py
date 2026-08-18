@@ -1,11 +1,13 @@
 """HypothesisCandidate and HypothesisType definitions for the Hypothesis Layer."""
 
 import hashlib
-from enum import Enum
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime
+from enum import Enum
 from typing import List
+
 from core.domain.common import HypothesisId, InferenceId
+
 
 class HypothesisType(Enum):
     """Semantic categories of hypotheses."""

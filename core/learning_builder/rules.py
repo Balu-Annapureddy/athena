@@ -3,11 +3,13 @@
 from abc import ABC, abstractmethod
 from datetime import datetime, timezone
 from typing import List
-from core.domain.common import LearningId, OutcomeId, DecisionId
-from core.learning_builder.target import LearningTarget, LearningChange
-from core.learning_builder.candidate import LearningCandidate, AdjustmentType
-from core.learning_builder.policies import LearningPolicy
+
+from core.domain.common import DecisionId, OutcomeId
+from core.learning_builder.candidate import AdjustmentType, LearningCandidate
 from core.learning_builder.context import LearningEvaluationContext
+from core.learning_builder.policies import LearningPolicy
+from core.learning_builder.target import LearningChange, LearningTarget
+
 
 class LearningCandidateRule(ABC):
     """Abstract base for pluggable rules analyzing history to suggest parameters changes."""

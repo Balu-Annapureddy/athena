@@ -3,22 +3,34 @@
 Responsible for connector integration, payloads schema contracts, and domain observation factories.
 """
 
-from core.data.contract import PayloadType, SourceType, VerificationStatus, Provenance, ConnectorPayload
-from core.data.payloads import IPayload, PricePayload, FundamentalPayload, NewsPayload, EconomicPayload
-from core.data.factory import IObservationFactory, ObservationFactory
-from core.data.registry import ConnectorRegistry
 from core.data.connectors import (
-    Capabilities,
     BaseConnector,
-    MarketConnector,
-    MockMarketConnector,
+    Capabilities,
     CorporateConnector,
-    MockCorporateConnector,
-    NewsConnector,
-    MockNewsConnector,
     EconomicConnector,
+    MarketConnector,
+    MockCorporateConnector,
     MockEconomicConnector,
+    MockMarketConnector,
+    MockNewsConnector,
+    NewsConnector,
 )
+from core.data.contract import (
+    ConnectorPayload,
+    PayloadType,
+    Provenance,
+    SourceType,
+    VerificationStatus,
+)
+from core.data.factory import IObservationFactory, ObservationFactory
+from core.data.payloads import (
+    EconomicPayload,
+    FundamentalPayload,
+    IPayload,
+    NewsPayload,
+    PricePayload,
+)
+from core.data.registry import ConnectorRegistry
 
 __all__ = [
     "PayloadType",

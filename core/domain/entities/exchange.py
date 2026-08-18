@@ -1,7 +1,8 @@
 """Exchange entity representing individual trading venues."""
 
-from core.domain.entities.base import BaseEntity
 from core.domain.common import DomainMetadata, MarketId, validate_non_empty_string
+from core.domain.entities.base import BaseEntity
+
 
 class Exchange(BaseEntity):
     """Represents a trading exchange (e.g., NYSE, NASDAQ) situated in a financial Market."""

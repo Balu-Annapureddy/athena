@@ -1,15 +1,16 @@
 """ThesisAssembler materializing candidates to InvestmentThesis domain entities."""
 
 from typing import List, Tuple
+
 from core.domain.common import DomainMetadata, SecurityId
 from core.domain.entities import InvestmentThesis
 from core.hypothesis_builder import HypothesisRecord
-from core.thesis_builder.candidate import ThesisCandidate
-from core.thesis_builder.policies import ThesisPolicy
-from core.thesis_builder.context import ThesisEvaluationContext
 from core.thesis_builder.builder import ThesisCandidateBuilder
+from core.thesis_builder.context import ThesisEvaluationContext
 from core.thesis_builder.evaluator import ThesisEvaluator
 from core.thesis_builder.ledger import ThesisLedger, ThesisRecord
+from core.thesis_builder.policies import ThesisPolicy
+
 
 class ThesisAssembler:
     """Orchestrates candidate synthesis, set-based evaluation, and domain model materialization."""
@@ -47,7 +48,7 @@ class ThesisAssembler:
     ) -> List[Tuple[InvestmentThesis, ThesisRecord]]:
         """Synthesize candidate theses, evaluate their confidence, and return materialized domain entities."""
         candidates = self._builder.build_candidates(active_hypotheses, policy)
-        
+
         # Perform set-based evaluation to produce Confidence VOs
         confidences = self._evaluator.evaluate(candidates, context)
 

@@ -1,14 +1,16 @@
 """Decision ledger tracking versioned history logs and state updates."""
 
-from enum import Enum
-from datetime import datetime, timezone
 from dataclasses import dataclass
-from typing import List, Dict, Optional
-from core.domain.common import DecisionId, ThesisId
-from core.domain.enums import RecommendationAction, ValidationStatus
+from datetime import datetime, timezone
+from enum import Enum
+from typing import Dict, List, Optional
+
 from core.decision_builder.candidate import DecisionCandidate, DecisionRationale
 from core.decision_builder.policies import DecisionAssessment
+from core.domain.common import DecisionId, ThesisId
+from core.domain.enums import RecommendationAction, ValidationStatus
 from core.risk.engine import RiskAssessment
+
 
 class DecisionState(Enum):
     """Lifecycle states of a decision recommendation."""
@@ -92,7 +94,7 @@ class DecisionLedger:
 
         if did in self._active_records:
             existing = self._active_records[did]
-            
+
             # Supersede old active record state in ledger
             superseded_record = DecisionRecord(
                 id=existing.id,

@@ -11,8 +11,7 @@ Reference:
 
 import json
 import os
-import sys
-from typing import Dict, List
+from typing import List
 
 from core.backtest.engine import TransactionCostModel
 from core.backtest.validation import ValidationCampaign
@@ -80,7 +79,7 @@ def main() -> None:
     trender_tickers = [t for t, r in regime_map.items() if r == AssetRegime.TRENDER]
     reverter_tickers = [t for t, r in regime_map.items() if r == AssetRegime.MEAN_REVERTER]
 
-    print(f"In-Sample Regime Classification (2010–2022):")
+    print("In-Sample Regime Classification (2010–2022):")
     print(f"  - Trenders ({len(trender_tickers)})      : Assigned GoldenCrossDeathCrossStrategy")
     print(f"    {trender_tickers[:6]}...")
     print(f"  - Mean Reverters ({len(reverter_tickers)}): Assigned RSIMeanReversionStrategy")

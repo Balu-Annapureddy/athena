@@ -21,7 +21,6 @@ from typing import Any, Callable, Dict, List, Optional
 from core.data.contract import ConnectorPayload
 from core.domain.exceptions.validation import DomainValidationError
 
-
 # ---------------------------------------------------------------------------
 # Exception
 # ---------------------------------------------------------------------------

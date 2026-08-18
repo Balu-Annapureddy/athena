@@ -1,12 +1,17 @@
 """Composable Strategy Profiles representing Layer 3 of Athena."""
 
-from typing import List, Dict
-from core.domain.common import DomainMetadata, SecurityId, HypothesisId
-from core.domain.entities import InvestmentThesis, Inference
-from core.domain.enums import RecommendationAction
-from core.domain.value_objects import Confidence, RiskAssessment
+from typing import Dict, List
+
+from core.domain.common import (
+    DomainMetadata,
+    HypothesisId,
+    SecurityId,
+    validate_non_empty_string,
+)
+from core.domain.entities import Inference, InvestmentThesis
 from core.domain.exceptions import DomainValidationError
-from core.domain.common import validate_non_empty_string
+from core.domain.value_objects import Confidence, RiskAssessment
+
 
 class StrategyProfile:
     """Represents a composable investment strategy built from reusable reasoning rules (Lego blocks)."""
@@ -57,13 +62,13 @@ class StrategyProfile:
             evidence_ids.extend(inf.evidence_ids)
 
         assumptions = [
-            f"Assumes corporate governance standards match historical profile.",
+            "Assumes corporate governance standards match historical profile.",
             f"Assumes macroeconomic variables satisfy {self._name} boundaries."
         ]
 
         invalidation_conditions = [
             f"Any of the required reasoning rules ({', '.join(self._required_rule_ids)}) fail validation.",
-            f"Associated risk factors exceed risk tolerance thresholds."
+            "Associated risk factors exceed risk tolerance thresholds."
         ]
 
         scenarios = {

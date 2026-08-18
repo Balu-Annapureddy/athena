@@ -1,14 +1,22 @@
 """ThesisCandidate and Enums for the Investment Thesis Layer."""
 
 import hashlib
-from enum import Enum
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime
+from enum import Enum
 from typing import List
-from core.domain.common import ThesisId, HypothesisId, EvidenceId, InferenceId, SecurityId
+
+from core.domain.common import (
+    EvidenceId,
+    HypothesisId,
+    InferenceId,
+    SecurityId,
+    ThesisId,
+)
 from core.domain.enums import ThesisDirection
 from core.domain.value_objects import RiskAssessment
 from core.thesis_builder.assumptions import Assumption, Scenario
+
 
 class TimeHorizon(Enum):
     """Enums representing the investment time horizon."""

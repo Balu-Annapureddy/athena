@@ -4,10 +4,11 @@ import hashlib
 import json
 from datetime import datetime, timezone
 from typing import Any, Dict, List
+
+from core.domain.exceptions.validation import DomainValidationError
+from core.knowledge.engine import KnowledgeGraphEngine
 from core.memory.models import MemoryEvent, MemoryEventType
 from core.memory.store import MemoryStore
-from core.knowledge.engine import KnowledgeGraphEngine
-from core.domain.exceptions.validation import DomainValidationError
 
 
 def _compute_deterministic_id(entity_id: str, type_str: str, timestamp_str: str, properties: dict) -> str:
@@ -19,14 +20,14 @@ def _compute_deterministic_id(entity_id: str, type_str: str, timestamp_str: str,
 
 class MemoryLoader:
     """Ingests and validates raw event feeds.
-    
+
     Verifies referenced concepts exist within the Knowledge Graph Engine.
     """
 
     @staticmethod
     def load_from_dict(store: MemoryStore, engine: KnowledgeGraphEngine, data: List[Dict[str, Any]]) -> None:
         """Parse, validate, and load memory events from a list of dictionaries.
-        
+
         Expected fields:
             - entity_id (str)
             - event_type (str or MemoryEventType)

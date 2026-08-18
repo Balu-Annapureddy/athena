@@ -17,7 +17,7 @@ import os
 import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Optional, Set, Tuple
+from typing import List, Optional, Set
 
 PRIMARY_NSE_URL = "https://nsearchives.nseindia.com/content/indices/ind_nifty500list.csv"
 SECONDARY_NSE_URL = "https://archives.nseindia.com/content/indices/ind_nifty500list.csv"
@@ -99,7 +99,7 @@ class PointInTimeUniverseProvider:
         """Populate provider with immutable constituent records after performing dataset quality validation."""
         for r in records:
             self._validate_record(r)
-            
+
             # Check duplicate / overlap against existing records
             r_drop = r.dropped_date if r.dropped_date is not None else "9999-12-31"
             for existing in self._records:

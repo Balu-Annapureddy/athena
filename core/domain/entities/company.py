@@ -1,7 +1,8 @@
 """Sector, Industry, and Company domain entities."""
 
-from core.domain.entities.base import BaseEntity
 from core.domain.common import DomainMetadata, validate_non_empty_string
+from core.domain.entities.base import BaseEntity
+
 
 class Sector(BaseEntity):
     """Represents a broad macroeconomic sector (e.g. 'Technology')."""

@@ -2,16 +2,16 @@
 
 import hashlib
 from datetime import datetime, timezone
-from typing import List, Optional, Tuple
-from core.explanation.models import (
-    ExplanationReport,
-    ProvenanceNode,
-    ProvenanceNodeType,
-    ProvenanceLink,
-    ProvenancePredicate,
-)
+from typing import Tuple
+
 from core.explanation.context import IExplanationContext
 from core.explanation.graph import ProvenanceGraphBuilder
+from core.explanation.models import (
+    ExplanationReport,
+    ProvenanceLink,
+    ProvenanceNode,
+    ProvenanceNodeType,
+)
 
 ATHENA_VERSION = "1.0.0"
 
@@ -183,12 +183,12 @@ class ExplanationEngine:
     def render_mermaid(report: ExplanationReport) -> str:
         """Render the report's explanation graph structure to a clean Mermaid flowchart string."""
         lines = ["flowchart TD"]
-        
+
         # Build node definitions with styled formatting depending on node type
         for n in report.nodes:
             nid = n.node_id.replace("-", "_")
             label = n.label.replace('"', '\\"')
-            
+
             # Simple shape decorators depending on node types
             if n.node_type == ProvenanceNodeType.DECISION:
                 shape = f'("{label}")'
@@ -206,10 +206,10 @@ class ExplanationEngine:
         lines.append("")
 
         # Build link connection definitions
-        for l in report.links:
-            src = l.source_node_id.replace("-", "_")
-            tgt = l.target_node_id.replace("-", "_")
-            predicate = l.predicate.name
+        for link in report.links:
+            src = link.source_node_id.replace("-", "_")
+            tgt = link.target_node_id.replace("-", "_")
+            predicate = link.predicate.name
             lines.append(f"    {src} -- {predicate} --> {tgt}")
 
         return "\n".join(lines)

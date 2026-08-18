@@ -2,10 +2,12 @@
 
 import logging
 from typing import List, Tuple
+
 from core.domain.entities import Fact, Observation
 from core.domain.exceptions import DomainValidationError
-from core.facts.taxonomy import FactType
 from core.facts.rules import FactExtractionRule
+from core.facts.taxonomy import FactType
+
 
 class FactBuilder:
     """Orchestrates fact extraction rules, enforcing determinism and error isolation."""
@@ -47,7 +49,7 @@ class FactValidator:
     def validate_facts(self, facts: List[Fact]) -> None:
         """Verify that all facts map to canonical FactType definitions."""
         valid_types = {t.value for t in FactType}
-        
+
         for fact in facts:
             if fact.name not in valid_types:
                 raise DomainValidationError(

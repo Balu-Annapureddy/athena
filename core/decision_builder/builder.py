@@ -2,11 +2,13 @@
 
 import logging
 from typing import List, Tuple
-from core.thesis_builder import ThesisRecord
-from core.decision_builder.portfolio import PortfolioState
-from core.decision_builder.policies import DecisionPolicy
+
 from core.decision_builder.candidate import DecisionCandidate
+from core.decision_builder.policies import DecisionPolicy
+from core.decision_builder.portfolio import PortfolioState
 from core.decision_builder.rules import DecisionCandidateRule
+from core.thesis_builder import ThesisRecord
+
 
 class DecisionCandidateBuilder:
     """Orchestrates candidate decision recommendation generation with error isolation."""

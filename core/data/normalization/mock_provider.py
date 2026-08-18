@@ -40,12 +40,10 @@ from core.data.contract import (
 from core.data.normalization.base import (
     FieldMapping,
     INormalizer,
-    NormalizationError,
     apply_field_map,
     parse_timestamp,
 )
 from core.data.payloads.price import PricePayload
-
 
 # Field mappings for the MockProvider price payload.
 # "tf" is optional with default "1D" — the key is intentionally absent in the

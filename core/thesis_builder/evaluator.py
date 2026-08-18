@@ -1,10 +1,12 @@
 """ThesisEvaluator performing set-based evaluation of investment cases."""
 
-from typing import List, Dict
+from typing import Dict, List
+
 from core.domain.common import ThesisId
 from core.domain.value_objects import Confidence
 from core.thesis_builder.candidate import ThesisCandidate
 from core.thesis_builder.context import ThesisEvaluationContext
+
 
 class ThesisEvaluator:
     """Evaluates thesis candidates as a set to produce rich Confidence value objects."""
@@ -25,10 +27,10 @@ class ThesisEvaluator:
             # Score ranges bounded between 0.0 and 1.0
             score = min(1.0, max(0.0, sup_count * 0.45))
             evidence_quality = 0.85
-            
+
             # Model agreement drops if opposing hypotheses are present
             model_agreement = max(0.0, min(1.0, 1.0 - (opp_count * 0.25)))
-            
+
             evidence_count = sup_count + len(candidate.inference_ids)
 
             rationale = (

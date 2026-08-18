@@ -16,7 +16,7 @@ Input contract:
 """
 
 from datetime import datetime, timezone
-from typing import Dict, List, Optional, Sequence
+from typing import Dict, List, Optional
 
 from core.domain.common import DomainMetadata, FactId, ObservationId
 from core.domain.entities import Fact

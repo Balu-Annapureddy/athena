@@ -2,13 +2,14 @@
 
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
-from core.memory.models import MemoryEvent, MemoryEventType
+
 from core.domain.exceptions.validation import DomainValidationError
+from core.memory.models import MemoryEvent, MemoryEventType
 
 
 class MemoryStore:
     """authoritative, read-only query repository of temporal events.
-    
+
     Exposes query APIs and keeps event storage append-only and immutable.
     """
 
@@ -20,14 +21,14 @@ class MemoryStore:
 
     def add_event(self, event: MemoryEvent) -> None:
         """Insert a memory event into the repository.
-        
+
         Enforces append-only constraints and duplicate event ID rejection.
         """
         if event.event_id in self._event_ids:
             raise DomainValidationError(f"Event ID '{event.event_id}' is already registered.")
 
         self._event_ids[event.event_id] = event
-        
+
         entity_key = event.entity_id.upper()
         if entity_key not in self._events_by_entity:
             self._events_by_entity[entity_key] = []
@@ -41,7 +42,7 @@ class MemoryStore:
         end: Optional[datetime] = None
     ) -> Tuple[MemoryEvent, ...]:
         """Retrieve chronologically ordered events for an entity.
-        
+
         Deterministic secondary sorting uses event_id when timestamps are identical.
         """
         entity_key = entity_id.upper()
@@ -79,7 +80,7 @@ class MemoryStore:
 
     def get_state_at(self, entity_id: str, state_key: str, timestamp: datetime) -> Optional[Any]:
         """Derive the historical state value of a property at a specific timestamp.
-        
+
         Scans preceding events chronologically to compute value.
         """
         entity_key = entity_id.upper()

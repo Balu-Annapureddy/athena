@@ -29,7 +29,6 @@ Indicators implemented:
 import math
 from typing import List, NamedTuple, Optional, Sequence
 
-
 # ---------------------------------------------------------------------------
 # Named-tuple return types for multi-output indicators
 # ---------------------------------------------------------------------------
@@ -338,8 +337,8 @@ def atr(
         return None
 
     trs = [
-        max(h - l, abs(h - pc), abs(l - pc))
-        for h, l, pc in zip(highs, lows, prev_closes)
+        max(h - lo, abs(h - pc), abs(lo - pc))
+        for h, lo, pc in zip(highs, lows, prev_closes)
     ]
 
     # Seed: simple average of first `period` TRs
@@ -436,8 +435,8 @@ def vwap(
 
     cumulative_tp_vol = 0.0
     cumulative_vol    = 0.0
-    for h, l, c, v in zip(highs, lows, closes, volumes):
-        tp = (h + l + c) / 3.0
+    for h, lo, c, v in zip(highs, lows, closes, volumes):
+        tp = (h + lo + c) / 3.0
         cumulative_tp_vol += tp * v
         cumulative_vol    += v
 

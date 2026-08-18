@@ -1,9 +1,11 @@
 """Fact entity representing extracted objective market/financial truths."""
 
 from datetime import datetime
-from core.domain.entities.base import BaseEntity
+
 from core.domain.common import DomainMetadata, ObservationId, validate_non_empty_string
+from core.domain.entities.base import BaseEntity
 from core.domain.value_objects import Measurement
+
 
 class Fact(BaseEntity):
     """Represents an objective, verified, and parsed fact extracted from raw Observations (e.g. 'Revenue is $10B')."""

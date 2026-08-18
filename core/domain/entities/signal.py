@@ -1,9 +1,11 @@
 """Signal entity representing derived patterns and analytical triggers."""
 
 from datetime import datetime
-from core.domain.entities.base import BaseEntity
+
 from core.domain.common import DomainMetadata, ObservationId, validate_non_empty_string
+from core.domain.entities.base import BaseEntity
 from core.domain.enums import SignalDirection
+
 
 class Signal(BaseEntity):
     """Represents a derived pattern or indicator threshold breach computed from factual data."""

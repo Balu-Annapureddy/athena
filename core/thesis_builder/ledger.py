@@ -1,14 +1,16 @@
 """Thesis ledger tracking versioned history logs and state updates."""
 
-from enum import Enum
-from datetime import datetime, timezone
 from dataclasses import dataclass
-from typing import List, Dict
-from core.domain.common import ThesisId, HypothesisId, EvidenceId, InferenceId
+from datetime import datetime, timezone
+from enum import Enum
+from typing import Dict, List
+
+from core.domain.common import EvidenceId, HypothesisId, InferenceId, ThesisId
 from core.domain.enums import ThesisDirection, ValidationStatus
-from core.domain.value_objects import RiskAssessment, Confidence
-from core.thesis_builder.candidate import ThesisCandidate, TimeHorizon, StrategyStyle
+from core.domain.value_objects import Confidence, RiskAssessment
 from core.thesis_builder.assumptions import Assumption, Scenario
+from core.thesis_builder.candidate import StrategyStyle, ThesisCandidate, TimeHorizon
+
 
 class ThesisState(Enum):
     """Lifecycle states of an investment thesis case."""
@@ -98,7 +100,7 @@ class ThesisLedger:
 
         if tid in self._active_records:
             existing = self._active_records[tid]
-            
+
             # Supersede old active record state in ledger
             superseded_record = ThesisRecord(
                 id=existing.id,

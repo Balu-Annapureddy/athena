@@ -1,13 +1,15 @@
 """Price (OHLCV) payload value object."""
 
 from dataclasses import dataclass
+
 from core.data.payloads import IPayload
 from core.domain.common import (
-    validate_positive,
-    validate_non_negative,
     validate_non_empty_string,
+    validate_non_negative,
+    validate_positive,
 )
 from core.domain.exceptions import DomainValidationError
+
 
 @dataclass(frozen=True)
 class PricePayload(IPayload):

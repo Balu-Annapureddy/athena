@@ -1,7 +1,13 @@
 """Economic Knowledge Graph mapping macro variables and indices."""
 
+from core.knowledge.graphs.base import (
+    Concept,
+    KnowledgeGraph,
+    PredicateType,
+    Relationship,
+)
 from core.knowledge.taxonomy import TaxonomyCategory
-from core.knowledge.graphs.base import KnowledgeGraph, Concept, Relationship, PredicateType
+
 
 class EconomicGraph(KnowledgeGraph):
     """Represents macroeconomic concepts and directional indicators."""

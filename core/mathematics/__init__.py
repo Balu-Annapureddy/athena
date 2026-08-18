@@ -3,6 +3,6 @@
 Contains calculated metric definitions, formulas, and units validation.
 """
 
-from core.mathematics.formulas import Formula, CORE_FORMULAS
+from core.mathematics.formulas import CORE_FORMULAS, Formula
 
 __all__ = ["Formula", "CORE_FORMULAS"]

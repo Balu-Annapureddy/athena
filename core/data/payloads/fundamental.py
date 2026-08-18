@@ -2,8 +2,10 @@
 
 from dataclasses import dataclass, field
 from types import MappingProxyType
+
 from core.data.payloads import IPayload
 from core.domain.exceptions import DomainValidationError
+
 
 @dataclass(frozen=True)
 class FundamentalPayload(IPayload):
@@ -25,7 +27,7 @@ class FundamentalPayload(IPayload):
             raise DomainValidationError("cash_flow must be a dictionary")
         if not isinstance(self.ratios, dict):
             raise DomainValidationError("ratios must be a dictionary")
-        
+
         # Enforce nested immutability via MappingProxyType
         object.__setattr__(self, "balance_sheet", MappingProxyType(dict(self.balance_sheet)))
         object.__setattr__(self, "income_statement", MappingProxyType(dict(self.income_statement)))

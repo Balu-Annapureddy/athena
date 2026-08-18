@@ -1,9 +1,11 @@
 """Symbolic reasoning Rules Engine representing Layer 2 of Athena."""
 
-from typing import List, Callable, Dict, Any
-from core.domain.common import DomainMetadata, EvidenceId, FactId
-from core.domain.entities import Evidence, Inference, Fact
+from typing import Any, Dict, List
+
+from core.domain.common import DomainMetadata
+from core.domain.entities import Evidence, Fact, Inference
 from core.domain.exceptions import DomainValidationError
+
 
 class FactCondition:
     """Evaluates comparisons on objective factual measurements."""
@@ -16,12 +18,12 @@ class FactCondition:
     def evaluate(self, facts: Dict[str, Fact]) -> bool:
         if self.fact_name not in facts:
             return False
-        
+
         fact_val = facts[self.fact_name].value.value
         try:
             val = float(fact_val) # type: ignore
             thresh = float(self.threshold)
-            
+
             if self.operator == '>':
                 return val > thresh
             elif self.operator == '<':

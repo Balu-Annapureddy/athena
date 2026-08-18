@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 
 
 class ConnectorStatus(Enum):
@@ -38,7 +38,7 @@ class FetchResult:
 
 class IInfrastructureConnector(ABC):
     """Abstract interface for infrastructure-managed connectors.
-    
+
     This interface wraps domain connectors with infrastructure concerns
     (health tracking, retry eligibility, rate limit awareness) without
     modifying the domain connector itself.

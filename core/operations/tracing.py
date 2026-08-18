@@ -1,7 +1,7 @@
 """TracingContext for thread-local correlation-ID propagation."""
 
-import uuid
 import threading
+import uuid
 from typing import Any, Optional
 
 

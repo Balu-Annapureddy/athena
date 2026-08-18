@@ -20,7 +20,6 @@ from Yahoo endpoint instability. Tests use ReplayConnector against JSONL fixture
 never yfinance directly.
 """
 
-import hashlib
 import json
 import os
 import uuid
@@ -127,7 +126,7 @@ class YFinanceConnector(BaseConnector):
         run_id = f"run-yf-{uuid.uuid4().hex[:8]}"
 
         ticker = yf.Ticker(entity)
-        
+
         timeout = kwargs.get("timeout", 15)
         start_str = kwargs.get("start", "")
         end_str = kwargs.get("end", "")

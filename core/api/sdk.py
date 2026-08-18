@@ -1,11 +1,11 @@
 """Python SDK AthenaClient wrapping namespaced endpoints."""
 
 import json
-import urllib.request
 import urllib.error
 import urllib.parse
+import urllib.request
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, List, Optional
 
 
 class AthenaAPIException(Exception):

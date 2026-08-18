@@ -1,8 +1,10 @@
 """Economic indicators payload value object."""
 
 from dataclasses import dataclass
+
 from core.data.payloads import IPayload
 from core.domain.common import validate_non_empty_string
+
 
 @dataclass(frozen=True)
 class EconomicPayload(IPayload):

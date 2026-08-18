@@ -2,18 +2,19 @@
 
 from abc import ABC, abstractmethod
 from datetime import datetime, timezone
-from typing import List, Dict
+from typing import Dict, List
+
 from core.domain.entities import Fact
-from core.measurements.factory import DerivedMeasurement
-from core.measurements.taxonomy import FormulaId
 from core.evidence_builder.candidate import EvidenceCandidate
 from core.evidence_builder.policies import (
-    ThresholdPolicy,
     FundamentalThresholdPolicy,
-    PriceThresholdPolicy,
     MacroThresholdPolicy,
+    PriceThresholdPolicy,
+    ThresholdPolicy,
 )
 from core.facts.taxonomy import FactType
+from core.measurements.factory import DerivedMeasurement
+from core.measurements.taxonomy import FormulaId
 
 
 class EvidenceCandidateRule(ABC):

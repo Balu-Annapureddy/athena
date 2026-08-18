@@ -8,7 +8,7 @@ Reference:
 """
 
 from enum import Enum
-from typing import Dict, List, Sequence
+from typing import Dict, Sequence
 
 from core.intelligence.indicators import efficiency_ratio
 
@@ -61,7 +61,7 @@ class AssetClassifier:
 
         sorted_tickers = sorted(scores.keys(), key=lambda t: scores[t], reverse=True)
         num_trenders = max(1, int(len(sorted_tickers) * (top_pct / 100.0)))
-        
+
         result = {}
         for idx, ticker in enumerate(sorted_tickers):
             if idx < num_trenders:

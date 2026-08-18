@@ -1,18 +1,19 @@
 """Infrastructure Connector Registry for managing connector lifecycle."""
 
 from typing import Dict, Tuple
+
 from core.infrastructure.connectors import IInfrastructureConnector
 
 
 class InfrastructureRegistry:
     """Registry for infrastructure-managed connectors.
-    
+
     Responsibilities:
     - Register connectors
     - Retrieve connectors by name
     - List available connectors
     - Prevent duplicate registration
-    
+
     The registry does not execute connectors.
     """
 

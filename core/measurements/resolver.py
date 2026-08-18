@@ -1,9 +1,11 @@
 """Formula dependency resolver and cycle detection logic for the Measurement Engine."""
 
-from typing import List, Dict, Set
+from typing import Dict, List, Set
+
 from core.domain.exceptions import DomainValidationError
 from core.mathematics.formulas import Formula
 from core.measurements.taxonomy import FormulaId
+
 
 class FormulaDependencyResolver:
     """Resolves formula execution order, building a DAG and detecting cycles."""
@@ -43,7 +45,7 @@ class FormulaDependencyResolver:
                 )
             if node in visited:
                 return
-            
+
             visiting.add(node)
             for dep in adj[node]:
                 dfs(dep)

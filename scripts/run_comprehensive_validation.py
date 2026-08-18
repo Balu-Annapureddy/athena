@@ -7,7 +7,7 @@ for 5 strategy engines across 15 core NIFTY stocks.
 import os
 import sys
 from dataclasses import dataclass
-from typing import Dict, List, Any
+from typing import Any, Dict, List
 
 # Ensure project root is on sys.path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -18,13 +18,13 @@ if sys.platform == "win32":
     except Exception:
         pass
 
-from core.strategy.golden_cross import GoldenCrossDeathCrossStrategy
-from core.strategy.rsi_mean_reversion import RSIMeanReversionStrategy
-from core.strategy.macd_cross import MACDSignalCrossStrategy
-from core.strategy.breakout_volume import BreakoutVolumeConfirmationStrategy
-from core.strategy.vwap_bias import VWAPBiasStrategy
 from core.backtest.engine import BacktestEngine, TradeRecord
 from core.backtest.metrics import MetricsCalculator
+from core.strategy.breakout_volume import BreakoutVolumeConfirmationStrategy
+from core.strategy.golden_cross import GoldenCrossDeathCrossStrategy
+from core.strategy.macd_cross import MACDSignalCrossStrategy
+from core.strategy.rsi_mean_reversion import RSIMeanReversionStrategy
+from core.strategy.vwap_bias import VWAPBiasStrategy
 
 TICKERS = [
     "RELIANCE.NS",
@@ -87,7 +87,7 @@ def run_multi_timeframe_validation() -> Dict[str, Any]:
     print("=" * 115)
     print(f"Data Source       : Real Historical Fixtures ({FIXTURE_DIR})")
     print(f"Tickers ({len(TICKERS)})     : {TICKERS}")
-    print(f"Timeframes        : 15m (Intraday/Short-Term), 1h (Sub-Daily Trend), 1d (Daily Macro)")
+    print("Timeframes        : 15m (Intraday/Short-Term), 1h (Sub-Daily Trend), 1d (Daily Macro)")
     print(f"Starting Capital  : INR {ACCOUNT_SIZE:,.2f}")
     print("=" * 115)
     print()
@@ -132,7 +132,7 @@ def run_multi_timeframe_validation() -> Dict[str, Any]:
                     if metrics and metrics.avg_pnl_per_trade > 0:
                         st_passing_runs += 1
                         total_passing_runs += 1
-            except Exception as e:
+            except Exception:
                 pass
 
         # Compute aggregate NET-OF-COST metrics for this strategy/timeframe
@@ -231,9 +231,9 @@ def main() -> None:
     report_path = os.path.join("docs", "comprehensive_backtest_report.md")
     with open(report_path, "w", encoding="utf-8") as f:
         f.write("# Athena Multi-Timeframe Quantitative Validation Report (Net-of-Cost)\n\n")
-        f.write(f"**Execution Date**: 2026-08-07  \n")
-        f.write(f"**Historical Fixture Coverage**: 15 Core NIFTY Tickers (15m, 1h, 1d)  \n")
-        f.write(f"**Transaction Cost Model**: Zerodha Delivery Rates (0.03% capped at ₹20) + STT (0.1% sell) + Stamp Duty (0.015% buy) + Exchange Fees + 8 bps Slippage  \n")
+        f.write("**Execution Date**: 2026-08-07  \n")
+        f.write("**Historical Fixture Coverage**: 15 Core NIFTY Tickers (15m, 1h, 1d)  \n")
+        f.write("**Transaction Cost Model**: Zerodha Delivery Rates (0.03% capped at ₹20) + STT (0.1% sell) + Stamp Duty (0.015% buy) + Exchange Fees + 8 bps Slippage  \n")
         f.write(f"**Total Backtest Runs**: {results['total_runs']}  \n")
         f.write(f"**Total Executed Trades**: {results['total_trades']}  \n\n")
 

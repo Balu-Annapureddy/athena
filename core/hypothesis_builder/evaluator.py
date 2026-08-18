@@ -1,10 +1,12 @@
 """HypothesisEvaluator and HypothesisAssessment value object."""
 
 from dataclasses import dataclass
-from typing import List, Dict
+from typing import Dict, List
+
 from core.domain.common import HypothesisId
 from core.hypothesis_builder.candidate import HypothesisCandidate
 from core.hypothesis_builder.context import HypothesisEvaluationContext
+
 
 @dataclass(frozen=True)
 class HypothesisAssessment:
@@ -26,7 +28,7 @@ class HypothesisEvaluator:
     ) -> Dict[HypothesisId, HypothesisAssessment]:
         """Evaluate the entire candidate set, resolving competition and mutual exclusivity."""
         assessments: Dict[HypothesisId, HypothesisAssessment] = {}
-        
+
         # Track counts of candidate types to identify competing/overlapping explanations
         type_counts = {}
         for c in candidates:

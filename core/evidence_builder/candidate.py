@@ -1,9 +1,10 @@
 """EvidenceCandidate — the explicit intermediate object between the computation stack and the Evidence Engine."""
 
 import hashlib
-from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from dataclasses import dataclass
+from datetime import datetime
 from typing import List
+
 from core.domain.common import CandidateId, FactId
 
 

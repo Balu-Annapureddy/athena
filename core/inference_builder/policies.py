@@ -2,6 +2,7 @@
 
 from dataclasses import dataclass
 
+
 @dataclass(frozen=True)
 class InferencePolicy:
     """Configurable parameter set for inference candidate validation."""

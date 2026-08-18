@@ -4,7 +4,6 @@ Consumes raw NSE constituent membership archives, normalizes ticker symbols, val
 and generates reproducible, checksummed versioned PIT JSON datasets.
 """
 
-import dataclasses
 import hashlib
 import json
 import os
@@ -12,9 +11,12 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 
-from core.portfolio.symbol_normalizer import SymbolNormalizer
 from core.portfolio.pit_validator import PITDatasetValidator, PITValidationReport
-from core.portfolio.universe import UniverseConstituentRecord, PointInTimeUniverseProvider
+from core.portfolio.symbol_normalizer import SymbolNormalizer
+from core.portfolio.universe import (
+    PointInTimeUniverseProvider,
+    UniverseConstituentRecord,
+)
 
 
 @dataclass

@@ -1,13 +1,15 @@
 import time
-import logging
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Tuple
+from datetime import datetime
+from typing import Any, Dict, List, Optional
 
-from core.api.models import VersionInfo, HealthResponse, SubsystemHealth
-from core.domain.enums import ThesisDirection
-from core.knowledge.graphs.base import Concept
+from core.api.models import HealthResponse, SubsystemHealth, VersionInfo
 from core.explanation import ExplanationEngine
-from core.simulation import SimulationEngine, Scenario, FactOverride, ConfigurationOverride
+from core.simulation import (
+    ConfigurationOverride,
+    FactOverride,
+    Scenario,
+    SimulationEngine,
+)
 
 
 class AthenaAPIService:

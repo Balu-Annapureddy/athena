@@ -1,11 +1,13 @@
 """Base classes for Athena's multi-graph knowledge model."""
 
-from enum import Enum
 from dataclasses import dataclass, field
-from typing import List, Dict, Any
+from enum import Enum
 from types import MappingProxyType
-from core.knowledge.taxonomy import TaxonomyCategory
+from typing import Dict, List
+
 from core.domain.common import validate_non_empty_string
+from core.knowledge.taxonomy import TaxonomyCategory
+
 
 class PredicateType(Enum):
     """Semantic relation types for knowledge graph relationships."""
@@ -16,7 +18,7 @@ class PredicateType(Enum):
     SHIFTS = "SHIFTS"
     MODIFIES = "MODIFIES"
     DERIVES = "DERIVES"
-    
+
     # Real-world instance relation predicates
     CEO_OF = "CEO_OF"
     SUPPLIER_OF = "SUPPLIER_OF"

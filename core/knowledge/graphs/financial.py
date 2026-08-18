@@ -1,7 +1,14 @@
 """Financial Knowledge Graph implementation mapping standard accounting and balance sheet structures."""
 
+from core.knowledge.graphs.base import (
+    Concept,
+    Constraint,
+    KnowledgeGraph,
+    PredicateType,
+    Relationship,
+)
 from core.knowledge.taxonomy import TaxonomyCategory
-from core.knowledge.graphs.base import KnowledgeGraph, Concept, Relationship, PredicateType, Constraint
+
 
 class FinancialGraph(KnowledgeGraph):
     """Represents objective corporate financial structures, statement line items, and accounting equations."""
@@ -15,7 +22,7 @@ class FinancialGraph(KnowledgeGraph):
         revenue = Concept(id="REVENUE", name="Revenue", category=TaxonomyCategory.ACCOUNTING)
         ebitda = Concept(id="EBITDA", name="EBITDA", category=TaxonomyCategory.ACCOUNTING)
         net_income = Concept(id="NET_INCOME", name="Net Income", category=TaxonomyCategory.ACCOUNTING)
-        
+
         assets = Concept(id="ASSETS", name="Total Assets", category=TaxonomyCategory.ACCOUNTING)
         liabilities = Concept(id="LIABILITIES", name="Total Liabilities", category=TaxonomyCategory.ACCOUNTING)
         equity = Concept(id="EQUITY", name="Shareholders Equity", category=TaxonomyCategory.ACCOUNTING)

@@ -3,10 +3,12 @@
 from datetime import datetime
 from types import MappingProxyType
 from typing import Optional
-from core.domain.entities.base import BaseEntity
+
 from core.domain.common import DomainMetadata, ThesisId
+from core.domain.entities.base import BaseEntity
 from core.domain.enums import RecommendationAction
 from core.risk.engine import RiskAssessment
+
 
 class Decision(BaseEntity):
     """Represents an execution action decision backed by an InvestmentThesis."""

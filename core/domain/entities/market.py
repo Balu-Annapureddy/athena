@@ -1,7 +1,8 @@
 """Market entity representing global financial marketplaces/jurisdictions."""
 
-from core.domain.entities.base import BaseEntity
 from core.domain.common import DomainMetadata, validate_non_empty_string
+from core.domain.entities.base import BaseEntity
+
 
 class Market(BaseEntity):
     """Represents a geographic or asset-class financial market (e.g., US Equities, Crypto)."""

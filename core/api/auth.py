@@ -2,8 +2,9 @@
 
 import hmac
 import os
-from typing import Dict, List, Optional
-from core.operations.secrets import SecretsRepository, ConfigurationError
+from typing import Dict, Optional
+
+from core.operations.secrets import ConfigurationError, SecretsRepository
 
 
 class APIKeyAuthenticator:
@@ -29,7 +30,7 @@ class APIKeyAuthenticator:
 
     def authenticate(self, headers: Dict[str, str]) -> bool:
         """Authenticate request headers using constant-time comparison.
-        
+
         Supports Authorization (Bearer) and X-API-Key headers.
         """
         if self.is_bypass_active():

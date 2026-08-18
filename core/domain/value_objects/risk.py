@@ -1,9 +1,11 @@
 """Immutable RiskAssessment value object."""
 
 from dataclasses import dataclass
-from core.domain.interfaces import IValueObject
-from core.domain.enums import RiskSeverity
+
 from core.domain.common import validate_non_empty_string
+from core.domain.enums import RiskSeverity
+from core.domain.interfaces import IValueObject
+
 
 @dataclass(frozen=True)
 class RiskAssessment(IValueObject):

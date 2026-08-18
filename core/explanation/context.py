@@ -6,7 +6,7 @@ from typing import Any, Optional, Tuple
 
 class IExplanationContext(ABC):
     """Abstract interface exposing read-only access to all underlying ledgers and stores.
-    
+
     Provides complete decoupled lookup for all reasoning, configuration, and temporal entities.
     """
 

@@ -5,11 +5,11 @@ using declarative FieldMapping specs rather than hardcoded if/else chains.
 """
 
 from core.data.normalization.base import (
-    NormalizationError,
     FieldMapping,
-    parse_timestamp,
-    apply_field_map,
     INormalizer,
+    NormalizationError,
+    apply_field_map,
+    parse_timestamp,
 )
 from core.data.normalization.mock_provider import MockProviderNormalizer
 from core.data.normalization.nse_option_chain_provider import (

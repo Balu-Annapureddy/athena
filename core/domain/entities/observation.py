@@ -2,8 +2,10 @@
 
 from datetime import datetime
 from types import MappingProxyType
-from core.domain.entities.base import BaseEntity
+
 from core.domain.common import DomainMetadata, validate_non_empty_string
+from core.domain.entities.base import BaseEntity
+
 
 class Observation(BaseEntity):
     """Represents a single raw factual observation obtained from an external system or data source."""

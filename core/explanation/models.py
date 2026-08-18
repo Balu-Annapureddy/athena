@@ -1,11 +1,12 @@
 """Explanation Models for Athena's Explanation Engine."""
 
 import copy
-from enum import Enum
 from dataclasses import dataclass
 from datetime import datetime
+from enum import Enum
 from types import MappingProxyType
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Optional, Tuple
+
 from core.domain.common import validate_non_empty_string
 
 

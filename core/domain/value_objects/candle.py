@@ -1,10 +1,12 @@
 """Immutable candle value object representing OHLCV data."""
 
-from datetime import datetime
 from dataclasses import dataclass
-from core.domain.interfaces import IValueObject
+from datetime import datetime
+
 from core.domain.common import validate_non_negative
 from core.domain.exceptions import DomainValidationError
+from core.domain.interfaces import IValueObject
+
 
 @dataclass(frozen=True)
 class Candle(IValueObject):

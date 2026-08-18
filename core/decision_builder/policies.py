@@ -1,9 +1,11 @@
 """Policies, Priorities, and Violation reporting structures for Decisions."""
 
-from enum import Enum
 from dataclasses import dataclass, field
+from enum import Enum
 from typing import List
+
 from core.domain.interfaces import IValueObject
+
 
 class Priority(Enum):
     """Execution priority levels for recommendations."""

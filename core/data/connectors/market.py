@@ -4,9 +4,17 @@ import hashlib
 from abc import ABC
 from datetime import datetime, timezone
 from typing import List
+
 from core.data.connectors.base import BaseConnector, Capabilities
-from core.data.contract import ConnectorPayload, PayloadType, SourceType, VerificationStatus, Provenance
+from core.data.contract import (
+    ConnectorPayload,
+    PayloadType,
+    Provenance,
+    SourceType,
+    VerificationStatus,
+)
 from core.data.payloads.price import PricePayload
+
 
 class MarketConnector(BaseConnector, ABC):
     """Abstract base connector for receiving market price updates."""
@@ -29,7 +37,7 @@ class MockMarketConnector(MarketConnector):
 
     def fetch_data(self, entity: str, **kwargs) -> List[ConnectorPayload]:
         now = datetime.now(timezone.utc)
-        
+
         # Build simulated price payload
         price = PricePayload(
             open=150.0,

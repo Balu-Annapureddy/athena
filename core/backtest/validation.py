@@ -10,10 +10,12 @@ import os
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Tuple
 
-from core.domain.enums import ValidationStatus
 from core.backtest.engine import BacktestEngine, TransactionCostModel
+from core.domain.enums import ValidationStatus
 from core.portfolio.engine import MultiAssetPortfolioEngine
-from core.portfolio.universe import PointInTimeUniverseProvider, MissingPointInTimeUniverseDataError
+from core.portfolio.universe import (
+    PointInTimeUniverseProvider,
+)
 
 
 @dataclass
@@ -296,10 +298,10 @@ class ValidationCampaign:
                         account_size=account_size,
                         risk_percent=risk_percent
                     )
-                    
+
                     metrics       = res["metrics"]
                     gross_metrics = res.get("gross_metrics", metrics)  # gross provided by cost-aware engine
-                    trades        = res["trades"]
+                    res["trades"]
                     total_costs   = res.get("total_costs", 0.0)
 
                     run_trade_count = metrics.total_trades

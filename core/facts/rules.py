@@ -3,10 +3,12 @@
 from abc import ABC, abstractmethod
 from datetime import datetime, timezone
 from typing import List
+
+from core.domain.common import DomainMetadata, FactId
 from core.domain.entities import Fact, Observation
 from core.domain.value_objects import Measurement
-from core.domain.common import FactId, DomainMetadata
 from core.facts.taxonomy import FactType
+
 
 class FactExtractionRule(ABC):
     """Abstract base class representing an extraction rule for objective Facts."""
@@ -36,7 +38,7 @@ class FactExtractionRule(ABC):
     ) -> Fact:
         """Helper method to instantiate a domain Fact with proper provenance metadata."""
         fact_id = FactId.generate()
-        
+
         # Propagate quality and trust parameters from the observation payload metadata
         verification = observation.payload.get("verification", "UNKNOWN")
         quality_map = {
@@ -46,10 +48,10 @@ class FactExtractionRule(ABC):
             "UNKNOWN": "UNVERIFIED"
         }
         quality = quality_map.get(verification, "UNVERIFIED")
-        
+
         prov = observation.payload.get("provenance", {})
         prov_source = prov.get("provider", "ConnectorInference")
-        
+
         meas = Measurement(
             value=value,
             units=units,
@@ -89,7 +91,7 @@ class PriceFactRule(FactExtractionRule):
             return []
 
         c_pay = observation.payload.get("connector_payload", {})
-        
+
         # Objective, non-derived price items
         open_val = float(c_pay.get("open", 0.0))
         high_val = float(c_pay.get("high", 0.0))
@@ -127,12 +129,12 @@ class FundamentalFactRule(FactExtractionRule):
             return []
 
         c_pay = observation.payload.get("connector_payload", {})
-        
+
         bs = c_pay.get("balance_sheet", {})
         inc = c_pay.get("income_statement", {})
-        
+
         facts = []
-        
+
         # Stated values only (no derived ratios like Debt-to-Equity)
         if "REVENUE" in inc:
             facts.append(self._create_fact(observation, FactType.FINANCIAL_REVENUE, float(inc["REVENUE"]), "currency"))
@@ -167,11 +169,11 @@ class EconomicFactRule(FactExtractionRule):
             return []
 
         c_pay = observation.payload.get("connector_payload", {})
-        
-        indicator_name = str(c_pay.get("indicator_name", ""))
+
+        str(c_pay.get("indicator_name", ""))
         val = float(c_pay.get("value", 0.0))
         unit = str(c_pay.get("unit", ""))
-        
+
         # Build factual representation
         fact = self._create_fact(
             observation=observation,
@@ -179,7 +181,7 @@ class EconomicFactRule(FactExtractionRule):
             value=val,
             units=unit
         )
-        
+
         # Update fact name mapping if needed, or preserve indicator name inside value metadata
         return [fact]
 
@@ -200,7 +202,7 @@ class NewsFactRule(FactExtractionRule):
 
         c_pay = observation.payload.get("connector_payload", {})
         publisher = str(c_pay.get("publisher", "Unknown"))
-        
+
         # Create fact tracking publication details
         fact = self._create_fact(
             observation=observation,

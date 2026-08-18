@@ -4,17 +4,20 @@ from datetime import datetime, timezone
 from typing import Dict, List, Optional, Tuple
 
 from core.domain.enums import ValidationStatus
-from core.strategy.base import BaseStrategy
-from core.strategy.golden_cross import GoldenCrossDeathCrossStrategy
-from core.strategy.regime_filtered_golden_cross import RegimeFilteredGoldenCrossStrategy
 from core.strategy.atr_trailing_golden_cross import ATRTrailingGoldenCrossStrategy
+from core.strategy.base import BaseStrategy
 from core.strategy.breakout_volume import BreakoutVolumeConfirmationStrategy
+from core.strategy.breakout_volume_atr_hybrid import (
+    BreakoutVolumeATRTrailingHybridStrategy,
+)
 from core.strategy.cross_sectional_momentum import CrossSectionalMomentumStrategy
 from core.strategy.dual_momentum import DualMomentumVolatilityScaledStrategy
+from core.strategy.golden_cross import GoldenCrossDeathCrossStrategy
+from core.strategy.macd_atr_hybrid import MACDATRTrailingHybridStrategy
 from core.strategy.macd_cross import MACDSignalCrossStrategy
+from core.strategy.regime_filtered_golden_cross import RegimeFilteredGoldenCrossStrategy
 from core.strategy.rsi_mean_reversion import RSIMeanReversionStrategy
 from core.strategy.vwap_bias import VWAPBiasStrategy
-from core.strategy.breakout_volume_atr_hybrid import BreakoutVolumeATRTrailingHybridStrategy
 
 
 class StrategyRegistry:
@@ -98,6 +101,7 @@ class StrategyRegistry:
             (VWAPBiasStrategy(), ValidationStatus.UNVALIDATED),
             (DualMomentumVolatilityScaledStrategy(), ValidationStatus.UNVALIDATED),
             (BreakoutVolumeATRTrailingHybridStrategy(), ValidationStatus.RISK_ADJUSTED_VALIDATED),
+            (MACDATRTrailingHybridStrategy(), ValidationStatus.UNVALIDATED),
         ]
         for strat, status in strategies:
             registry.register(

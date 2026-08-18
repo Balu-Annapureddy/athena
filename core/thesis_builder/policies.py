@@ -2,6 +2,7 @@
 
 from dataclasses import dataclass
 
+
 @dataclass(frozen=True)
 class ThesisPolicy:
     """Configurable parameter set for investment thesis rules and evaluations."""

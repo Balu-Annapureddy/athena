@@ -1,6 +1,7 @@
 """OptionContractPayload strongly typed payload value object."""
 
 from dataclasses import dataclass
+
 from core.data.payloads import IPayload
 
 

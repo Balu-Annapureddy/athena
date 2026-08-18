@@ -1,21 +1,21 @@
 """Daily runner executing daily strategy evaluations."""
 
-from dataclasses import dataclass
 import datetime
+from dataclasses import dataclass
 from datetime import timedelta
 from typing import List
 
-from core.domain.enums import RecommendationAction, ValidationStatus
-from core.portfolio.registry import StrategyRegistry
-from core.pipeline.signal_report import SignalReport
 from core.data.connectors.yfinance_connector import YFinanceConnector
 from core.data.factory import ObservationFactory
+from core.decision_builder.context import DecisionEvaluationContext
+from core.decision_builder.policies import DecisionPolicy
+from core.decision_builder.portfolio import PortfolioState
+from core.domain.enums import RecommendationAction, ValidationStatus
 from core.facts.builder import FactBuilder
 from core.facts.rules import PriceFactRule
 from core.patterns.engine import PatternEngine
-from core.decision_builder.portfolio import PortfolioState
-from core.decision_builder.policies import DecisionPolicy
-from core.decision_builder.context import DecisionEvaluationContext
+from core.pipeline.signal_report import SignalReport
+from core.portfolio.registry import StrategyRegistry
 
 
 @dataclass(frozen=True)

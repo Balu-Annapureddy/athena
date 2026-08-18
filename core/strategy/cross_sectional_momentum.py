@@ -9,19 +9,19 @@ Reference: Jegadeesh & Titman, "Returns to Buying Winners and Selling Losers",
 Journal of Finance, 1993.
 """
 
+import glob
 import json
 import os
-import glob
 from typing import Any, Dict, List, Optional, Tuple
 
-from core.domain.entities import Fact, InvestmentThesis, Decision
-from core.thesis_builder.ledger import ThesisRecord
-from core.decision_builder.ledger import DecisionRecord
-from core.decision_builder.portfolio import PortfolioState
-from core.decision_builder.policies import DecisionPolicy
 from core.decision_builder.context import DecisionEvaluationContext
-from core.strategy.base import BaseStrategy
+from core.decision_builder.ledger import DecisionRecord
+from core.decision_builder.policies import DecisionPolicy
+from core.decision_builder.portfolio import PortfolioState
+from core.domain.entities import Decision, Fact, InvestmentThesis
 from core.intelligence import atr
+from core.strategy.base import BaseStrategy
+from core.thesis_builder.ledger import ThesisRecord
 
 
 class CrossSectionalRankProvider:
@@ -193,7 +193,7 @@ class CrossSectionalMomentumStrategy(BaseStrategy):
             return None
 
         curr_close = closes[-1]
-        
+
         # Resolve target ticker symbol from dec_ctx or fact metadata
         entity = None
         if dec_ctx and getattr(dec_ctx, "target_security_id", None):

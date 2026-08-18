@@ -2,10 +2,12 @@
 
 import logging
 from typing import List, Tuple
+
 from core.domain.entities import Inference
 from core.hypothesis_builder.candidate import HypothesisCandidate
 from core.hypothesis_builder.policies import HypothesisPolicy
 from core.hypothesis_builder.rules import HypothesisCandidateRule
+
 
 class HypothesisCandidateBuilder:
     """Orchestrates candidate hypothesis generation with error isolation and determinism."""
