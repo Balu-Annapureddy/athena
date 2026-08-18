@@ -124,7 +124,12 @@ class DailySignalRunner:
                     reasoning = f"{thesis_rec.rule_name} direction: {thesis_rec.thesis_direction.value}"
 
                 # Calculate composite confidence score (0 to 95%)
-                base_score = 50.0 if status == ValidationStatus.BACKTESTED else 25.0
+                if status == ValidationStatus.BACKTESTED:
+                    base_score = 50.0
+                elif status == ValidationStatus.RISK_ADJUSTED_VALIDATED:
+                    base_score = 40.0
+                else:
+                    base_score = 25.0
                 rr_boost = 0.0
                 if reward_to_risk is not None:
                     if reward_to_risk >= 3.0:

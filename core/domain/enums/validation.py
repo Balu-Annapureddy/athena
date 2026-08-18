@@ -4,13 +4,14 @@ from enum import Enum
 
 
 class ValidationStatus(Enum):
-    """Lifecycle validation state for a thesis or decision produced by Athena rules.
+    """Lifecycle validation state for a thesis, decision, or strategy in Athena.
 
-    UNVALIDATED: Default for all rules that have not been through backtesting.
-                 Every thesis and decision in the system carries this status until
-                 Sprint 29 introduces the backtesting framework.
-    BACKTESTED:  Set explicitly by the backtesting layer once a rule has been
-                 validated against historical data. Not used until Sprint 29.
+    UNVALIDATED: Default for all rules that have not been validated against the PIT benchmark.
+    RISK_ADJUSTED_VALIDATED: Proven out-of-sample risk-adjusted outperformance (Sharpe >= Benchmark * 1.05,
+                             MaxDD <= Benchmark * 0.60, Trade Count >= 30, Positive Net Return).
+    BACKTESTED:  Validated raw out-of-sample outperformance exceeding the benchmark total return
+                 net of transaction costs and slippage with statistically meaningful trade count.
     """
-    UNVALIDATED = "UNVALIDATED"
-    BACKTESTED  = "BACKTESTED"
+    UNVALIDATED              = "UNVALIDATED"
+    RISK_ADJUSTED_VALIDATED  = "RISK_ADJUSTED_VALIDATED"
+    BACKTESTED               = "BACKTESTED"

@@ -586,10 +586,10 @@ class TestValidationStatusDefaults(unittest.TestCase):
         self.assertEqual(record.validation_status, ValidationStatus.UNVALIDATED)
 
     def test_validation_status_enum_has_expected_values(self):
-        """ValidationStatus must have exactly UNVALIDATED and BACKTESTED."""
+        """ValidationStatus must have exactly UNVALIDATED, RISK_ADJUSTED_VALIDATED, and BACKTESTED."""
         from core.domain.enums import ValidationStatus
         values = {s.value for s in ValidationStatus}
-        self.assertEqual(values, {"UNVALIDATED", "BACKTESTED"})
+        self.assertEqual(values, {"UNVALIDATED", "RISK_ADJUSTED_VALIDATED", "BACKTESTED"})
 
 
 # ===========================================================================

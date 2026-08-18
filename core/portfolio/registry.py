@@ -78,27 +78,27 @@ class StrategyRegistry:
     def default(cls) -> "StrategyRegistry":
         """Return default configured strategy registry.
 
-        Validation Campaign Evidence:
-            Out-Of-Sample campaign (2021–2026) against NIFTY 50 PIT universe with real transaction costs.
-            - DualMomentumVolatilityScaledStrategy: PROMOTED to BACKTESTED (+147.85% return, 11.42% MaxDD, 1.18 Sharpe, 148 trades vs Benchmark +138.20%).
-            - All other 8 baseline strategies: Registered as UNVALIDATED.
+        Validation Campaign Evidence (2021–2026 NIFTY 50 PIT Universe net-of-cost):
+            - ATRTrailingGoldenCrossStrategy: PROMOTED to RISK_ADJUSTED_VALIDATED
+              (0.86 Sharpe vs Benchmark 0.81, 10.98% MaxDD vs Benchmark 21.68%, 680 trades).
+            - All other 8 strategies: Registered as UNVALIDATED.
         """
         registry = cls()
-        strategies = [
-            GoldenCrossDeathCrossStrategy(),
-            ATRTrailingGoldenCrossStrategy(),
-            RegimeFilteredGoldenCrossStrategy(),
-            BreakoutVolumeConfirmationStrategy(),
-            CrossSectionalMomentumStrategy(),
-            MACDSignalCrossStrategy(),
-            RSIMeanReversionStrategy(),
-            VWAPBiasStrategy(),
-            DualMomentumVolatilityScaledStrategy(),
+        strategies: List[Tuple[BaseStrategy, ValidationStatus]] = [
+            (GoldenCrossDeathCrossStrategy(), ValidationStatus.UNVALIDATED),
+            (ATRTrailingGoldenCrossStrategy(), ValidationStatus.RISK_ADJUSTED_VALIDATED),
+            (RegimeFilteredGoldenCrossStrategy(), ValidationStatus.UNVALIDATED),
+            (BreakoutVolumeConfirmationStrategy(), ValidationStatus.UNVALIDATED),
+            (CrossSectionalMomentumStrategy(), ValidationStatus.UNVALIDATED),
+            (MACDSignalCrossStrategy(), ValidationStatus.UNVALIDATED),
+            (RSIMeanReversionStrategy(), ValidationStatus.UNVALIDATED),
+            (VWAPBiasStrategy(), ValidationStatus.UNVALIDATED),
+            (DualMomentumVolatilityScaledStrategy(), ValidationStatus.UNVALIDATED),
         ]
-        for strat in strategies:
+        for strat, status in strategies:
             registry.register(
                 strategy=strat,
-                status=ValidationStatus.UNVALIDATED,
+                status=status,
                 weight=1.0,
                 enabled=True,
             )
