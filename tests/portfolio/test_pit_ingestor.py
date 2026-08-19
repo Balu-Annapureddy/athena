@@ -73,8 +73,8 @@ class TestPITUniverseIngestion(unittest.TestCase):
     def test_dataset_version_hash_deterministic(self) -> None:
         """Batch 9 - 11 & 12: VersionedPITDataset generates reproducible SHA256 checksums."""
         raw_items = [
-            {"raw_symbol": "RELIANCE", "index_symbol": "NIFTY_50", "joined_date": "2010-01-01", "source_url": "https://example.com", "source_evidence": "Sample evidence string for test"},
-            {"raw_symbol": "TCS", "index_symbol": "NIFTY_50", "joined_date": "2010-01-01", "source_url": "https://example.com", "source_evidence": "Sample evidence string for test"},
+            {"raw_symbol": "RELIANCE", "index_symbol": "NIFTY_50", "joined_date": "2010-01-01", "source_url": "https://example.com/rel", "source_evidence": "Sample evidence string mentioning RELIANCE for test"},
+            {"raw_symbol": "TCS", "index_symbol": "NIFTY_50", "joined_date": "2010-01-01", "source_url": "https://example.com/tcs", "source_evidence": "Sample evidence string mentioning TCS for test"},
         ]
         d1, v1, p1 = self.ingestor.process_raw_records(raw_items)
         d2, v2, p2 = self.ingestor.process_raw_records(raw_items)
@@ -98,7 +98,7 @@ class TestPITUniverseIngestion(unittest.TestCase):
     def test_dataset_status_classification_partial(self) -> None:
         """Batch 10 - 2: Small sample dataset is audited and classified as PARTIAL status."""
         raw_items = [
-            {"raw_symbol": "RELIANCE", "index_symbol": "NIFTY_50", "joined_date": "2010-01-01", "source_url": "https://example.com", "source_evidence": "Sample evidence string for test"},
+            {"raw_symbol": "RELIANCE", "index_symbol": "NIFTY_50", "joined_date": "2010-01-01", "source_url": "https://example.com/rel", "source_evidence": "Sample evidence string mentioning RELIANCE for test"},
         ]
         dataset, val_report, provider = self.ingestor.process_raw_records(raw_items)
         self.assertEqual(val_report.dataset_status, PITDatasetStatus.PARTIAL)
@@ -178,7 +178,7 @@ class TestPITUniverseIngestion(unittest.TestCase):
         records = [
             UniverseConstituentRecord(
                 f"STOCK_{i}.NS", "NIFTY_50", f"2010-01-{(i%28)+1:02d}",
-                source_url="https://example.com", source_evidence="Valid quoted evidence text for testing"
+                source_url=f"https://example.com/source_{i}", source_evidence=f"Valid quoted evidence text mentioning STOCK_{i} for testing"
             )
             for i in range(50)
         ]
@@ -191,13 +191,13 @@ class TestPITUniverseIngestion(unittest.TestCase):
         validator = PITDatasetValidator(ground_truth_events=[], max_allowed_gap_days=300)
         # Create a list of 50 records with a 400-day gap between 2015-01-01 and 2016-02-05
         records = [
-            UniverseConstituentRecord("A.NS", "NIFTY_50", "2010-01-01", source_url="https://a.com", source_evidence="Evidence text sample for A"),
-            UniverseConstituentRecord("B.NS", "NIFTY_50", "2015-01-01", source_url="https://b.com", source_evidence="Evidence text sample for B"),
-            UniverseConstituentRecord("C.NS", "NIFTY_50", "2016-02-05", source_url="https://c.com", source_evidence="Evidence text sample for C"),
+            UniverseConstituentRecord("A.NS", "NIFTY_50", "2010-01-01", source_url="https://a.com/source_a", source_evidence="Evidence text sample mentioning A"),
+            UniverseConstituentRecord("B.NS", "NIFTY_50", "2015-01-01", source_url="https://b.com/source_b", source_evidence="Evidence text sample mentioning B"),
+            UniverseConstituentRecord("C.NS", "NIFTY_50", "2016-02-05", source_url="https://c.com/source_c", source_evidence="Evidence text sample mentioning C"),
         ] + [
             UniverseConstituentRecord(
                 f"STOCK_{i}.NS", "NIFTY_50", f"2016-03-{(i%28)+1:02d}",
-                source_url="https://example.com", source_evidence="Evidence text sample for testing gap"
+                source_url=f"https://example.com/source_{i}", source_evidence=f"Evidence text sample mentioning STOCK_{i} for testing gap"
             )
             for i in range(47)
         ]
