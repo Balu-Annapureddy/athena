@@ -2,11 +2,13 @@
 
 import unittest
 from datetime import datetime, timezone
+
+from core.domain.common import DomainMetadata, FactId, ObservationId
 from core.domain.entities import Fact
-from core.domain.common import ObservationId, FactId, DomainMetadata
 from core.domain.value_objects import Measurement
 from core.mathematics.formulas import Formula
-from core.measurements import MeasurementEngine, FormulaId, DerivedMeasurement
+from core.measurements import FormulaId, MeasurementEngine
+
 
 class TestMeasurementEngine(unittest.TestCase):
     """Verifies that the engine performs deterministic calculations with isolated error handling and complete lineage."""
@@ -33,7 +35,7 @@ class TestMeasurementEngine(unittest.TestCase):
         # Inputs: NetIncome=15.0, Equity=80.0
         fact_ni = self._create_fact("NetIncome", 15.0, "currency")
         fact_eq = self._create_fact("Equity", 80.0, "currency")
-        
+
         formulas = {
             FormulaId.ROE: Formula(
                 name="Return on Equity",
@@ -49,14 +51,14 @@ class TestMeasurementEngine(unittest.TestCase):
 
         self.assertEqual(len(results), 1)
         self.assertIn(FormulaId.ROE, results)
-        
+
         derived = results[FormulaId.ROE]
         self.assertEqual(derived.measurement.value, 15.0 / 80.0)
         self.assertEqual(derived.measurement.units, "%")
-        
+
         # Verify confidence is exact 1.0
         self.assertEqual(derived.measurement.confidence_score, 1.0)
-        
+
         # Verify source fact lineage
         self.assertIn(fact_ni.id, derived.source_fact_ids)
         self.assertIn(fact_eq.id, derived.source_fact_ids)
@@ -64,7 +66,7 @@ class TestMeasurementEngine(unittest.TestCase):
     def test_error_isolation(self) -> None:
         fact_ni = self._create_fact("NetIncome", 15.0, "currency")
         fact_eq = self._create_fact("Equity", 80.0, "currency")
-        
+
         # Formula 1: Crashes due to division by zero (NetMargin)
         # Formula 2: Success (ROE)
         formulas = {
@@ -121,19 +123,19 @@ class TestMeasurementEngine(unittest.TestCase):
         results = engine.calculate_measurements([fact_eq, fact_liab, fact_debt])
 
         self.assertEqual(len(results), 2)
-        
+
         # Verify assets = 80 + 20 = 100
         self.assertEqual(results[FormulaId.CURRENT_RATIO].measurement.value, 100.0)
-        
+
         # Verify debt_to_assets = 40 / 100 = 0.4
         derived_ratio = results[FormulaId.DEBT_TO_EQUITY]
         self.assertEqual(derived_ratio.measurement.value, 0.4)
-        
+
         # Check parent fact lineage (Debt, Equity, Liabilities must all be present in DebtToAssets)
         self.assertIn(fact_eq.id, derived_ratio.source_fact_ids)
         self.assertIn(fact_liab.id, derived_ratio.source_fact_ids)
         self.assertIn(fact_debt.id, derived_ratio.source_fact_ids)
-        
+
         # Check source measurement lineage (CURRENT_RATIO must be in source_measurement_ids)
         self.assertIn(str(FormulaId.CURRENT_RATIO.value), derived_ratio.source_measurement_ids)
 

@@ -2,10 +2,12 @@
 
 import unittest
 from datetime import datetime, timezone
-from core.domain.common import FactId, ObservationId, DomainMetadata
-from core.domain.value_objects import Measurement
+
+from core.domain.common import DomainMetadata, FactId, ObservationId
 from core.domain.entities import Fact
 from core.domain.exceptions import DomainValidationError
+from core.domain.value_objects import Measurement
+
 
 class TestMeasurementValueObject(unittest.TestCase):
     """Verifies that Measurement handles units, quality, and confidence scores correctly."""
@@ -43,7 +45,7 @@ class TestFactEntity(unittest.TestCase):
         fact_id = FactId.generate()
         obs_id = ObservationId.generate()
         metadata = DomainMetadata.create(fact_id)
-        
+
         meas = Measurement(
             value="18%",
             units="%",
@@ -52,7 +54,7 @@ class TestFactEntity(unittest.TestCase):
             source="SEC Filing",
             confidence_score=0.9
         )
-        
+
         fact = Fact(
             metadata=metadata,
             source_observation_id=obs_id,
@@ -60,7 +62,7 @@ class TestFactEntity(unittest.TestCase):
             value=meas,
             extracted_at=datetime.now(timezone.utc)
         )
-        
+
         self.assertEqual(fact.id, fact_id)
         self.assertEqual(fact.source_observation_id, obs_id)
         self.assertEqual(fact.name, "Revenue_Growth")

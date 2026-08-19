@@ -3,15 +3,16 @@
 import unittest
 from unittest.mock import MagicMock
 
-from core.backtest.validation import ValidationCampaign, PortfolioResearchConfig
+from core.backtest.validation import ValidationCampaign
 from core.backtest.walk_forward import (
+    InvalidWalkForwardWindowError,
+    WalkForwardCampaign,
     WalkForwardWindow,
     WalkForwardWindowGenerator,
-    WalkForwardCampaign,
-    InvalidWalkForwardWindowError,
 )
-from core.portfolio.universe import PointInTimeUniverseProvider, UniverseConstituentRecord, MissingPointInTimeUniverseDataError
-from core.domain.enums import RecommendationAction
+from core.portfolio.universe import (
+    MissingPointInTimeUniverseDataError,
+)
 
 
 class TestWalkForwardValidation(unittest.TestCase):

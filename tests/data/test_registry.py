@@ -1,14 +1,16 @@
 """Unit tests for the Connector Registry and concrete mock connectors."""
 
 import unittest
-from core.data.registry import ConnectorRegistry
+
 from core.data.connectors import (
-    MockMarketConnector,
     MockCorporateConnector,
+    MockEconomicConnector,
+    MockMarketConnector,
     MockNewsConnector,
-    MockEconomicConnector
 )
+from core.data.registry import ConnectorRegistry
 from core.domain.exceptions import DomainValidationError
+
 
 class TestConnectorRegistryAndConnectors(unittest.TestCase):
     """Verifies connector registration, enabling/disabling, and data simulation feeds."""
@@ -16,11 +18,11 @@ class TestConnectorRegistryAndConnectors(unittest.TestCase):
     def test_registry_lifecycle(self) -> None:
         registry = ConnectorRegistry()
         market_conn = MockMarketConnector()
-        
+
         # Register
         registry.register(market_conn)
         self.assertEqual(len(registry.list_connectors()), 1)
-        
+
         # Duplicate registration failure
         with self.assertRaises(DomainValidationError):
             registry.register(market_conn)
@@ -35,7 +37,7 @@ class TestConnectorRegistryAndConnectors(unittest.TestCase):
         # Lookups
         retrieved = registry.get_connector("MockMarketConnector")
         self.assertEqual(retrieved, market_conn)
-        
+
         by_provider = registry.find_by_provider("MockExchange")
         self.assertIn(market_conn, by_provider)
 

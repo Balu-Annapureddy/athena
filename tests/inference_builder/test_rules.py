@@ -2,13 +2,15 @@
 
 import unittest
 from datetime import datetime, timezone
+
 from core.domain.common import EvidenceId, FactId
 from core.evidence import EvidenceRecord, EvidenceState
 from core.inference_builder import (
-    InferencePolicy,
     FundamentalStrengthInferenceRule,
+    InferencePolicy,
     PriceActionInferenceRule,
 )
+
 
 def _make_evidence(category: str) -> EvidenceRecord:
     return EvidenceRecord(
@@ -32,10 +34,10 @@ class TestInferenceRules(unittest.TestCase):
     def test_fundamental_rule_quorum_fails(self) -> None:
         policy = InferencePolicy(min_evidence_quorum=2)
         rule = FundamentalStrengthInferenceRule()
-        
+
         # Only 1 record -> Should fail quorum check
         records = [_make_evidence("FINANCIAL_STATEMENT")]
-        
+
         self.assertFalse(rule.can_assemble(records, policy))
         candidates = rule.assemble(records, policy)
         self.assertEqual(len(candidates), 0)
@@ -43,13 +45,13 @@ class TestInferenceRules(unittest.TestCase):
     def test_fundamental_rule_quorum_passes(self) -> None:
         policy = InferencePolicy(min_evidence_quorum=2)
         rule = FundamentalStrengthInferenceRule()
-        
+
         # 2 records -> Should pass quorum check
         records = [
             _make_evidence("FINANCIAL_STATEMENT"),
             _make_evidence("FINANCIAL_STATEMENT")
         ]
-        
+
         self.assertTrue(rule.can_assemble(records, policy))
         candidates = rule.assemble(records, policy)
         self.assertEqual(len(candidates), 1)
@@ -59,12 +61,12 @@ class TestInferenceRules(unittest.TestCase):
     def test_price_action_rule_quorum_passes(self) -> None:
         policy = InferencePolicy(min_evidence_quorum=2)
         rule = PriceActionInferenceRule()
-        
+
         records = [
             _make_evidence("MARKET_DATA"),
             _make_evidence("MARKET_DATA")
         ]
-        
+
         self.assertTrue(rule.can_assemble(records, policy))
         candidates = rule.assemble(records, policy)
         self.assertEqual(len(candidates), 1)

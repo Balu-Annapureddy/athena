@@ -3,13 +3,15 @@
 import datetime
 import unittest
 
-from core.domain.common import DomainMetadata, FactId, ObservationId
-from core.domain.entities import Fact
-from core.domain.value_objects import Measurement
 from core.decision_builder.context import DecisionEvaluationContext
 from core.decision_builder.policies import DecisionPolicy
 from core.decision_builder.portfolio import PortfolioState
-from core.strategy.breakout_volume_atr_hybrid import BreakoutVolumeATRTrailingHybridStrategy
+from core.domain.common import DomainMetadata, FactId, ObservationId
+from core.domain.entities import Fact
+from core.domain.value_objects import Measurement
+from core.strategy.breakout_volume_atr_hybrid import (
+    BreakoutVolumeATRTrailingHybridStrategy,
+)
 
 
 class TestBreakoutVolumeATRTrailingHybridStrategy(unittest.TestCase):

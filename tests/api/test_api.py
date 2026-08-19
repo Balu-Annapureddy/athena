@@ -1,29 +1,27 @@
 """Unit and Integration tests for the Athena API Layer (Sprint 21)."""
 
-import json
 import os
-import socket
 import threading
 import unittest
 from datetime import datetime, timezone
 from typing import Any, List, Optional, Tuple
 
-from core.domain.common import FactId, ObservationId, DomainMetadata
-from core.domain.value_objects import Measurement
-from core.domain.entities import Fact, Observation
-from core.domain.enums import ThesisDirection, RecommendationAction
-from core.memory import MemoryStore, MemoryEvent, MemoryEventType
-from core.config import ConfigurationRegistry, ConfigurationSnapshot, VersionedConfig
-from core.simulation import SimulationContext
 from core.api import (
-    VersionInfo,
-    HealthResponse,
-    AthenaAPIService,
-    AthenaRESTServer,
-    AthenaClient,
     AthenaAPIException,
+    AthenaAPIService,
+    AthenaClient,
+    AthenaRESTServer,
+)
+from core.api import (
     main as cli_main,
 )
+from core.config import ConfigurationRegistry
+from core.domain.common import DomainMetadata, FactId, ObservationId
+from core.domain.entities import Fact
+from core.domain.enums import RecommendationAction, ThesisDirection
+from core.domain.value_objects import Measurement
+from core.memory import MemoryEvent, MemoryEventType, MemoryStore
+from core.simulation import SimulationContext
 
 
 # Mock classes for API service matching

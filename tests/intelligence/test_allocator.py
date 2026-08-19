@@ -1,7 +1,8 @@
 """Tests for InverseVolatilityAllocator (core/intelligence/allocator.py)."""
 
-import unittest
 import math
+import unittest
+
 from core.intelligence.allocator import InverseVolatilityAllocator, _annualised_vol
 
 

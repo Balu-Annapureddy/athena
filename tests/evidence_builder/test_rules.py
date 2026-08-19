@@ -2,22 +2,21 @@
 
 import unittest
 from datetime import datetime, timezone
+
+from core.domain.common import DomainMetadata, FactId, ObservationId
 from core.domain.entities import Fact
-from core.domain.common import FactId, ObservationId, DomainMetadata
 from core.domain.value_objects import Measurement
-from core.measurements.factory import DerivedMeasurement, MeasurementFactory
-from core.measurements.taxonomy import FormulaId
-from core.evidence_builder.rules import (
-    FundamentalCandidateRule,
-    PriceCandidateRule,
-    MacroCandidateRule,
-)
 from core.evidence_builder.policies import (
     FundamentalThresholdPolicy,
-    PriceThresholdPolicy,
-    MacroThresholdPolicy,
+)
+from core.evidence_builder.rules import (
+    FundamentalCandidateRule,
+    MacroCandidateRule,
+    PriceCandidateRule,
 )
 from core.facts.taxonomy import FactType
+from core.measurements.factory import DerivedMeasurement, MeasurementFactory
+from core.measurements.taxonomy import FormulaId
 
 
 def _make_fact(name: str, value: float, units: str = "currency") -> Fact:

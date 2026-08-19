@@ -1,19 +1,20 @@
 """Unit tests for the Temporal Memory layer (Sprint 18)."""
 
 import unittest
-from datetime import datetime, timezone, timedelta
-from typing import Dict, List, Any
+from datetime import datetime, timedelta, timezone
 
-from core.knowledge import KnowledgeGraphEngine, TaxonomyCategory, Concept, KnowledgeLoader
+from core.domain.exceptions.validation import DomainValidationError
+from core.knowledge import (
+    KnowledgeGraphEngine,
+    KnowledgeLoader,
+)
 from core.memory import (
-    MemoryEventType,
     MemoryEventCategory,
-    MemoryEvent,
-    MemoryStore,
+    MemoryEventType,
     MemoryLoader,
+    MemoryStore,
     get_category_for_type,
 )
-from core.domain.exceptions.validation import DomainValidationError
 
 
 class TestTemporalMemory(unittest.TestCase):
@@ -40,7 +41,7 @@ class TestTemporalMemory(unittest.TestCase):
 
     def test_load_event_validates_against_knowledge_graph(self) -> None:
         now = datetime.now(timezone.utc)
-        
+
         # Valid entity AAPL (exists in graph)
         data = [{
             "entity_id": "AAPL",
@@ -92,7 +93,7 @@ class TestTemporalMemory(unittest.TestCase):
             "source_connector": "connector-sec"
         }]
         MemoryLoader.load_from_dict(self.store, self.engine, data)
-        
+
         event = self.store.get_latest("AAPL", MemoryEventType.LEADERSHIP_CHANGE)
         self.assertIsNotNone(event)
         self.assertEqual(event.timestamp, occurrence_time)
@@ -123,17 +124,17 @@ class TestTemporalMemory(unittest.TestCase):
 
         events = self.store.get_events("AAPL", MemoryEventType.ACQUISITION)
         self.assertEqual(len(events), 2)
-        
+
         # Sorting must be deterministic by (timestamp, event_id)
         # Verify that sorting produces the exact same sequence regardless of insertion order
         event_ids_order = [e.event_id for e in events]
-        
+
         # If we re-create store and load in reverse order, order should remain identical
         store2 = MemoryStore()
         MemoryLoader.load_from_dict(store2, self.engine, data[::-1])
         events2 = store2.get_events("AAPL", MemoryEventType.ACQUISITION)
         event_ids_order2 = [e.event_id for e in events2]
-        
+
         self.assertEqual(event_ids_order, event_ids_order2)
 
     def test_chronological_query_range_filters(self) -> None:
@@ -181,7 +182,7 @@ class TestTemporalMemory(unittest.TestCase):
 
     def test_state_reconstruction_over_multiple_updates(self) -> None:
         base_time = datetime(2026, 1, 1, 0, 0, 0, tzinfo=timezone.utc)
-        
+
         # Sequence of CEO changes
         data = [
             {
@@ -230,9 +231,9 @@ class TestTemporalMemory(unittest.TestCase):
             "source_observation_id": "obs-1",
             "source_connector": "connector-sec"
         }
-        
+
         MemoryLoader.load_from_dict(self.store, self.engine, [event_dict])
-        
+
         # Second insert with duplicate ID must fail
         with self.assertRaises(DomainValidationError):
             MemoryLoader.load_from_dict(self.store, self.engine, [event_dict])
@@ -264,7 +265,7 @@ class TestTemporalMemory(unittest.TestCase):
             }
         ]
         MemoryLoader.load_from_dict(self.store, self.engine, data)
-        
+
         # Querying AAPL doesn't show MSFT events
         aapl_events = self.store.get_events("AAPL")
         self.assertEqual(len(aapl_events), 1)

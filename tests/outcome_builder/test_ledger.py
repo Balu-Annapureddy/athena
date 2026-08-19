@@ -2,32 +2,32 @@
 
 import unittest
 from datetime import datetime, timezone
-from core.domain.common import ThesisId, HypothesisId, DecisionId, OutcomeId, SecurityId
-from core.domain.enums import ThesisDirection, RecommendationAction
-from core.domain.value_objects import Confidence
-from core.thesis_builder import ThesisRecord, ThesisState, TimeHorizon, StrategyStyle
+
 from core.decision_builder import (
-    DecisionCandidate,
-    DecisionRationale,
     DecisionAssessment,
+    DecisionCandidate,
     DecisionPolicyResult,
-    Priority,
+    DecisionRationale,
     DecisionRecord,
+    Priority,
 )
+from core.domain.common import DecisionId, OutcomeId, SecurityId, ThesisId
+from core.domain.enums import RecommendationAction
 from core.outcome_builder import (
-    OutcomePolicy,
-    OutcomeEvaluationContext,
-    OutcomeState,
-    OutcomeLedger,
-    OutcomeAssembler,
-    OutcomeCandidateBuilder,
-    ReconciliationOutcomeRule,
-    OutcomeCandidate,
-    OutcomeEventType,
-    OutcomeAssessment,
     ExecutionQuality,
     InvestmentOutcome,
+    OutcomeAssembler,
+    OutcomeAssessment,
+    OutcomeCandidate,
+    OutcomeCandidateBuilder,
+    OutcomeEvaluationContext,
+    OutcomeEventType,
+    OutcomeLedger,
+    OutcomePolicy,
+    OutcomeState,
+    ReconciliationOutcomeRule,
 )
+
 
 def _make_decision_record() -> DecisionRecord:
     candidate = DecisionCandidate(
@@ -65,7 +65,7 @@ class TestOutcomeLedgerAndAssembler(unittest.TestCase):
 
     def test_ledger_record_and_discrepancy(self) -> None:
         ledger = OutcomeLedger()
-        
+
         candidate = OutcomeCandidate(
             candidate_id=OutcomeId.generate(),
             decision_id=DecisionId.generate(),
@@ -87,7 +87,7 @@ class TestOutcomeLedgerAndAssembler(unittest.TestCase):
         pass_eq = ExecutionQuality(1.0, 1.0, 15.0, 1.0, 1.0)
         pass_io = InvestmentOutcome(0.01, 0.0, 0.0, 0.0, 0.0, 0.0)
         pass_assess = OutcomeAssessment(execution_quality=pass_eq, investment_outcome=pass_io)
-        
+
         record = ledger.record_outcome(candidate, pass_assess, OutcomeState.UNRESOLVED)
         self.assertEqual(record.version, 1)
         self.assertEqual(record.state, OutcomeState.UNRESOLVED)
@@ -95,7 +95,7 @@ class TestOutcomeLedgerAndAssembler(unittest.TestCase):
         # 2. Create a failing assessment (violates fill ratio) -> DISCREPANCY
         fail_eq = ExecutionQuality(0.2, 1.0, 15.0, 1.0, 1.0)  # low fill ratio (0.2 < 0.5)
         fail_assess = OutcomeAssessment(execution_quality=fail_eq, investment_outcome=pass_io)
-        
+
         reconciled_record = ledger.record_outcome(candidate, fail_assess)
         self.assertEqual(reconciled_record.state, OutcomeState.DISCREPANCY)
 

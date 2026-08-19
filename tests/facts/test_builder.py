@@ -2,16 +2,24 @@
 
 import unittest
 from datetime import datetime, timezone
-from core.domain.entities import Observation, Fact
-from core.domain.common import ObservationId, DomainMetadata, FactId
-from core.domain.value_objects import Measurement
-from core.domain.exceptions import DomainValidationError
-from core.data.contract import ConnectorPayload, PayloadType, SourceType, VerificationStatus, Provenance
-from core.data.payloads import PricePayload
+
+from core.data.contract import (
+    ConnectorPayload,
+    PayloadType,
+    Provenance,
+    SourceType,
+    VerificationStatus,
+)
 from core.data.factory import ObservationFactory
-from core.facts.taxonomy import FactType
-from core.facts.rules import FactExtractionRule, PriceFactRule
+from core.data.payloads import PricePayload
+from core.domain.common import DomainMetadata, FactId, ObservationId
+from core.domain.entities import Fact, Observation
+from core.domain.exceptions import DomainValidationError
+from core.domain.value_objects import Measurement
 from core.facts.builder import FactBuilder, FactValidator
+from core.facts.rules import FactExtractionRule, PriceFactRule
+from core.facts.taxonomy import FactType
+
 
 class CrashingFactRule(FactExtractionRule):
     """Mock rule designed to raise an exception for testing error isolation."""
@@ -34,7 +42,7 @@ class TestFactBuilder(unittest.TestCase):
         now = datetime.now(timezone.utc)
         prov = Provenance("Conn", "Provider", now, now, "SRC_1", "chk", "1.0", "run-1")
         price = PricePayload(100.0, 105.0, 99.0, 102.0, 50.0, "1D")
-        
+
         obs = factory.create_observation(
             ConnectorPayload("F1", "AAPL", PayloadType.PRICE, price, SourceType.EXCHANGE, VerificationStatus.VERIFIED, prov)
         )
@@ -56,7 +64,7 @@ class TestFactBuilder(unittest.TestCase):
         now = datetime.now(timezone.utc)
         prov = Provenance("Conn", "Provider", now, now, "SRC_1", "chk", "1.0", "run-1")
         price = PricePayload(100.0, 105.0, 99.0, 102.0, 50.0, "1D")
-        
+
         obs = factory.create_observation(
             ConnectorPayload("F1", "AAPL", PayloadType.PRICE, price, SourceType.EXCHANGE, VerificationStatus.VERIFIED, prov)
         )
@@ -66,7 +74,7 @@ class TestFactBuilder(unittest.TestCase):
         builder.register_rule(CrashingFactRule())  # Registered crashing rule!
 
         facts = builder.build_facts(obs)
-        
+
         # Verify that despite CrashingFactRule crashing, PriceFactRule successfully extracted 8 facts
         self.assertEqual(len(facts), 8)
         self.assertEqual(len(builder.last_errors), 1)
@@ -76,7 +84,7 @@ class TestFactBuilder(unittest.TestCase):
     def test_fact_validator_success_and_failures(self) -> None:
         validator = FactValidator()
         meas = Measurement(10.0, "units", "VERIFIED", datetime.now(timezone.utc), "source", 1.0)
-        
+
         valid_fact = Fact(
             metadata=DomainMetadata.create(FactId.generate()),
             source_observation_id=ObservationId.generate(),

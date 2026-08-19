@@ -2,24 +2,26 @@
 
 import unittest
 from datetime import datetime, timezone
-from core.domain.common import ThesisId, HypothesisId, DecisionId
-from core.domain.enums import ThesisDirection, RecommendationAction
-from core.domain.value_objects import Confidence
-from core.thesis_builder import ThesisRecord, ThesisState, TimeHorizon, StrategyStyle
+
 from core.decision_builder import (
-    DecisionPolicy,
-    DecisionEvaluationContext,
-    DecisionState,
-    DecisionLedger,
     DecisionAssembler,
-    DecisionCandidateBuilder,
-    QualityBuyDecisionRule,
-    PortfolioState,
     DecisionAssessment,
+    DecisionCandidateBuilder,
+    DecisionEvaluationContext,
+    DecisionLedger,
+    DecisionPolicy,
     DecisionPolicyResult,
+    DecisionState,
+    PortfolioState,
     Priority,
+    QualityBuyDecisionRule,
 )
 from core.decision_builder.candidate import DecisionCandidate, DecisionRationale
+from core.domain.common import DecisionId, HypothesisId, ThesisId
+from core.domain.enums import RecommendationAction, ThesisDirection
+from core.domain.value_objects import Confidence
+from core.thesis_builder import StrategyStyle, ThesisRecord, ThesisState, TimeHorizon
+
 
 def _make_thesis(direction: ThesisDirection, state: ThesisState = ThesisState.ACTIVE) -> ThesisRecord:
     conf = Confidence(0.8, 0.8, 0.8, 2, datetime.now(timezone.utc), "Rational case")
@@ -51,7 +53,7 @@ class TestDecisionLedgerAndAssembler(unittest.TestCase):
 
     def test_ledger_record_and_rejection(self) -> None:
         ledger = DecisionLedger()
-        
+
         candidate = DecisionCandidate(
             candidate_id=DecisionId.generate(),
             thesis_id=ThesisId.generate(),

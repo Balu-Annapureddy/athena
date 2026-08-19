@@ -1,17 +1,19 @@
 """Unit tests for Athena domain common utilities (identifiers, metadata, validators)."""
 
 import unittest
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
+
 from core.domain.common import (
     DomainId,
-    MarketId,
     DomainMetadata,
-    validate_positive,
-    validate_non_negative,
-    validate_range,
+    MarketId,
     validate_non_empty_string,
+    validate_non_negative,
+    validate_positive,
+    validate_range,
 )
 from core.domain.exceptions import DomainValidationError
+
 
 class TestDomainIdentifiers(unittest.TestCase):
     """Verifies strong typing and serialization of unique identifiers."""
@@ -47,7 +49,7 @@ class TestDomainMetadata(unittest.TestCase):
         entity_id = MarketId.generate()
         metadata = DomainMetadata.create(entity_id)
         updated = metadata.update()
-        
+
         self.assertEqual(updated.id, metadata.id)
         self.assertEqual(updated.version, 2)
         self.assertGreaterEqual(updated.updated_at, metadata.updated_at)

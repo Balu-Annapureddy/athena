@@ -3,14 +3,20 @@
 import datetime
 import os
 import unittest
-from datetime import timezone, date
+from datetime import date, timezone
 from typing import List
 
-from core.domain.enums import RecommendationAction, ValidationStatus
-from core.pipeline.signal_report import SignalReport
-from core.pipeline.paper_ledger import PaperLedger
-from core.data.contract import ConnectorPayload, Provenance, PayloadType, SourceType, VerificationStatus
+from core.data.contract import (
+    ConnectorPayload,
+    PayloadType,
+    Provenance,
+    SourceType,
+    VerificationStatus,
+)
 from core.data.payloads.price import PricePayload
+from core.domain.enums import RecommendationAction, ValidationStatus
+from core.pipeline.paper_ledger import PaperLedger
+from core.pipeline.signal_report import SignalReport
 
 
 class MockYFinanceConnector:
@@ -85,9 +91,9 @@ class TestPaperLedger(unittest.TestCase):
             validation_status=ValidationStatus.BACKTESTED,
             reasoning="Golden cross buy"
         )
-        
+
         self.ledger.record_signal(signal)
-        
+
         open_trades = self.ledger.get_open_trades()
         self.assertEqual(len(open_trades), 1)
         self.assertEqual(open_trades[0]["ticker"], "RELIANCE.NS")
@@ -112,10 +118,10 @@ class TestPaperLedger(unittest.TestCase):
             validation_status=ValidationStatus.BACKTESTED,
             reasoning="Golden cross buy"
         )
-        
+
         self.ledger.record_signal(signal)
         self.ledger.record_signal(signal)  # Duplicate signal
-        
+
         open_trades = self.ledger.get_open_trades()
         self.assertEqual(len(open_trades), 1)  # Still only 1 open trade
 
@@ -137,9 +143,9 @@ class TestPaperLedger(unittest.TestCase):
         # Mock price bar that hits Stop Loss (Low=85)
         bar = self._create_bar("RELIANCE.NS", "2026-07-22", 100.0, 105.0, 85.0, 95.0)
         mock_connector = MockYFinanceConnector([bar])
-        
+
         closed = self.ledger.update_open_trades(date(2026, 7, 22), mock_connector)
-        
+
         self.assertEqual(len(closed), 1)
         self.assertEqual(closed[0]["status"], "CLOSED")
         self.assertEqual(closed[0]["exit_reason"], "STOP_LOSS")
@@ -171,9 +177,9 @@ class TestPaperLedger(unittest.TestCase):
         # Mock price bar that hits Target (High=125)
         bar = self._create_bar("RELIANCE.NS", "2026-07-22", 100.0, 125.0, 95.0, 115.0)
         mock_connector = MockYFinanceConnector([bar])
-        
+
         closed = self.ledger.update_open_trades(date(2026, 7, 22), mock_connector)
-        
+
         self.assertEqual(len(closed), 1)
         self.assertEqual(closed[0]["status"], "CLOSED")
         self.assertEqual(closed[0]["exit_reason"], "TARGET_PRICE")
@@ -203,9 +209,9 @@ class TestPaperLedger(unittest.TestCase):
         # Day 2: High=125 (hits target), Low=85 (hits stop)
         bar = self._create_bar("RELIANCE.NS", "2026-07-22", 100.0, 125.0, 85.0, 110.0)
         mock_connector = MockYFinanceConnector([bar])
-        
+
         closed = self.ledger.update_open_trades(date(2026, 7, 22), mock_connector)
-        
+
         self.assertEqual(len(closed), 1)
         # Should exit at stop-loss exit, not target price
         self.assertEqual(closed[0]["exit_reason"], "STOP_LOSS")

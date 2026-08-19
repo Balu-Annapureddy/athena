@@ -2,32 +2,39 @@
 
 import unittest
 from datetime import datetime, timezone
+
 from core.domain.common import (
-    ObservationId,
-    SignalId,
-    EvidenceId,
-    InferenceId,
-    HypothesisId,
-    ThesisId,
     DecisionId,
-    OutcomeId,
-    LearningId,
-    SecurityId,
     DomainMetadata,
+    EvidenceId,
+    HypothesisId,
+    InferenceId,
+    LearningId,
+    ObservationId,
+    OutcomeId,
+    SecurityId,
+    SignalId,
+    ThesisId,
 )
-from core.domain.enums import RecommendationAction, SignalDirection, ThesisDirection, RiskSeverity
-from core.domain.value_objects import Confidence, RiskAssessment
 from core.domain.entities import (
-    Observation,
-    Signal,
-    Evidence,
-    Inference,
-    Hypothesis,
-    InvestmentThesis,
     Decision,
-    Outcome,
+    Evidence,
+    Hypothesis,
+    Inference,
+    InvestmentThesis,
     Learning,
+    Observation,
+    Outcome,
+    Signal,
 )
+from core.domain.enums import (
+    RecommendationAction,
+    RiskSeverity,
+    SignalDirection,
+    ThesisDirection,
+)
+from core.domain.value_objects import Confidence, RiskAssessment
+
 
 class TestReasoningLifecycle(unittest.TestCase):
     """Verifies the complete scientific lifecycle chain and parent-child traceability."""
@@ -101,7 +108,7 @@ class TestReasoningLifecycle(unittest.TestCase):
         thesis_id = ThesisId.generate()
         thesis_meta = DomainMetadata.create(thesis_id)
         sec_id = SecurityId.generate()
-        
+
         conf = Confidence(
             score=0.80,
             evidence_quality=0.85,
@@ -129,7 +136,7 @@ class TestReasoningLifecycle(unittest.TestCase):
             invalidation_conditions=["Insider dumps holdings", "Significant guidance downgrade"],
             scenarios={"Bull": "Target price $220", "Bear": "Stop loss triggered at $180"}
         )
-        
+
         self.assertEqual(thesis.associated_hypothesis_id, hyp_id)
         self.assertIn(ev_id, thesis.evidence_ids)
         self.assertIn(inf_id, thesis.inference_ids)

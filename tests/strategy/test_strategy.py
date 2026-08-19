@@ -7,19 +7,19 @@ outside them.
 import unittest
 from datetime import datetime, timezone
 
+from core.decision_builder.context import DecisionEvaluationContext
+from core.decision_builder.policies import DecisionPolicy
+from core.decision_builder.portfolio import PortfolioState
 from core.domain.common import DomainMetadata, FactId, ObservationId
 from core.domain.entities import Fact
-from core.domain.enums import ThesisDirection, RecommendationAction, ValidationStatus
+from core.domain.enums import RecommendationAction, ThesisDirection, ValidationStatus
 from core.domain.value_objects import Measurement
 from core.facts.taxonomy import FactType
-from core.decision_builder.portfolio import PortfolioState
-from core.decision_builder.policies import DecisionPolicy
-from core.decision_builder.context import DecisionEvaluationContext
-from core.strategy.golden_cross import GoldenCrossDeathCrossStrategy
-from core.strategy.rsi_mean_reversion import RSIMeanReversionStrategy
-from core.strategy.macd_cross import MACDSignalCrossStrategy
-from core.strategy.vwap_bias import VWAPBiasStrategy
 from core.strategy.breakout_volume import BreakoutVolumeConfirmationStrategy
+from core.strategy.golden_cross import GoldenCrossDeathCrossStrategy
+from core.strategy.macd_cross import MACDSignalCrossStrategy
+from core.strategy.rsi_mean_reversion import RSIMeanReversionStrategy
+from core.strategy.vwap_bias import VWAPBiasStrategy
 
 
 class BaseStrategyTest(unittest.TestCase):
@@ -142,7 +142,7 @@ class TestGoldenCrossDeathCross(BaseStrategyTest):
             facts.append(self._make_price_fact("PRICE_LOW", c, obs_ids[i]))
 
         strategy = GoldenCrossDeathCrossStrategy(fast_period=2, slow_period=4)
-        
+
         # 1. No position held -> emits AVOID (informational bearish signal)
         result = strategy.evaluate(facts, self.portfolio, self.policy, self.ctx)
         self.assertIsNotNone(result)

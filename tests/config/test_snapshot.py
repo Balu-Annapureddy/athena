@@ -1,10 +1,11 @@
 """Unit tests for ConfigurationSnapshot: determinism, ordering, and metadata."""
 
 import unittest
+
+from core.config import ConfigurationRegistry
 from core.decision_builder.policies import DecisionPolicy
 from core.learning_builder.policies import LearningPolicy
 from core.outcome_builder.policies import OutcomePolicy
-from core.config import ConfigurationRegistry
 
 
 class TestConfigurationSnapshot(unittest.TestCase):

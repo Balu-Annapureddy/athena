@@ -2,17 +2,15 @@
 
 import unittest
 from datetime import datetime, timezone
-from core.domain.entities import Fact
-from core.domain.common import FactId, ObservationId, DomainMetadata
+
 from core.domain.value_objects import Measurement
-from core.measurements.factory import DerivedMeasurement, MeasurementFactory
-from core.measurements.taxonomy import FormulaId
 from core.evidence_builder.builder import EvidenceCandidateBuilder
 from core.evidence_builder.rules import (
     EvidenceCandidateRule,
     FundamentalCandidateRule,
 )
-from core.evidence_builder.candidate import EvidenceCandidate
+from core.measurements.factory import DerivedMeasurement, MeasurementFactory
+from core.measurements.taxonomy import FormulaId
 
 
 class CrashingCandidateRule(EvidenceCandidateRule):

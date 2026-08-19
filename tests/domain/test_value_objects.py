@@ -1,11 +1,13 @@
 """Unit tests for Athena domain value objects."""
 
 import unittest
-from datetime import datetime, timezone
 from dataclasses import FrozenInstanceError
-from core.domain.value_objects import Candle, Indicator, RiskAssessment, Confidence
+from datetime import datetime, timezone
+
 from core.domain.enums import RiskSeverity
 from core.domain.exceptions import DomainValidationError
+from core.domain.value_objects import Candle, Confidence, Indicator, RiskAssessment
+
 
 class TestCandleValueObject(unittest.TestCase):
     """Verifies candle logic checks and frozen state integrity."""

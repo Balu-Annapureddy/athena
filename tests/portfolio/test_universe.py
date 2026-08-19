@@ -5,7 +5,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from core.portfolio.universe import get_nifty_500_tickers, NIFTY_500
+from core.portfolio.universe import NIFTY_500, get_nifty_500_tickers
 
 
 class TestUniverse(unittest.TestCase):

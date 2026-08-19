@@ -1,9 +1,10 @@
 """Unit tests for ConfigurationRegistry: registration, retrieval, history, and isolation."""
 
 import unittest
+
+from core.config import ConfigurationRegistry
 from core.decision_builder.policies import DecisionPolicy
 from core.learning_builder.policies import LearningPolicy
-from core.config import ConfigurationRegistry
 
 
 class TestConfigurationRegistry(unittest.TestCase):

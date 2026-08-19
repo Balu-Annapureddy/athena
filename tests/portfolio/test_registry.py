@@ -1,7 +1,6 @@
 """Unit tests for StrategyRegistry."""
 
 import unittest
-from datetime import datetime, timezone
 
 from core.domain.enums import ValidationStatus
 from core.portfolio.registry import StrategyRegistry
@@ -13,12 +12,12 @@ class TestStrategyRegistry(unittest.TestCase):
     def test_registry_registration_and_retrieval(self) -> None:
         registry = StrategyRegistry()
         strategy = GoldenCrossDeathCrossStrategy()
-        
+
         registry.register(strategy, status=ValidationStatus.BACKTESTED, weight=0.5, enabled=True)
-        
+
         self.assertEqual(registry.get_strategy("GoldenCrossDeathCrossStrategy"), strategy)
         self.assertEqual(registry.get_status("GoldenCrossDeathCrossStrategy"), ValidationStatus.BACKTESTED)
-        
+
         active = registry.get_active_strategies()
         self.assertEqual(len(active), 1)
         self.assertEqual(active[0][0], strategy)
@@ -28,9 +27,9 @@ class TestStrategyRegistry(unittest.TestCase):
     def test_registry_disabled_strategies_are_not_active(self) -> None:
         registry = StrategyRegistry()
         strategy = GoldenCrossDeathCrossStrategy()
-        
+
         registry.register(strategy, status=ValidationStatus.UNVALIDATED, weight=1.0, enabled=False)
-        
+
         self.assertEqual(registry.get_strategy("GoldenCrossDeathCrossStrategy"), strategy)
         active = registry.get_active_strategies()
         self.assertEqual(len(active), 0)
@@ -38,12 +37,12 @@ class TestStrategyRegistry(unittest.TestCase):
     def test_registry_status_immutability_at_runtime(self) -> None:
         registry = StrategyRegistry()
         strategy = GoldenCrossDeathCrossStrategy()
-        
+
         registry.register(strategy, status=ValidationStatus.UNVALIDATED)
-        
+
         # Verify status is UNVALIDATED
         self.assertEqual(registry.get_status("GoldenCrossDeathCrossStrategy"), ValidationStatus.UNVALIDATED)
-        
+
         # Try to modify status on retrieved dict (should not work if it's encapsulated/immutable)
         # Re-registering is the only way to update status
         registry.register(strategy, status=ValidationStatus.BACKTESTED)
@@ -52,7 +51,7 @@ class TestStrategyRegistry(unittest.TestCase):
     def test_default_registry_configures_expected_statuses(self) -> None:
         """Enforces ADR-029 safety invariant: ATRTrailing and BreakoutVolumeATRTrailingHybrid are RISK_ADJUSTED_VALIDATED, all others UNVALIDATED."""
         registry = StrategyRegistry.default()
-        
+
         self.assertEqual(
             registry.get_status("ATRTrailingGoldenCrossStrategy"),
             ValidationStatus.RISK_ADJUSTED_VALIDATED
@@ -61,7 +60,7 @@ class TestStrategyRegistry(unittest.TestCase):
             registry.get_status("BreakoutVolumeATRTrailingHybridStrategy"),
             ValidationStatus.RISK_ADJUSTED_VALIDATED
         )
-        
+
         unvalidated_names = [
             "GoldenCrossDeathCrossStrategy",
             "RegimeFilteredGoldenCrossStrategy",
@@ -73,7 +72,7 @@ class TestStrategyRegistry(unittest.TestCase):
             "DualMomentumVolatilityScaledStrategy",
             "MACDATRTrailingHybridStrategy",
         ]
-        
+
         for name in unvalidated_names:
             self.assertEqual(registry.get_status(name), ValidationStatus.UNVALIDATED)
 

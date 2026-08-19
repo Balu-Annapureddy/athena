@@ -2,15 +2,22 @@
 
 import unittest
 from datetime import datetime, timezone
-from core.domain.common import ThesisId, DecisionId, SecurityId
+
+from core.decision_builder import (
+    DecisionAssessment,
+    DecisionPolicyResult,
+    DecisionRecord,
+    Priority,
+)
+from core.decision_builder.candidate import DecisionCandidate, DecisionRationale
+from core.domain.common import DecisionId, SecurityId, ThesisId
 from core.domain.enums import RecommendationAction
-from core.decision_builder import DecisionRecord, DecisionAssessment, DecisionPolicyResult, Priority
-from core.decision_builder.candidate import DecisionRationale, DecisionCandidate
 from core.outcome_builder import (
-    OutcomePolicy,
     OutcomeEventType,
+    OutcomePolicy,
     ReconciliationOutcomeRule,
 )
+
 
 def _make_decision_record() -> DecisionRecord:
     candidate = DecisionCandidate(
@@ -66,7 +73,7 @@ class TestOutcomeRules(unittest.TestCase):
 
         self.assertTrue(rule.can_assemble(dec_record, OutcomeEventType.EXECUTED))
         candidates = rule.assemble(dec_record, OutcomeEventType.EXECUTED, execution_details, policy)
-        
+
         self.assertEqual(len(candidates), 1)
         cand = candidates[0]
         self.assertEqual(cand.decision_id, dec_record.id)

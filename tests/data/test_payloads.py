@@ -2,8 +2,15 @@
 
 import unittest
 from datetime import datetime, timezone
-from core.data.payloads import PricePayload, FundamentalPayload, NewsPayload, EconomicPayload
+
+from core.data.payloads import (
+    EconomicPayload,
+    FundamentalPayload,
+    NewsPayload,
+    PricePayload,
+)
 from core.domain.exceptions import DomainValidationError
+
 
 class TestConnectorPayloads(unittest.TestCase):
     """Verifies strict schema validations for typed payloads."""
@@ -32,7 +39,7 @@ class TestConnectorPayloads(unittest.TestCase):
             income_statement={"REVENUE": 200.0}
         )
         self.assertEqual(f.balance_sheet["ASSETS"], 500.0)
-        
+
         # Test immutable dictionary proxy
         with self.assertRaises(TypeError):
             f.balance_sheet["ASSETS"] = 600.0 # type: ignore

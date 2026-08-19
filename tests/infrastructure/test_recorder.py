@@ -16,7 +16,6 @@ from core.data.payloads.price import PricePayload
 from core.infrastructure.connectors import FetchRequest
 from core.infrastructure.recorder import PayloadRecorder, ReplayConnector
 
-
 # ---------------------------------------------------------------------------
 # Shared fixture builder
 # ---------------------------------------------------------------------------

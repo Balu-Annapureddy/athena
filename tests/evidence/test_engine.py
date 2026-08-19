@@ -2,15 +2,14 @@
 
 import unittest
 from datetime import datetime, timezone
-from core.evidence.engine import EvidenceEngine
+
+from core.domain.value_objects import Measurement
 from core.evidence.context import EvidenceEvaluationContext
-from core.evidence.accumulator import EvidenceState
-from core.evidence_builder.candidate import EvidenceCandidate
-from core.evidence_builder.rules import FundamentalCandidateRule
+from core.evidence.engine import EvidenceEngine
 from core.evidence_builder.builder import EvidenceCandidateBuilder
+from core.evidence_builder.rules import FundamentalCandidateRule
 from core.measurements.factory import DerivedMeasurement, MeasurementFactory
 from core.measurements.taxonomy import FormulaId
-from core.domain.value_objects import Measurement
 
 
 def _make_derived(formula_id: FormulaId, value: float) -> DerivedMeasurement:

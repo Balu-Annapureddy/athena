@@ -1,16 +1,18 @@
 """Unit tests for the Formula dependency resolver."""
 
 import unittest
+
 from core.domain.exceptions import DomainValidationError
 from core.mathematics.formulas import Formula
 from core.measurements import FormulaDependencyResolver, FormulaId
+
 
 class TestDependencyResolver(unittest.TestCase):
     """Verifies that resolver handles DAG sorting and catches circular dependencies."""
 
     def test_topological_sort_no_cycle(self) -> None:
         resolver = FormulaDependencyResolver()
-        
+
         # Define clean formulas:
         # ROE requires NetIncome and Equity
         # NET_MARGIN requires NetIncome and Revenue
@@ -37,7 +39,7 @@ class TestDependencyResolver(unittest.TestCase):
 
     def test_circular_dependency_fails(self) -> None:
         resolver = FormulaDependencyResolver()
-        
+
         # A depends on B, B depends on A
         formulas = {
             FormulaId.ROE: Formula(

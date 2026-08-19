@@ -2,16 +2,21 @@
 
 import datetime
 import unittest
-from datetime import timezone, date
+from datetime import date, timezone
 from typing import List
 
-from core.domain.enums import RecommendationAction, ValidationStatus
-from core.portfolio.registry import StrategyRegistry
-from core.pipeline.daily_runner import DailySignalRunner
-from core.pipeline.signal_report import SignalReport
-from core.strategy.golden_cross import GoldenCrossDeathCrossStrategy
-from core.data.contract import ConnectorPayload, Provenance, PayloadType, SourceType, VerificationStatus
+from core.data.contract import (
+    ConnectorPayload,
+    PayloadType,
+    Provenance,
+    SourceType,
+    VerificationStatus,
+)
 from core.data.payloads.price import PricePayload
+from core.domain.enums import RecommendationAction, ValidationStatus
+from core.pipeline.daily_runner import DailySignalRunner
+from core.portfolio.registry import StrategyRegistry
+from core.strategy.golden_cross import GoldenCrossDeathCrossStrategy
 
 
 class MockYFinanceConnector:
@@ -27,7 +32,7 @@ class MockYFinanceConnector:
     def fetch_data(self, entity: str, **kwargs) -> List[ConnectorPayload]:
         self.last_start = kwargs.get("start")
         self.last_end = kwargs.get("end")
-        
+
         filtered = [p for p in self.payloads if p.entity == entity]
         if self.last_start:
             start_dt = datetime.datetime.strptime(self.last_start, "%Y-%m-%d").replace(tzinfo=timezone.utc)
@@ -120,7 +125,7 @@ class TestDailySignalRunner(unittest.TestCase):
 
         with self.assertRaises(ValueError) as ctx:
             runner.run_ticker("RELIANCE.NS", date(2026, 7, 5))
-            
+
         self.assertIn("Insufficient history", str(ctx.exception))
         self.assertIn("required 11", str(ctx.exception))
 
@@ -163,13 +168,13 @@ class TestDailySignalRunner(unittest.TestCase):
             self._create_bar("RELIANCE.NS", f"2026-07-{(i+1):02d}", prices[i])
             for i in range(30)
         ]
-        
+
         mock_connector = MockYFinanceConnector(payloads)
         runner._connector = mock_connector
 
         reports = runner.run_ticker("RELIANCE.NS", date(2026, 7, 26))
         self.assertEqual(len(reports), 1)
-        
+
         # Let's inspect the actions to ensure at least one evaluation generated a BUY signal
         # Since we jumped from 10 to 20, fast SMA (last 5) will be ~20.0, slow SMA (last 10) will be ~15.0
         # On prior days it was flat, so this is a golden cross crossover signal!

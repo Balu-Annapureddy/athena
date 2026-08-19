@@ -2,9 +2,17 @@
 
 import unittest
 from datetime import datetime, timezone
-from core.data.contract import ConnectorPayload, PayloadType, SourceType, VerificationStatus, Provenance
-from core.data.payloads import PricePayload, FundamentalPayload
+
+from core.data.contract import (
+    ConnectorPayload,
+    PayloadType,
+    Provenance,
+    SourceType,
+    VerificationStatus,
+)
+from core.data.payloads import FundamentalPayload, PricePayload
 from core.domain.exceptions import DomainValidationError
+
 
 class TestConnectorContracts(unittest.TestCase):
     """Verifies that ConnectorPayload rejects mismatches and enforces immutability."""
@@ -17,7 +25,7 @@ class TestConnectorContracts(unittest.TestCase):
     def test_contract_type_mismatch_fails(self) -> None:
         now = datetime.now(timezone.utc)
         prov = Provenance("Conn", "Yahoo", now, now, "FEED_001", "xyz", "1.0.0", "run-1")
-        
+
         fundamental = FundamentalPayload(balance_sheet={"ASSETS": 100.0})
 
         # Try to register a FundamentalPayload as a PRICE type
@@ -35,9 +43,9 @@ class TestConnectorContracts(unittest.TestCase):
     def test_contract_validation_success(self) -> None:
         now = datetime.now(timezone.utc)
         prov = Provenance("Conn", "Yahoo", now, now, "FEED_001", "xyz", "1.0.0", "run-1")
-        
+
         price = PricePayload(100.0, 105.0, 99.0, 102.0, 50.0, "1D")
-        
+
         contract = ConnectorPayload(
             source_id="FEED_ID",
             entity="AAPL",

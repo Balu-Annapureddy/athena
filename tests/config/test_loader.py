@@ -1,6 +1,7 @@
 """Unit tests for ConfigurationLoader: dict-based policy loading."""
 
 import unittest
+
 from core.config import ConfigurationLoader
 
 

@@ -14,7 +14,6 @@ Fixture files used:
     fixtures/yfinance/YFinanceConnector_TCS.NS.jsonl
 """
 
-import os
 import unittest
 from pathlib import Path
 

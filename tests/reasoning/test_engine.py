@@ -2,23 +2,35 @@
 
 import unittest
 from datetime import datetime, timezone
-from core.domain.common import FactId, ObservationId, HypothesisId, EvidenceId, DomainMetadata
-from core.domain.value_objects import Measurement
-from core.domain.entities import Fact, Evidence
+
+from core.domain.common import (
+    DomainMetadata,
+    EvidenceId,
+    FactId,
+    HypothesisId,
+    ObservationId,
+)
+from core.domain.entities import Evidence, Fact
 from core.domain.exceptions import DomainValidationError
-from core.reasoning import FactCondition, EvidenceCondition, ReasoningRule, RuleEvaluator
+from core.domain.value_objects import Measurement
+from core.reasoning import (
+    EvidenceCondition,
+    FactCondition,
+    ReasoningRule,
+)
+
 
 class TestReasoningEngine(unittest.TestCase):
     """Verifies conditions evaluation, rule firing triggers, and lineage tracings."""
 
     def test_fact_condition_evaluation(self) -> None:
         obs_id = ObservationId.generate()
-        
+
         meas = Measurement(15.5, "%", "AUDITED", datetime.now(timezone.utc), "Source", 1.0)
         fact = Fact(DomainMetadata.create(FactId.generate()), obs_id, "Revenue_Growth", meas, datetime.now(timezone.utc))
-        
+
         facts = {"REVENUE_GROWTH": fact}
-        
+
         # Test true comparison
         cond_gt = FactCondition("REVENUE_GROWTH", ">", 10.0)
         self.assertTrue(cond_gt.evaluate(facts))
@@ -30,7 +42,7 @@ class TestReasoningEngine(unittest.TestCase):
     def test_evidence_condition_evaluation(self) -> None:
         hyp_id = HypothesisId.generate()
         hypotheses_map = {str(hyp_id): "AAPL is entering an expansionary product supercycle"}
-        
+
         evidence = Evidence(
             metadata=DomainMetadata.create(EvidenceId.generate()),
             hypothesis_id=hyp_id,
@@ -39,9 +51,9 @@ class TestReasoningEngine(unittest.TestCase):
             weight=0.8,
             supports=True
         )
-        
+
         evidences = {str(evidence.id): evidence}
-        
+
         # Match by substring
         cond = EvidenceCondition("expansionary", must_support=True, min_weight=0.5)
         self.assertTrue(cond.evaluate(evidences, hypotheses_map))
@@ -80,7 +92,7 @@ class TestReasoningEngine(unittest.TestCase):
 
         metadata = DomainMetadata.create(FactId.generate())
         inference = rule.evaluate(facts, evidences, hypotheses_map, metadata)
-        
+
         self.assertEqual(inference.conclusion, "Asset satisfies quality growth reasoning benchmarks")
         self.assertIn(evidence.id, inference.evidence_ids)
         self.assertTrue(len(inference.reasoning_path) > 0)

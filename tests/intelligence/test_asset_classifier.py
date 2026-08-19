@@ -1,8 +1,9 @@
 """Unit tests for efficiency_ratio and AssetClassifier."""
 
 import unittest
-from core.intelligence.indicators import efficiency_ratio
+
 from core.intelligence.asset_classifier import AssetClassifier, AssetRegime
+from core.intelligence.indicators import efficiency_ratio
 
 
 class TestAssetClassifier(unittest.TestCase):
@@ -25,7 +26,7 @@ class TestAssetClassifier(unittest.TestCase):
     def test_classifier_trender_vs_reverter(self) -> None:
         """Straight trending series should be TRENDER, oscillating series MEAN_REVERTER."""
         classifier = AssetClassifier(er_period=10, trender_threshold=0.28)
-        
+
         trending_closes = [10.0 + i * 2.0 for i in range(50)]
         oscillating_closes = [100.0 + (5.0 if i % 2 == 0 else -5.0) for i in range(50)]
 

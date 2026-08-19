@@ -2,21 +2,23 @@
 
 import unittest
 from datetime import datetime, timezone
-from core.domain.common import HypothesisId, InferenceId, ThesisId, SecurityId
+
+from core.domain.common import HypothesisId, InferenceId, SecurityId, ThesisId
 from core.domain.enums import ThesisDirection
 from core.domain.value_objects import Confidence
 from core.hypothesis_builder import HypothesisRecord, HypothesisState, HypothesisType
 from core.hypothesis_builder.evaluator import HypothesisAssessment
 from core.thesis_builder import (
-    ThesisPolicy,
-    ThesisEvaluationContext,
-    ThesisState,
-    ThesisLedger,
+    LongTermGrowthThesisRule,
     ThesisAssembler,
     ThesisCandidateBuilder,
-    LongTermGrowthThesisRule,
+    ThesisEvaluationContext,
+    ThesisLedger,
+    ThesisPolicy,
+    ThesisState,
 )
-from core.thesis_builder.candidate import ThesisCandidate, TimeHorizon, StrategyStyle
+from core.thesis_builder.candidate import StrategyStyle, ThesisCandidate, TimeHorizon
+
 
 def _make_hypothesis(h_type: HypothesisType, state: HypothesisState = HypothesisState.ACTIVE) -> HypothesisRecord:
     assessment = HypothesisAssessment(0.8, 1.0, 0.9, 0.1, 0.81)
@@ -39,7 +41,7 @@ class TestThesisLedgerAndAssembler(unittest.TestCase):
 
     def test_ledger_record_and_invalidation(self) -> None:
         ledger = ThesisLedger()
-        
+
         candidate = ThesisCandidate(
             candidate_id=ThesisId.generate(),
             target_security_id=SecurityId.generate(),
@@ -103,8 +105,8 @@ class TestThesisLedgerAndAssembler(unittest.TestCase):
 
         # Verify domain entity fields
         self.assertEqual(thesis_entity.thesis_direction, ThesisDirection.BULLISH)
-        import uuid
         import hashlib
+        import uuid
         expected_uuid = uuid.UUID(hashlib.md5("HDFC".encode()).hexdigest())
         self.assertEqual(thesis_entity.target_security_id.value, expected_uuid)
         self.assertEqual(len(thesis_entity.assumptions), 2)

@@ -6,23 +6,26 @@ from datetime import datetime, timezone
 from typing import Any, List, Optional, Tuple
 from unittest.mock import MagicMock
 
-from core.domain.common import DomainMetadata, FactId, ObservationId, SecurityId
-from core.domain.entities import Fact, InvestmentThesis, Decision
-from core.domain.enums import RecommendationAction, ValidationStatus, ThesisDirection
-from core.domain.value_objects import Measurement
-from core.backtest.metrics import MetricsCalculator, BacktestMetrics
-from core.backtest.engine import BacktestEngine, TradeRecord
+from core.backtest.engine import BacktestEngine
+from core.backtest.metrics import BacktestMetrics, MetricsCalculator
 from core.backtest.validation import ValidationCampaign
+from core.decision_builder.candidate import DecisionRationale
+from core.decision_builder.context import DecisionEvaluationContext
+from core.decision_builder.ledger import DecisionRecord, DecisionState
+from core.decision_builder.policies import (
+    DecisionAssessment,
+    DecisionPolicy,
+    DecisionPolicyResult,
+    Priority,
+)
+from core.decision_builder.portfolio import PortfolioState
+from core.domain.common import DomainMetadata, ObservationId, SecurityId
+from core.domain.entities import Decision, Fact, InvestmentThesis
+from core.domain.enums import RecommendationAction, ThesisDirection
+from core.risk.engine import RiskAssessment
 from core.strategy.base import BaseStrategy
 from core.thesis_builder.candidate import TimeHorizon
-from core.decision_builder.portfolio import PortfolioState
-from core.decision_builder.policies import DecisionPolicy
-from core.decision_builder.context import DecisionEvaluationContext
 from core.thesis_builder.ledger import ThesisRecord, ThesisState
-from core.decision_builder.ledger import DecisionRecord, DecisionState
-from core.decision_builder.candidate import DecisionRationale
-from core.decision_builder.policies import DecisionAssessment, DecisionPolicyResult, Priority
-from core.risk.engine import RiskAssessment
 
 
 class LookaheadCheckingStrategy(BaseStrategy):
@@ -48,12 +51,12 @@ class LookaheadCheckingStrategy(BaseStrategy):
         dec_ctx: DecisionEvaluationContext
     ) -> Optional[Tuple[Any, Any, Any, Any]]:
         opens, highs, lows, closes, volumes, obs_ids = self._extract_ohlcv(facts)
-        
+
         # Check if any price in the series exceeds 150 (the future spike price)
         for c in closes:
             if c >= 150.0:
                 self.seen_future_price = True
-        
+
         return None
 
 
@@ -83,9 +86,15 @@ class TestBacktestEngine(unittest.TestCase):
 
     def setUp(self) -> None:
         # Create minimal observation / payload helper
-        from core.data.contract import ConnectorPayload, Provenance, PayloadType, SourceType, VerificationStatus
+        from core.data.contract import (
+            ConnectorPayload,
+            PayloadType,
+            Provenance,
+            SourceType,
+            VerificationStatus,
+        )
         from core.data.payloads.price import PricePayload
-        
+
         self.payload_type = PayloadType
         self.source_type = SourceType
         self.verification_status = VerificationStatus
@@ -135,10 +144,10 @@ class TestBacktestEngine(unittest.TestCase):
 
         strategy = LookaheadCheckingStrategy()
         engine = BacktestEngine()
-        
+
         # Inject the mock connector
         engine._connector = MockYFinanceConnector(payloads)
-        
+
         # We run the backtest up to day 8 (bar index 7) to check if Day 9 (index 9) spike was seen
         # We will check strategy state after run. If lookahead bias is avoided, the strategy
         # evaluating bar 7 (Day 8) will NOT see the spike of Day 9.
@@ -150,7 +159,7 @@ class TestBacktestEngine(unittest.TestCase):
             end_date="2026-07-08",
             account_size=100000.0
         )
-        
+
         # Since end_date is 2026-07-08, only payloads up to 2026-07-08 are fetched
         self.assertFalse(strategy.seen_future_price)
 
@@ -162,12 +171,12 @@ class TestBacktestEngine(unittest.TestCase):
         # We set Stop Loss = 490, Target Price = 550.
         # Both are breached! Low <= 490 AND High >= 550.
         # The engine must resolve to STOP_LOSS, exit at 490 (loss of -10), not target (profit of +50).
-        
+
         payloads = [
             self._create_mock_bar("2026-07-01", 500.0, 500.0, 500.0, 500.0, 1000.0),
             self._create_mock_bar("2026-07-02", 500.0, 560.0, 480.0, 510.0, 1000.0),
         ]
-        
+
         # Strategy that triggers BUY on day 1
         class TriggerLongStrategy(BaseStrategy):
             @property
@@ -178,12 +187,12 @@ class TestBacktestEngine(unittest.TestCase):
                 opens, highs, lows, closes, volumes, obs_ids = self._extract_ohlcv(facts)
                 if len(closes) == 1:
                     # Trigger entry BUY decision with RiskAssessment
-                    from core.domain.entities import InvestmentThesis, Decision
-                    from core.domain.common import ThesisId, DecisionId, DomainMetadata
-                    
+                    from core.domain.common import DecisionId, DomainMetadata, ThesisId
+                    from core.domain.entities import Decision, InvestmentThesis
+
                     tid = ThesisId.generate()
                     did = DecisionId.generate()
-                    
+
                     thesis_rec = ThesisRecord(
                         id=tid, target_security_id="RELIANCE.NS",
                         thesis_direction=ThesisDirection.BULLISH, associated_hypothesis_id=ObservationId.generate(),
@@ -193,7 +202,7 @@ class TestBacktestEngine(unittest.TestCase):
                         strategy_style=None, confidence=None, rule_name="Test", rule_version="1.0",
                         policy_version="1.0", state=ThesisState.ACTIVE, timestamp=datetime.now(timezone.utc)
                     )
-                    
+
                     dec_rec = DecisionRecord(
                         id=did, thesis_id=tid, proposed_action=RecommendationAction.BUY,
                         target_weight=0.05, rationale=DecisionRationale([tid], [], [], "buy"),
@@ -207,7 +216,7 @@ class TestBacktestEngine(unittest.TestCase):
                             entry_price=500.0, target_price=550.0
                         )
                     )
-                    
+
                     # Create entities
                     thesis_entity = InvestmentThesis(
                         metadata=DomainMetadata.create(tid), target_security_id=SecurityId.from_str("RELIANCE.NS"),
@@ -219,14 +228,14 @@ class TestBacktestEngine(unittest.TestCase):
                         executed_at=datetime.now(timezone.utc), execution_parameters={}, entry_price=500.0, target_price=550.0
                     )
                     dec_entity.risk_assessment = dec_rec.risk_assessment
-                    
+
                     return thesis_entity, thesis_rec, dec_entity, dec_rec
                 return None
 
         strategy = TriggerLongStrategy()
         engine = BacktestEngine()
         engine._connector = MockYFinanceConnector(payloads)
-        
+
         res = engine.run_backtest(
             strategy=strategy,
             ticker="RELIANCE.NS",
@@ -234,7 +243,7 @@ class TestBacktestEngine(unittest.TestCase):
             end_date="2026-07-02",
             account_size=100000.0
         )
-        
+
         trades = res["trades"]
         self.assertEqual(len(trades), 1)
         self.assertEqual(trades[0].exit_reason, "STOP_LOSS")
@@ -251,7 +260,13 @@ class TestBacktestEngine(unittest.TestCase):
         position_size: int = 10,
     ) -> Tuple[InvestmentThesis, ThesisRecord, Decision, DecisionRecord]:
         import uuid
-        from core.domain.common.identifiers import DomainId, ThesisId, HypothesisId, DecisionId
+
+        from core.domain.common.identifiers import (
+            DecisionId,
+            DomainId,
+            HypothesisId,
+            ThesisId,
+        )
         from core.domain.value_objects import Confidence
         from core.thesis_builder.candidate import StrategyStyle
 
@@ -351,14 +366,14 @@ class TestBacktestEngine(unittest.TestCase):
     def test_long_gap_down_stop_loss_fills_at_open_price(self) -> None:
         """Verify long position gap-down through stop loss fills at price.open and PnL reflects gap."""
         engine = BacktestEngine(cost_model=None)
-        
+
         # Bar 0: Signal bar (strategy returns BUY decision)
         # Bar 1: Trade execution bar (enters LONG at open 100, SL=95, TP=120)
         # Bar 2: Gap down exit bar (open 80 < SL 95 -> fills exit at 80.0)
         bar0 = self._create_mock_bar("2026-07-01", 100.0, 103.0, 99.0, 102.0, 1000)
         bar1 = self._create_mock_bar("2026-07-02", 100.0, 105.0, 98.0, 102.0, 1000)
         bar2 = self._create_mock_bar("2026-07-03", 80.0, 82.0, 75.0, 78.0, 1000)
-        
+
         mock_strategy = MagicMock()
         mock_strategy.required_history_bars = 1
 
@@ -373,7 +388,7 @@ class TestBacktestEngine(unittest.TestCase):
 
         mock_strategy.evaluate = MagicMock(side_effect=[signal, None, None])
         engine._connector.fetch_data = MagicMock(return_value=[bar0, bar1, bar2])
-        
+
         res = engine.run_backtest(mock_strategy, "RELIANCE.NS", "2026-07-01", "2026-07-03", account_size=10000.0)
         trades = res["trades"]
         self.assertEqual(len(trades), 1)
@@ -386,11 +401,11 @@ class TestBacktestEngine(unittest.TestCase):
     def test_long_normal_stop_loss_fills_at_stop_price(self) -> None:
         """Verify long position normal stop loss (open >= SL, low <= SL) fills at limit stop price."""
         engine = BacktestEngine(cost_model=None)
-        
+
         bar0 = self._create_mock_bar("2026-07-01", 100.0, 103.0, 99.0, 102.0, 1000)
         bar1 = self._create_mock_bar("2026-07-02", 100.0, 105.0, 98.0, 102.0, 1000)
         bar2 = self._create_mock_bar("2026-07-03", 98.0, 99.0, 92.0, 93.0, 1000)  # Open (98) >= SL (95), Low (92) <= SL (95)
-        
+
         mock_strategy = MagicMock()
         mock_strategy.required_history_bars = 1
 
@@ -405,7 +420,7 @@ class TestBacktestEngine(unittest.TestCase):
 
         mock_strategy.evaluate = MagicMock(side_effect=[signal, None, None])
         engine._connector.fetch_data = MagicMock(return_value=[bar0, bar1, bar2])
-        
+
         res = engine.run_backtest(mock_strategy, "RELIANCE.NS", "2026-07-01", "2026-07-03", account_size=10000.0)
         trades = res["trades"]
         self.assertEqual(len(trades), 1)
@@ -416,11 +431,11 @@ class TestBacktestEngine(unittest.TestCase):
     def test_short_gap_up_stop_loss_fills_at_open_price(self) -> None:
         """Verify short position gap-up through stop loss fills at price.open and PnL reflects gap."""
         engine = BacktestEngine(cost_model=None)
-        
+
         bar0 = self._create_mock_bar("2026-07-01", 100.0, 103.0, 97.0, 98.0, 1000)
         bar1 = self._create_mock_bar("2026-07-02", 100.0, 102.0, 95.0, 98.0, 1000)
         bar2 = self._create_mock_bar("2026-07-03", 115.0, 120.0, 114.0, 118.0, 1000)  # Open (115) > SL (105)
-        
+
         mock_strategy = MagicMock()
         mock_strategy.required_history_bars = 1
 
@@ -435,7 +450,7 @@ class TestBacktestEngine(unittest.TestCase):
 
         mock_strategy.evaluate = MagicMock(side_effect=[signal, None, None])
         engine._connector.fetch_data = MagicMock(return_value=[bar0, bar1, bar2])
-        
+
         res = engine.run_backtest(mock_strategy, "RELIANCE.NS", "2026-07-01", "2026-07-03", account_size=10000.0)
         trades = res["trades"]
         self.assertEqual(len(trades), 1)
@@ -466,14 +481,14 @@ class TestBacktestMetrics(unittest.TestCase):
         self.assertEqual(metrics.total_return, 0.20)
         self.assertEqual(metrics.win_rate, 0.50)
         self.assertEqual(metrics.max_drawdown, 0.20)
-        
+
         # Profit Factor: Gross profit (400) / Gross loss (200) = 2.0
         self.assertEqual(metrics.profit_factor, 2.0)
-        
+
         # Average Win = (300+100)/2 = 200; Average Loss = (-100-100)/2 = -100
         self.assertEqual(metrics.avg_win, 200.0)
         self.assertEqual(metrics.avg_loss, -100.0)
-        
+
         # Average PnL per trade = 200 / 4 = 50
         self.assertEqual(metrics.avg_pnl_per_trade, 50.0)
 
@@ -527,7 +542,7 @@ class TestBacktestMetrics(unittest.TestCase):
         mean_ret = sum(rets) / len(rets)
         var_ret = sum((r - mean_ret) ** 2 for r in rets) / (len(rets) - 1)
         std_ret = math.sqrt(var_ret)
-        
+
         expected_daily_sharpe = math.sqrt(252.0) * (mean_ret / std_ret)
         expected_15m_sharpe = math.sqrt(6300.0) * (mean_ret / std_ret)
 
@@ -548,7 +563,7 @@ class TestValidationCampaign(unittest.TestCase):
             min_total_trades=20,
             min_passing_ratio=0.67
         )
-        
+
         # We mock run_backtest to return 5 trades (below 20) with positive average PnL
         mock_metrics = BacktestMetrics(
             total_return=0.1, win_rate=0.8, max_drawdown=0.05, sharpe_ratio=1.5,
@@ -575,7 +590,7 @@ class TestValidationCampaign(unittest.TestCase):
             min_total_trades=5,
             min_passing_ratio=0.67
         )
-        
+
         # Run 1: Positive average PnL (+50.0), 5 trades
         m_pass = BacktestMetrics(
             total_return=0.1, win_rate=0.8, max_drawdown=0.05, sharpe_ratio=1.5,
@@ -588,7 +603,7 @@ class TestValidationCampaign(unittest.TestCase):
             profit_factor=0.5, avg_pnl_per_trade=-10.0, avg_win=20.0, avg_loss=-30.0,
             total_trades=5, winning_trades=2, losing_trades=3
         )
-        
+
         # Sequence of returns for the 3 mock calls
         campaign._engine.run_backtest = MagicMock(side_effect=[
             {"metrics": m_pass, "trades": [None]*5, "equity_curve": [1000.0], "thesis_records": [], "decision_records": []},

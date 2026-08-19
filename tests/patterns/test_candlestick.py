@@ -12,7 +12,6 @@ from core.domain.entities import Fact
 from core.domain.value_objects import Measurement
 from core.facts.taxonomy import FactType
 from core.patterns.candlestick import (
-    DOJI_BODY_RATIO_THRESHOLD,
     is_bearish_engulfing,
     is_bullish_engulfing,
     is_doji,
@@ -163,7 +162,7 @@ class TestPatternEngine(unittest.TestCase):
             self._make_fact("PRICE_HIGH", 22.0, obs0),
             self._make_fact("PRICE_LOW", 18.0, obs0),
             self._make_fact("PRICE_CLOSE", 20.0, obs0),
-            
+
             self._make_fact("PRICE_OPEN", 6.0, obs1),
             self._make_fact("PRICE_HIGH", 9.0, obs1),
             self._make_fact("PRICE_LOW", 0.0, obs1),
@@ -187,7 +186,7 @@ class TestPatternEngine(unittest.TestCase):
             self._make_fact("PRICE_HIGH", 6.0, obs0),
             self._make_fact("PRICE_LOW", 4.0, obs0),
             self._make_fact("PRICE_CLOSE", 5.0, obs0),
-            
+
             self._make_fact("PRICE_OPEN", 6.0, obs1),
             self._make_fact("PRICE_HIGH", 9.0, obs1),
             self._make_fact("PRICE_LOW", 0.0, obs1),

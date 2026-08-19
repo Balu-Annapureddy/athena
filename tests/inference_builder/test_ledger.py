@@ -1,10 +1,11 @@
 """Unit tests for the Inference Ledger history logging and transitions."""
 
 import unittest
-from datetime import datetime, timezone
-from core.domain.common import InferenceId, EvidenceId
+
+from core.domain.common import EvidenceId, InferenceId
 from core.domain.entities.inference import ReasoningStep
 from core.inference_builder import InferenceLedger, InferenceState
+
 
 class TestInferenceLedger(unittest.TestCase):
     """Verifies state history tracking and version incrementation."""
@@ -45,7 +46,7 @@ class TestInferenceLedger(unittest.TestCase):
 
         self.assertEqual(updated.version, 2)
         self.assertEqual(updated.state, InferenceState.ACTIVE)
-        
+
         # Verify transaction log entries (1 CREATE, 1 SUPERSEDE, 1 UPDATE)
         entries = ledger.get_ledger()
         self.assertEqual(len(entries), 3)

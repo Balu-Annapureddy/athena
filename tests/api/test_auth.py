@@ -2,8 +2,9 @@
 
 import os
 import unittest
-from core.operations.secrets import SecretsRepository
+
 from core.api.auth import APIKeyAuthenticator
+from core.operations.secrets import SecretsRepository
 
 
 class TestAPIKeyAuthentication(unittest.TestCase):

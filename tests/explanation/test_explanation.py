@@ -2,19 +2,14 @@
 
 import unittest
 from datetime import datetime, timezone
-from typing import Dict, List, Any, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
-from core.explanation import (
-    ProvenanceNodeType,
-    ProvenancePredicate,
-    ProvenanceNode,
-    ProvenanceLink,
-    ExplanationReport,
-    IExplanationContext,
-    ProvenanceGraphBuilder,
-    ExplanationEngine,
-)
 from core.domain.enums import RecommendationAction
+from core.explanation import (
+    ExplanationEngine,
+    IExplanationContext,
+    ProvenanceNodeType,
+)
 
 
 # Define Mock Data Classes to resemble Athena's domain models for tests
@@ -239,13 +234,13 @@ class TestExplanationEngine(unittest.TestCase):
             inference_ids=["inf-1"]
         )
         ctx.hypotheses["hyp-1"] = MockHypothesis("Apple sales are accelerating", "AAPL")
-        
+
         # Circular link: Inference references Evidence-1, Evidence-1 references Inference-1 via observation path (mock)
         ctx.inferences["inf-1"] = MockInference("Sales exceed forecast model", [], ["ev-1"])
         ctx.evidences["ev-1"] = MockEvidence("hyp-1", ["inf-1"], 0.9, True) # circular mock reference
 
         engine = ExplanationEngine()
-        
+
         # Traversing should terminate safely and not crash with RecursionError
         report = engine.generate_report("dec-1", ctx)
         self.assertTrue(len(report.nodes) > 0)
@@ -265,7 +260,7 @@ class TestExplanationEngine(unittest.TestCase):
             inference_ids=["inf-1"]
         )
         ctx.hypotheses["hyp-1"] = MockHypothesis("Apple sales are accelerating", "AAPL")
-        
+
         # Single inference depending on two evidences
         ctx.inferences["inf-1"] = MockInference("Sales exceed forecast model", [], ["ev-1", "ev-2"])
         ctx.evidences["ev-1"] = MockEvidence("hyp-1", [], 0.9, True)

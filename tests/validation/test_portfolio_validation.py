@@ -3,10 +3,15 @@
 import unittest
 from unittest.mock import MagicMock
 
-from core.backtest.validation import ValidationCampaign, PortfolioResearchConfig, CampaignResult
-from core.portfolio.engine import MultiAssetPortfolioEngine
-from core.portfolio.universe import PointInTimeUniverseProvider, MissingPointInTimeUniverseDataError
+from core.backtest.validation import (
+    PortfolioResearchConfig,
+    ValidationCampaign,
+)
 from core.domain.enums import RecommendationAction
+from core.portfolio.engine import MultiAssetPortfolioEngine
+from core.portfolio.universe import (
+    MissingPointInTimeUniverseDataError,
+)
 
 
 class TestPortfolioValidationCampaign(unittest.TestCase):

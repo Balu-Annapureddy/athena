@@ -1,14 +1,14 @@
 """Tests for EvidenceEvaluator: trust, freshness, source category, error isolation, and candidate_id linkage."""
 
 import unittest
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
+
+from core.domain.common import FactId
 from core.evidence.accumulator import EvidenceAccumulator, EvidenceState
 from core.evidence.context import EvidenceEvaluationContext
-from core.evidence.evaluator import EvidenceEvaluator
 from core.evidence.decay import LinearDecay
+from core.evidence.evaluator import EvidenceEvaluator
 from core.evidence_builder.candidate import EvidenceCandidate
-from core.domain.common import CandidateId, FactId
-import uuid
 
 
 def _make_candidate(statement: str = "ROE (25.0%) exceeds configured profitability threshold (15.0%).",

@@ -5,11 +5,18 @@ import unittest
 from unittest.mock import MagicMock
 
 from core.domain.enums import RecommendationAction
+from core.experiment.generalization import (
+    CrossSectionalGeneralizationExperiment,
+    PortfolioResearchConfig,
+)
+from core.portfolio.pit_ingestor import PointInTimeDatasetIngestor
+from core.portfolio.pit_validator import PITDatasetStatus, PITDatasetValidator
 from core.portfolio.symbol_normalizer import SymbolNormalizer
-from core.portfolio.pit_validator import PITDatasetValidator, PITDatasetStatus
-from core.portfolio.pit_ingestor import PointInTimeDatasetIngestor, VersionedPITDataset
-from core.portfolio.universe import PointInTimeUniverseProvider, UniverseConstituentRecord, MissingPointInTimeUniverseDataError, UnvalidatedPointInTimeDatasetError
-from core.experiment.generalization import CrossSectionalGeneralizationExperiment, PortfolioResearchConfig
+from core.portfolio.universe import (
+    PointInTimeUniverseProvider,
+    UniverseConstituentRecord,
+    UnvalidatedPointInTimeDatasetError,
+)
 
 
 class TestPITUniverseIngestion(unittest.TestCase):
@@ -85,7 +92,7 @@ class TestPITUniverseIngestion(unittest.TestCase):
 
     def test_production_versioned_dataset_file_loads(self) -> None:
         """Batch 9 - 13: Production versioned JSON dataset file loads cleanly into PointInTimeUniverseProvider."""
-        dataset_path = "data/pit_universe_production_v1.json"
+        dataset_path = "data/pit_universe_production_v5.json"
         self.assertTrue(os.path.exists(dataset_path))
 
         provider = PointInTimeUniverseProvider(strict_mode=True)

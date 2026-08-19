@@ -1,10 +1,11 @@
 """Unit tests for the Financial Dictionary registry."""
 
 import unittest
-from datetime import datetime, timezone
-from core.knowledge.taxonomy import TaxonomyCategory
-from core.knowledge.dictionary import DictionaryEntry, FinancialDictionary
+
 from core.domain.exceptions import DomainValidationError
+from core.knowledge.dictionary import DictionaryEntry, FinancialDictionary
+from core.knowledge.taxonomy import TaxonomyCategory
+
 
 class TestFinancialDictionary(unittest.TestCase):
     """Verifies retrieval, registry, and provenance audit data in the dictionary."""
@@ -34,7 +35,7 @@ class TestFinancialDictionary(unittest.TestCase):
         )
         dict_registry.register(custom)
         self.assertTrue(dict_registry.contains("TRD_SLIPPAGE"))
-        
+
         retrieved = dict_registry.lookup("TRD_SLIPPAGE")
         self.assertEqual(retrieved.name, "Slippage")
         self.assertEqual(retrieved.confidence_rating, 0.85)

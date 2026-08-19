@@ -1,9 +1,10 @@
 """Tests for EvidenceCandidate construction, immutability, and deterministic ID derivation."""
 
 import unittest
-from core.evidence_builder.candidate import EvidenceCandidate
-from core.domain.common import FactId, CandidateId
 from datetime import datetime, timezone
+
+from core.domain.common import FactId
+from core.evidence_builder.candidate import EvidenceCandidate
 
 
 class TestEvidenceCandidate(unittest.TestCase):

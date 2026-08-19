@@ -1,22 +1,21 @@
 """Unit tests for the Simulation Engine (Sprint 20)."""
 
 import unittest
-from datetime import datetime, timezone, timedelta
-from typing import Dict, List, Any, Optional, Tuple
+from datetime import datetime, timedelta, timezone
+from typing import Any, List, Tuple
 
-from core.domain.common import FactId, ObservationId, DomainMetadata
-from core.domain.value_objects import Measurement
-from core.domain.entities import Fact, Observation
-from core.domain.enums import ThesisDirection, RecommendationAction
-from core.memory import MemoryStore, MemoryEvent, MemoryEventType
 from core.config import ConfigurationSnapshot, VersionedConfig
+from core.domain.common import DomainMetadata, FactId, ObservationId
+from core.domain.entities import Fact
+from core.domain.enums import RecommendationAction, ThesisDirection
+from core.domain.value_objects import Measurement
+from core.memory import MemoryEvent, MemoryEventType, MemoryStore
 from core.simulation import (
-    FactOverride,
+    AthenaRunner,
     ConfigurationOverride,
+    FactOverride,
     Scenario,
     SimulationContext,
-    SimulationResult,
-    AthenaRunner,
     SimulationEngine,
 )
 
@@ -73,22 +72,22 @@ class MockAthenaRunner(AthenaRunner):
         if interest_rate_val > 6.0:
             inferences.append(MockInference("Interest rates are restrictive"))
             hypotheses.append(MockHypothesis("Corporate margins will contract under high rates"))
-            
+
             conf_score = 0.8
             # If threshold configuration override is applied
             if min_threshold > 0.7:
                 conf_score = 0.65  # Shift confidence downwards for test comparison
-            
+
             theses.append(MockThesis("AAPL", ThesisDirection.BEARISH, conf_score))
             decisions.append(MockDecision(RecommendationAction.SELL))
         else:
             inferences.append(MockInference("Interest rates are accommodative"))
             hypotheses.append(MockHypothesis("Corporate expansion accelerates"))
-            
+
             conf_score = 0.75
             if min_threshold > 0.7:
                 conf_score = 0.6
-                
+
             theses.append(MockThesis("AAPL", ThesisDirection.BULLISH, conf_score))
             decisions.append(MockDecision(RecommendationAction.BUY))
 
@@ -104,7 +103,7 @@ class TestSimulationEngine(unittest.TestCase):
     def setUp(self) -> None:
         # Construct baseline elements
         now = datetime.now(timezone.utc)
-        
+
         # 1. Facts
         meas_ir = Measurement(5.0, "%", "AUDITED", now, "Central Bank", 1.0)
         fact_ir = Fact(DomainMetadata.create(FactId.generate()), ObservationId.generate(), "INTEREST_RATES", meas_ir, now)
@@ -239,7 +238,7 @@ class TestSimulationEngine(unittest.TestCase):
             description="Tests that simulation outcomes are deterministic",
             fact_overrides=(FactOverride("INTEREST_RATES", 6.5),)
         )
-        
+
         result_run1 = self.engine.run_scenario(scenario, self.ctx, self.runner)
         result_run2 = self.engine.run_scenario(scenario, self.ctx, self.runner)
 

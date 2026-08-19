@@ -2,10 +2,18 @@
 
 import unittest
 from datetime import datetime, timezone
-from core.data.contract import ConnectorPayload, PayloadType, SourceType, VerificationStatus, Provenance
-from core.data.payloads import PricePayload, EconomicPayload
+
+from core.data.contract import (
+    ConnectorPayload,
+    PayloadType,
+    Provenance,
+    SourceType,
+    VerificationStatus,
+)
 from core.data.factory import ObservationFactory
+from core.data.payloads import EconomicPayload, PricePayload
 from core.domain.entities import Observation
+
 
 class TestObservationFactory(unittest.TestCase):
     """Verifies that the factory maps payloads to Domain Observations with correct fields."""
@@ -14,7 +22,7 @@ class TestObservationFactory(unittest.TestCase):
         now = datetime.now(timezone.utc)
         prov = Provenance("ConnMarket", "NSE", now, now, "MOCK_AAPL", "chk1", "1.0", "run-1")
         price = PricePayload(100.0, 105.0, 99.0, 102.0, 50.0, "1D")
-        
+
         contract = ConnectorPayload(
             source_id="FEED_ID",
             entity="AAPL",
@@ -31,7 +39,7 @@ class TestObservationFactory(unittest.TestCase):
         self.assertIsInstance(obs, Observation)
         self.assertEqual(obs.source, "FEED_ID")
         self.assertEqual(obs.timestamp, now)
-        
+
         # Verify serialized parameters
         p_data = obs.payload
         self.assertEqual(p_data["entity"], "AAPL")
@@ -44,7 +52,7 @@ class TestObservationFactory(unittest.TestCase):
         now = datetime.now(timezone.utc)
         prov = Provenance("ConnMacro", "RBI", now, now, "MOCK_GDP", "chk2", "1.0", "run-1")
         economic = EconomicPayload("GDP", 7.2, "%", "IN", "Q1 FY27", "Quarterly")
-        
+
         contract = ConnectorPayload(
             source_id="FEED_ID",
             entity="IN",

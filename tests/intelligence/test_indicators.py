@@ -19,9 +19,7 @@ import unittest
 from datetime import datetime, timezone
 
 from core.intelligence.indicators import (
-    BollingerResult,
     MACDResult,
-    ADXResult,
     adx,
     atr,
     bollinger_bands,
@@ -35,7 +33,6 @@ from core.intelligence.indicators import (
     vwap,
     wilder_smooth,
 )
-
 
 # ===========================================================================
 # SMA
@@ -514,12 +511,11 @@ class TestValidationStatusDefaults(unittest.TestCase):
         This ensures every thesis is visibly flagged until Sprint 29
         backtesting sets it to BACKTESTED.
         """
-        from datetime import datetime, timezone
-        from core.domain.common import ThesisId, HypothesisId
+        from core.domain.common import HypothesisId, ThesisId
         from core.domain.enums import ThesisDirection, ValidationStatus
-        from core.domain.value_objects import Confidence, RiskAssessment
+        from core.domain.value_objects import Confidence
+        from core.thesis_builder.candidate import StrategyStyle, TimeHorizon
         from core.thesis_builder.ledger import ThesisRecord, ThesisState
-        from core.thesis_builder.candidate import TimeHorizon, StrategyStyle
 
         record = ThesisRecord(
             id=ThesisId.generate(),
@@ -554,12 +550,15 @@ class TestValidationStatusDefaults(unittest.TestCase):
 
     def test_decision_record_default_validation_status_is_unvalidated(self):
         """DecisionRecord.validation_status must default to UNVALIDATED."""
-        from datetime import datetime, timezone
+        from core.decision_builder.candidate import DecisionRationale
+        from core.decision_builder.ledger import DecisionRecord, DecisionState
+        from core.decision_builder.policies import (
+            DecisionAssessment,
+            DecisionPolicyResult,
+            Priority,
+        )
         from core.domain.common import DecisionId, ThesisId
         from core.domain.enums import RecommendationAction, ValidationStatus
-        from core.decision_builder.ledger import DecisionRecord, DecisionState
-        from core.decision_builder.candidate import DecisionRationale
-        from core.decision_builder.policies import DecisionAssessment, DecisionPolicyResult, Priority
 
         record = DecisionRecord(
             id=DecisionId.generate(),
@@ -605,7 +604,6 @@ class TestExplanationUnvalidatedWarning(unittest.TestCase):
         pipeline context.
         """
         from core.explanation.engine import ExplanationEngine
-        from core.explanation.models import ProvenanceNodeType
         # Empty nodes — no thesis node → defaults to UNVALIDATED
         markdown = ExplanationEngine.render_markdown(nodes=(), links=())
         self.assertIn("UNVALIDATED STRATEGY", markdown)
@@ -659,10 +657,9 @@ class TestIndicatorEngine(unittest.TestCase):
 
     def test_indicator_engine_compute(self):
         """IndicatorEngine should extract price fact series and compute all indicators."""
-        from datetime import datetime, timezone
+        from core.domain.common import DomainMetadata, FactId, ObservationId
         from core.domain.entities import Fact
         from core.domain.value_objects import Measurement
-        from core.domain.common import DomainMetadata, ObservationId, FactId
         from core.facts.taxonomy import FactType
         from core.intelligence.engine import IndicatorEngine
 
@@ -670,7 +667,7 @@ class TestIndicatorEngine(unittest.TestCase):
         # Period parameters: SMA=3, EMA=3, RSI=3, ATR=3, BB=3, VWAP, Momentum=2, ROC=2, VolumeTrend=3, MACD: fast=2, slow=3, signal=2
         # This allows us to get valid indicator values for all of them with 5 bars.
         obs_ids = [ObservationId.generate() for _ in range(5)]
-        
+
         # Prices/volumes per bar:
         # Bar 0: H=12, L=8, C=10, V=100
         # Bar 1: H=13, L=9, C=11, V=100
@@ -731,13 +728,13 @@ class TestIndicatorEngine(unittest.TestCase):
         )
 
         indicator_facts = engine.compute(facts)
-        
+
         # Verify we got indicators
         self.assertGreater(len(indicator_facts), 0)
-        
+
         # Map them by fact type for verification
         derived = {f.name: f.value.value for f in indicator_facts}
-        
+
         # Verify SMA of last 3 closes ([12, 13, 14]) = 13.0
         self.assertIn(FactType.INDICATOR_SMA.value, derived)
         self.assertAlmostEqual(derived[FactType.INDICATOR_SMA.value], 13.0)

@@ -1,8 +1,9 @@
 """Unit tests for core/risk/engine.py — hand-calculated scenarios verifying risk profile metrics."""
 
 import unittest
+
 from core.domain.enums import RecommendationAction
-from core.risk.engine import RiskEngine, DEFAULT_TARGET_REWARD_RISK_RATIO
+from core.risk.engine import DEFAULT_TARGET_REWARD_RISK_RATIO, RiskEngine
 
 
 class MockDecision:
@@ -94,7 +95,7 @@ class TestRiskEngine(unittest.TestCase):
     def test_missing_account_size_refuses_sizing(self) -> None:
         """Confirm that missing or invalid account_size refuses to size a position."""
         decision = MockDecision(RecommendationAction.BUY)
-        
+
         # None account_size
         assessment_none = RiskEngine.calculate(
             decision=decision,
@@ -125,7 +126,7 @@ class TestRiskEngine(unittest.TestCase):
     def test_missing_other_inputs(self) -> None:
         """Confirm missing ATR or entry_price also gracefully returns None."""
         decision = MockDecision(RecommendationAction.BUY)
-        
+
         # Missing ATR
         assessment_no_atr = RiskEngine.calculate(
             decision=decision,
@@ -147,7 +148,7 @@ class TestRiskEngine(unittest.TestCase):
     def test_risk_percent_limit_enforced(self) -> None:
         """Confirm that risk_percent > 2% raises a ValueError."""
         decision = MockDecision(RecommendationAction.BUY)
-        
+
         with self.assertRaises(ValueError) as context:
             RiskEngine.calculate(
                 decision=decision,
@@ -161,7 +162,7 @@ class TestRiskEngine(unittest.TestCase):
     def test_flagged_ratio_below_threshold(self) -> None:
         """Confirm that a reward-to-risk ratio below 1:2 is flagged."""
         decision = MockDecision(RecommendationAction.BUY)
-        
+
         # Entry = 500, Stop = 480 (risk/share = 20), Target = 510 (reward = 10)
         # Ratio = 10 / 20 = 0.5 < 2.0 -> Flagged
         assessment = RiskEngine.calculate(

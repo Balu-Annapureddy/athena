@@ -1,12 +1,14 @@
 """Tests for RegimeAdaptivePortfolioEngine (core/intelligence/regime_engine.py)."""
 
 import unittest
-from unittest.mock import MagicMock, patch
 from typing import List
+from unittest.mock import MagicMock, patch
 
-from core.intelligence.regime_engine import RegimeAdaptivePortfolioEngine, RegimeAdaptiveResult
-from core.intelligence.asset_classifier import AssetRegime
 from core.domain.enums import RecommendationAction
+from core.intelligence.asset_classifier import AssetRegime
+from core.intelligence.regime_engine import (
+    RegimeAdaptivePortfolioEngine,
+)
 
 
 def _make_mock_bar(date_str: str, close: float = 100.0) -> MagicMock:

@@ -1,19 +1,14 @@
 """Unit tests for the Knowledge Graph Engine and Loader (Sprint 17)."""
 
 import unittest
-from datetime import datetime, timezone
 
+from core.domain.exceptions.validation import DomainValidationError
 from core.knowledge import (
-    TaxonomyCategory,
-    Concept,
-    Relationship,
-    PredicateType,
     FinancialGraph,
-    MarketGraph,
     KnowledgeGraphEngine,
     KnowledgeLoader,
+    PredicateType,
 )
-from core.domain.exceptions.validation import DomainValidationError
 
 
 class TestKnowledgeGraphEngine(unittest.TestCase):
@@ -201,7 +196,7 @@ class TestKnowledgeGraphEngine(unittest.TestCase):
         # Valid path: A -> B -> C -> D, or A -> C -> D (since search is undirected/directed)
         paths = engine.find_paths("NODE_A", "NODE_D", max_depth=3)
         self.assertTrue(len(paths) > 0)
-        
+
         # Verify cycles are ignored and execution terminates correctly (each node visited at most once)
         for path in paths:
             nodes_visited = ["NODE_A"]

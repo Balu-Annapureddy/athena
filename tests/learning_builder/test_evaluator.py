@@ -2,15 +2,17 @@
 
 import unittest
 from datetime import datetime, timezone
+
 from core.domain.common import OutcomeId
 from core.learning_builder import (
-    LearningTarget,
     AdjustmentType,
-    LearningChange,
     LearningCandidate,
-    LearningEvaluator,
+    LearningChange,
     LearningEvaluationContext,
+    LearningEvaluator,
+    LearningTarget,
 )
+
 
 def _make_candidate(outcome_count: int) -> LearningCandidate:
     change = LearningChange(LearningTarget.THRESHOLD_POLICY, "0.02", "0.05", "effect", "rollback")

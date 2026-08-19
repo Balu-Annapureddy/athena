@@ -2,29 +2,31 @@
 
 import unittest
 from datetime import datetime, timezone
-from core.domain.common import ThesisId, DecisionId, OutcomeId, LearningId, SecurityId
-from core.outcome_builder import (
-    OutcomeRecord,
-    OutcomeAssessment,
-    ExecutionQuality,
-    InvestmentOutcome,
-    OutcomeEventType,
-    OutcomeState,
-)
+
+from core.domain.common import DecisionId, LearningId, OutcomeId, SecurityId
 from core.learning_builder import (
-    LearningPolicy,
-    LearningEvaluationContext,
-    LearningState,
-    LearningLedger,
+    AdjustmentType,
     LearningAssembler,
-    LearningCandidateBuilder,
-    ThresholdCalibrationRule,
     LearningAssessment,
     LearningCandidate,
-    LearningTarget,
-    AdjustmentType,
+    LearningCandidateBuilder,
     LearningChange,
+    LearningEvaluationContext,
+    LearningLedger,
+    LearningPolicy,
+    LearningState,
+    LearningTarget,
+    ThresholdCalibrationRule,
 )
+from core.outcome_builder import (
+    ExecutionQuality,
+    InvestmentOutcome,
+    OutcomeAssessment,
+    OutcomeEventType,
+    OutcomeRecord,
+    OutcomeState,
+)
+
 
 def _make_outcome_record() -> OutcomeRecord:
     eq = ExecutionQuality(1.0, 1.0, 15.0, 1.0, 1.0)
@@ -48,7 +50,7 @@ class TestLearningLedgerAndAssembler(unittest.TestCase):
 
     def test_ledger_record_and_rejection(self) -> None:
         ledger = LearningLedger()
-        
+
         change = LearningChange(LearningTarget.THRESHOLD_POLICY, "0.02", "0.05", "effect", "rollback")
         candidate = LearningCandidate(
             candidate_id=LearningId.generate(),

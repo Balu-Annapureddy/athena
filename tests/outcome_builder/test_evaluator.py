@@ -2,14 +2,16 @@
 
 import unittest
 from datetime import datetime, timezone
-from core.domain.common import OutcomeId, DecisionId, SecurityId
+
+from core.domain.common import DecisionId, OutcomeId, SecurityId
 from core.outcome_builder import (
+    OutcomeCandidate,
     OutcomeEvaluationContext,
     OutcomeEvaluator,
-    OutcomeCandidate,
     OutcomeEventType,
     OutcomePolicy,
 )
+
 
 def _make_candidate(
     filled_qty: float,
@@ -45,14 +47,14 @@ class TestOutcomeEvaluator(unittest.TestCase):
             current_time=datetime.now(timezone.utc),
             active_policy=policy
         )
-        
+
         # Expected price 100, filled at 101 -> slippage +1.0 -> within 2.0 tolerance
         candidate = _make_candidate(200.0, 101.0, 200.0, 100.0)
         assessments = evaluator.evaluate([candidate], context)
-        
+
         self.assertEqual(len(assessments), 1)
         score = assessments[candidate.candidate_id]
-        
+
         # Verify execution metrics
         self.assertEqual(score.execution_quality.fill_ratio, 1.0)
         self.assertEqual(score.execution_quality.slippage, 1.0)

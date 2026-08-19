@@ -2,16 +2,18 @@
 
 import unittest
 from datetime import datetime, timezone
-from core.domain.common import ThesisId, HypothesisId
-from core.domain.enums import ThesisDirection, RecommendationAction
-from core.domain.value_objects import Confidence
-from core.thesis_builder import ThesisRecord, ThesisState, TimeHorizon, StrategyStyle
+
 from core.decision_builder import (
     DecisionPolicy,
     PortfolioState,
     QualityBuyDecisionRule,
     RiskSellDecisionRule,
 )
+from core.domain.common import HypothesisId, ThesisId
+from core.domain.enums import RecommendationAction, ThesisDirection
+from core.domain.value_objects import Confidence
+from core.thesis_builder import StrategyStyle, ThesisRecord, ThesisState, TimeHorizon
+
 
 def _make_thesis(direction: ThesisDirection, state: ThesisState = ThesisState.ACTIVE) -> ThesisRecord:
     conf = Confidence(0.8, 0.8, 0.8, 2, datetime.now(timezone.utc), "Rational case")

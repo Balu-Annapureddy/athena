@@ -2,25 +2,27 @@
 
 import unittest
 from datetime import datetime, timezone
+
 from core.domain.common import (
-    MarketId,
-    ExchangeId,
     CompanyId,
-    SecurityId,
-    EventId,
     DomainMetadata,
+    EventId,
+    ExchangeId,
+    MarketId,
+    SecurityId,
 )
 from core.domain.entities import (
-    Market,
-    Exchange,
-    Sector,
-    Industry,
     Company,
-    Security,
     Event,
+    Exchange,
+    Industry,
+    Market,
     MarketImpact,
+    Sector,
+    Security,
 )
 from core.domain.exceptions import DomainValidationError
+
 
 class TestStructuralEntities(unittest.TestCase):
     """Verifies instantiation, association, and validation rules of structural entities."""

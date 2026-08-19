@@ -3,6 +3,7 @@
 import unittest
 from datetime import datetime, timezone
 
+from core.data.contract import ConnectorPayload, PayloadType
 from core.data.normalization import (
     FieldMapping,
     MockProviderNormalizer,
@@ -10,10 +11,8 @@ from core.data.normalization import (
     apply_field_map,
     parse_timestamp,
 )
-from core.data.contract import ConnectorPayload, PayloadType
 from core.data.payloads import PricePayload
 from core.domain.exceptions.validation import DomainValidationError
-
 
 # ---------------------------------------------------------------------------
 # Shared fixture — the canonical "messy" raw payload.

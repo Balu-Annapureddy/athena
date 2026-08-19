@@ -1,14 +1,15 @@
 """Unit tests for MultiAssetPortfolioEngine covering all 15 adversarial edge cases."""
 
-import math
 import unittest
 from unittest.mock import MagicMock
 
-from core.domain.enums import RecommendationAction, ThesisDirection
+from core.domain.enums import RecommendationAction
 from core.portfolio.engine import MultiAssetPortfolioEngine
-from core.portfolio.results import MultiAssetBacktestResult
-from core.portfolio.state import PortfolioPosition, PortfolioStateSnapshot
-from core.portfolio.universe import PointInTimeUniverseProvider, UniverseConstituentRecord, MissingPointInTimeUniverseDataError
+from core.portfolio.universe import (
+    MissingPointInTimeUniverseDataError,
+    PointInTimeUniverseProvider,
+    UniverseConstituentRecord,
+)
 
 
 class TestMultiAssetPortfolioEngine(unittest.TestCase):
@@ -26,7 +27,7 @@ class TestMultiAssetPortfolioEngine(unittest.TestCase):
     def test_two_simultaneous_signals_sufficient_cash(self) -> None:
         """1. Two simultaneous signals with sufficient cash are both entered."""
         engine = MultiAssetPortfolioEngine(fixture_dir="fixtures/yfinance")
-        
+
         bar0_rel = self._create_mock_bar("2026-07-01", 100.0, 105.0, 98.0, 102.0)
         bar0_tcs = self._create_mock_bar("2026-07-01", 200.0, 205.0, 198.0, 202.0)
         bar1_rel = self._create_mock_bar("2026-07-02", 102.0, 106.0, 101.0, 105.0)
@@ -41,7 +42,7 @@ class TestMultiAssetPortfolioEngine(unittest.TestCase):
         mock_strategy.confidence_score = 0.9
         mock_strategy.atr_multiplier = 2.0
         mock_strategy.default_action = RecommendationAction.BUY
-        
+
         res = engine.run_portfolio_backtest(
             strategy=mock_strategy,
             tickers=["RELIANCE.NS", "TCS.NS"],
@@ -58,7 +59,7 @@ class TestMultiAssetPortfolioEngine(unittest.TestCase):
     def test_five_simultaneous_signals_insufficient_cash_all_or_nothing(self) -> None:
         """2. Five simultaneous signals with insufficient cash cleanly reject signals (all-or-nothing)."""
         engine = MultiAssetPortfolioEngine(fixture_dir="fixtures/yfinance")
-        
+
         # Initial capital ₹10,000, 5 signals each needing > ₹3,000
         bars = {f"TK{i}.NS": [self._create_mock_bar("2026-07-01", 100.0, 105.0, 98.0, 100.0)] for i in range(5)}
         engine._load_ticker_payloads = MagicMock(side_effect=lambda tk, s, e: bars.get(tk, []))
@@ -66,7 +67,7 @@ class TestMultiAssetPortfolioEngine(unittest.TestCase):
         mock_strategy = MagicMock()
         mock_strategy.confidence_score = 0.8
         mock_strategy.default_action = RecommendationAction.BUY
-        
+
         res = engine.run_portfolio_backtest(
             strategy=mock_strategy,
             tickers=[f"TK{i}.NS" for i in range(5)],
@@ -82,7 +83,7 @@ class TestMultiAssetPortfolioEngine(unittest.TestCase):
     def test_same_bar_exit_releases_cash_for_entry(self) -> None:
         """3. Position exit on bar T releases cash immediately for a new entry on bar T."""
         engine = MultiAssetPortfolioEngine(fixture_dir="fixtures/yfinance")
-        
+
         # Day 1: RELIANCE enters
         # Day 2: RELIANCE hits target price, exits; freed cash allows TCS entry
         rel_bar0 = self._create_mock_bar("2026-07-01", 100.0, 103.0, 99.0, 100.0)
@@ -98,7 +99,7 @@ class TestMultiAssetPortfolioEngine(unittest.TestCase):
         mock_strategy = MagicMock()
         mock_strategy.confidence_score = 0.8
         mock_strategy.default_action = RecommendationAction.BUY
-        
+
         res = engine.run_portfolio_backtest(
             strategy=mock_strategy,
             tickers=["RELIANCE.NS", "TCS.NS"],
@@ -113,10 +114,10 @@ class TestMultiAssetPortfolioEngine(unittest.TestCase):
     def test_divergent_stop_and_target_fills_on_same_bar(self) -> None:
         """4. Divergent stop and target price fills on same bar update accounting correctly."""
         engine = MultiAssetPortfolioEngine(fixture_dir="fixtures/yfinance")
-        
+
         rel_bar0 = self._create_mock_bar("2026-07-01", 100.0, 105.0, 98.0, 100.0)
         tcs_bar0 = self._create_mock_bar("2026-07-01", 100.0, 105.0, 98.0, 100.0)
-        
+
         # Day 2: RELIANCE drops to 80 (STOP_LOSS), TCS rises to 150 (TARGET_PRICE)
         rel_bar1 = self._create_mock_bar("2026-07-02", 90.0, 92.0, 75.0, 78.0)
         tcs_bar1 = self._create_mock_bar("2026-07-02", 110.0, 155.0, 108.0, 150.0)
@@ -128,7 +129,7 @@ class TestMultiAssetPortfolioEngine(unittest.TestCase):
 
         mock_strategy = MagicMock()
         mock_strategy.default_action = RecommendationAction.BUY
-        
+
         res = engine.run_portfolio_backtest(
             strategy=mock_strategy,
             tickers=["RELIANCE.NS", "TCS.NS"],
@@ -144,7 +145,7 @@ class TestMultiAssetPortfolioEngine(unittest.TestCase):
     def test_portfolio_max_drawdown_different_from_average_drawdown(self) -> None:
         """5. Prove portfolio MaxDD is computed on total portfolio equity curve, not averaged."""
         engine = MultiAssetPortfolioEngine(fixture_dir="fixtures/yfinance")
-        
+
         # Stock A drops on Day 2, Stock B drops on Day 3
         # Combined portfolio equity curve has different peak-to-trough ratio than individual stock drawdowns
         a_bars = [self._create_mock_bar("2026-07-01", 100.0, 105.0, 98.0, 100.0),
@@ -169,7 +170,7 @@ class TestMultiAssetPortfolioEngine(unittest.TestCase):
     def test_transaction_costs_reduce_portfolio_equity(self) -> None:
         """6. Verify transaction fees reduce portfolio cash and equity accurately."""
         engine = MultiAssetPortfolioEngine(fixture_dir="fixtures/yfinance")
-        
+
         bar0 = self._create_mock_bar("2026-07-01", 100.0, 105.0, 98.0, 100.0)
         bar1 = self._create_mock_bar("2026-07-02", 100.0, 105.0, 98.0, 100.0)  # Exit flat price
 
@@ -189,7 +190,7 @@ class TestMultiAssetPortfolioEngine(unittest.TestCase):
     def test_missing_bar_forward_fills_price(self) -> None:
         """7. Missing bar for a ticker forward-fills price for MTM without throwing or phantom executing."""
         engine = MultiAssetPortfolioEngine(fixture_dir="fixtures/yfinance")
-        
+
         bar0_a = self._create_mock_bar("2026-07-01", 100.0, 105.0, 98.0, 100.0)
         bar1_a = self._create_mock_bar("2026-07-02", 100.0, 105.0, 98.0, 102.0)
         bar0_b = self._create_mock_bar("2026-07-01", 200.0, 205.0, 198.0, 200.0)
@@ -214,7 +215,7 @@ class TestMultiAssetPortfolioEngine(unittest.TestCase):
         pit_provider.load_records([rec])
 
         engine = MultiAssetPortfolioEngine(fixture_dir="fixtures/yfinance", pit_provider=pit_provider)
-        
+
         bar0 = self._create_mock_bar("2026-07-01", 100.0, 105.0, 98.0, 100.0)
         bar1 = self._create_mock_bar("2026-07-02", 100.0, 105.0, 98.0, 100.0)
         engine._load_ticker_payloads = MagicMock(return_value=[bar0, bar1])
@@ -237,7 +238,7 @@ class TestMultiAssetPortfolioEngine(unittest.TestCase):
         pit_provider.load_records([rec])
 
         engine = MultiAssetPortfolioEngine(fixture_dir="fixtures/yfinance", pit_provider=pit_provider)
-        
+
         bar0 = self._create_mock_bar("2026-07-01", 100.0, 105.0, 98.0, 100.0)
         engine._load_ticker_payloads = MagicMock(return_value=[bar0])
 
@@ -254,7 +255,7 @@ class TestMultiAssetPortfolioEngine(unittest.TestCase):
     def test_simultaneous_long_and_short_margin_accounting(self) -> None:
         """10. Simultaneous long and synthetic-short positions reserve 100% cash margin for short."""
         engine = MultiAssetPortfolioEngine(fixture_dir="fixtures/yfinance")
-        
+
         long_bar = self._create_mock_bar("2026-07-01", 100.0, 105.0, 98.0, 100.0)
         short_bar = self._create_mock_bar("2026-07-01", 200.0, 205.0, 198.0, 200.0)
 
@@ -273,7 +274,7 @@ class TestMultiAssetPortfolioEngine(unittest.TestCase):
     def test_zero_available_cash_rejection(self) -> None:
         """11. Zero available cash cleanly rejects signals without throwing error."""
         engine = MultiAssetPortfolioEngine(fixture_dir="fixtures/yfinance")
-        
+
         bar0 = self._create_mock_bar("2026-07-01", 100.0, 105.0, 98.0, 100.0)
         engine._load_ticker_payloads = MagicMock(return_value=[bar0])
 
@@ -290,7 +291,7 @@ class TestMultiAssetPortfolioEngine(unittest.TestCase):
     def test_integer_share_rounding(self) -> None:
         """12. Position sizing rounds share quantities down to whole integers."""
         engine = MultiAssetPortfolioEngine(fixture_dir="fixtures/yfinance")
-        
+
         bar0 = self._create_mock_bar("2026-07-01", 333.33, 340.0, 330.0, 333.33)
         engine._load_ticker_payloads = MagicMock(return_value=[bar0])
 
@@ -308,7 +309,7 @@ class TestMultiAssetPortfolioEngine(unittest.TestCase):
     def test_gap_down_stop_fill_inside_multi_asset_portfolio(self) -> None:
         """13. Gap-down through stop loss fills at bar Open inside multi-asset portfolio loop."""
         engine = MultiAssetPortfolioEngine(fixture_dir="fixtures/yfinance")
-        
+
         bar0 = self._create_mock_bar("2026-07-01", 100.0, 105.0, 98.0, 100.0)
         bar1 = self._create_mock_bar("2026-07-02", 80.0, 82.0, 75.0, 78.0)  # Open 80 < SL 96
 
@@ -329,7 +330,7 @@ class TestMultiAssetPortfolioEngine(unittest.TestCase):
     def test_deterministic_tie_breaking(self) -> None:
         """14. Deterministic tie breaking: Cross-Sectional Rank -> Confidence -> Alphabetical Ticker."""
         engine = MultiAssetPortfolioEngine(fixture_dir="fixtures/yfinance")
-        
+
         bar0_a = self._create_mock_bar("2026-07-01", 100.0, 105.0, 98.0, 100.0)
         bar0_b = self._create_mock_bar("2026-07-01", 100.0, 105.0, 98.0, 100.0)
 
@@ -349,7 +350,7 @@ class TestMultiAssetPortfolioEngine(unittest.TestCase):
     def test_concentration_cap_10_percent_equity(self) -> None:
         """15. Position notional exceeding 10% total portfolio equity gets cleanly rejected."""
         engine = MultiAssetPortfolioEngine(fixture_dir="fixtures/yfinance")
-        
+
         # Expensive stock ₹50,000 per share with ₹100,000 total equity -> 1 share is 50% equity (> 10% cap)
         bar0 = self._create_mock_bar("2026-07-01", 50_000.0, 51_000.0, 49_000.0, 50_000.0)
         engine._load_ticker_payloads = MagicMock(return_value=[bar0])
@@ -370,7 +371,7 @@ class TestMultiAssetPortfolioEngine(unittest.TestCase):
     def test_portfolio_accounting_invariant_equation(self) -> None:
         """16. Verify accounting invariant: Equity = Cash + Long Asset Value + Short Margin Value + Short Unrealized PnL at every snapshot."""
         engine = MultiAssetPortfolioEngine(fixture_dir="fixtures/yfinance")
-        
+
         rel_bar0 = self._create_mock_bar("2026-07-01", 100.0, 105.0, 98.0, 102.0)
         rel_bar1 = self._create_mock_bar("2026-07-02", 102.0, 108.0, 101.0, 106.0)
 
@@ -388,7 +389,7 @@ class TestMultiAssetPortfolioEngine(unittest.TestCase):
             long_val = sum(p.shares * p.current_price for p in snap.open_positions if p.direction == "LONG")
             short_margin = sum(p.margin_reserved for p in snap.open_positions if p.direction == "SHORT")
             short_unrealized = sum(p.unrealized_pnl for p in snap.open_positions if p.direction == "SHORT")
-            
+
             expected_eq = snap.cash_available + long_val + short_margin + short_unrealized
             self.assertAlmostEqual(snap.total_equity, expected_eq, places=6)
 
@@ -552,14 +553,14 @@ class TestMultiAssetPortfolioEngine(unittest.TestCase):
             long_val = sum(p.shares * p.current_price for p in snap.open_positions if p.direction == "LONG")
             short_margin = sum(p.margin_reserved for p in snap.open_positions if p.direction == "SHORT")
             short_unrealized = sum(p.unrealized_pnl for p in snap.open_positions if p.direction == "SHORT")
-            
+
             expected_eq = snap.cash_available + long_val + short_margin + short_unrealized
             self.assertAlmostEqual(snap.total_equity, expected_eq, places=6)
 
     def test_backtest_engine_regression_untouched(self) -> None:
         """Batch 5 - 20: Regression test proving BacktestEngine single-ticker behavior remains 100% untouched."""
+
         from core.backtest.engine import BacktestEngine
-        from unittest.mock import patch
         engine = BacktestEngine()
         bar0 = self._create_mock_bar("2026-07-01", 100.0, 105.0, 98.0, 102.0)
         engine._connector.fetch_data = MagicMock(return_value=[bar0])

@@ -3,15 +3,16 @@
 import unittest
 from unittest.mock import MagicMock, patch
 
+from core.backtest.validation import PortfolioResearchConfig
 from core.domain.enums import RecommendationAction
 from core.experiment.generalization import (
-    UniversePartition,
     CrossSectionalGeneralizationExperiment,
-    GeneralizationExperimentReport,
+    UniversePartition,
 )
-from core.portfolio.universe import PointInTimeUniverseProvider, UniverseConstituentRecord, MissingPointInTimeUniverseDataError
 from core.portfolio.engine import MultiAssetPortfolioEngine
-from core.backtest.validation import PortfolioResearchConfig
+from core.portfolio.universe import (
+    MissingPointInTimeUniverseDataError,
+)
 
 
 class TestCrossSectionalGeneralizationExperiment(unittest.TestCase):

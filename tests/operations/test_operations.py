@@ -4,18 +4,15 @@ import json
 import logging
 import os
 import unittest
-from datetime import datetime, timezone
 from io import StringIO
 
 from core.operations import (
-    IMetricsCollector,
-    InMemoryMetricsCollector,
-    Timer,
-    JSONFormatter,
-    TracingContext,
-    SecretsRepository,
     ConfigurationError,
+    InMemoryMetricsCollector,
+    JSONFormatter,
     OperationsContext,
+    SecretsRepository,
+    TracingContext,
 )
 
 
@@ -34,7 +31,7 @@ class TestOperations(unittest.TestCase):
         log_buffer = StringIO()
         handler = logging.StreamHandler(log_buffer)
         handler.setFormatter(JSONFormatter())
-        
+
         logger = logging.getLogger("test_json")
         logger.addHandler(handler)
         logger.setLevel(logging.INFO)
@@ -86,7 +83,7 @@ class TestOperations(unittest.TestCase):
     def test_secrets_resolution_and_validation(self) -> None:
         # Set environment variable mock secret
         os.environ["ATHENA_TEST_SECRET_KEY"] = "mock-secret-val"
-        
+
         repo = SecretsRepository()
         val = repo.get_secret("ATHENA_TEST_SECRET_KEY")
         self.assertEqual(val, "mock-secret-val")

@@ -1,8 +1,8 @@
 """Unit tests for NSEOptionChainNormalizer and NSEOptionChainConnector."""
 
 import unittest
-from datetime import datetime, timezone
 
+from core.data.connectors.nse_option_chain_connector import NSEOptionChainConnector
 from core.data.contract import PayloadType
 from core.data.normalization.base import NormalizationError
 from core.data.normalization.nse_option_chain_provider import (
@@ -10,8 +10,7 @@ from core.data.normalization.nse_option_chain_provider import (
     parse_expiry_date,
 )
 from core.data.payloads.options import OptionContractPayload
-from core.infrastructure.rate_limiter import RateLimiter, RateLimitPolicy
-from core.data.connectors.nse_option_chain_connector import NSEOptionChainConnector
+from core.infrastructure.rate_limiter import RateLimiter
 
 
 class TestNSEOptionChainNormalizer(unittest.TestCase):

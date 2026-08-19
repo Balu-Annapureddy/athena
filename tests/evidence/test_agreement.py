@@ -1,8 +1,9 @@
 """Unit tests for the Evidence Engine agreement, conflict, coverage, and diversity calculations."""
 
 import unittest
-from datetime import datetime, timezone, timedelta
-from core.domain.common import EvidenceId, HypothesisId, FactId
+from datetime import datetime, timedelta, timezone
+
+from core.domain.common import EvidenceId, FactId, HypothesisId
 from core.evidence.accumulator import EvidenceAccumulator, EvidenceRecord, EvidenceState
 from core.evidence.agreement import (
     calculate_agreement,
@@ -12,13 +13,14 @@ from core.evidence.agreement import (
 )
 from core.evidence.metrics import calculate_engine_metrics
 
+
 class TestAgreementMetrics(unittest.TestCase):
     """Verifies indices calculations representing cognitive tension and sources."""
 
     def test_agreement_and_conflict(self) -> None:
         now = datetime.now(timezone.utc)
         expiry = now + timedelta(days=1)
-        
+
         # Supporting record: Weight 0.8, trust 1.0, relevance 1.0
         ev1 = EvidenceRecord(
             id=EvidenceId.generate(),
@@ -34,7 +36,7 @@ class TestAgreementMetrics(unittest.TestCase):
             expires_at=expiry,
             source_category="REGULATORY"
         )
-        
+
         # Contradicting record: Weight 0.2, trust 1.0, relevance 1.0
         ev2 = EvidenceRecord(
             id=EvidenceId.generate(),
@@ -52,17 +54,17 @@ class TestAgreementMetrics(unittest.TestCase):
         )
 
         evidences = [ev1, ev2]
-        
+
         # Agreement = 0.8 / (0.8 + 0.2) = 0.8
         self.assertAlmostEqual(calculate_agreement(evidences), 0.8)
-        
+
         # Conflict = 2.0 * min(0.8, 0.2) = 0.4
         self.assertAlmostEqual(calculate_conflict(evidences), 0.4)
 
     def test_maximal_conflict(self) -> None:
         now = datetime.now(timezone.utc)
         expiry = now + timedelta(days=1)
-        
+
         # Equal weights support and contradict
         ev1 = EvidenceRecord(EvidenceId.generate(), [], [], 1.0, 0.5, 1.0, True, 1.0, EvidenceState.ACTIVE, now, expiry, "REGULATORY")
         ev2 = EvidenceRecord(EvidenceId.generate(), [], [], 1.0, 0.5, 1.0, False, 1.0, EvidenceState.ACTIVE, now, expiry, "REGULATORY")
@@ -72,10 +74,10 @@ class TestAgreementMetrics(unittest.TestCase):
     def test_coverage(self) -> None:
         now = datetime.now(timezone.utc)
         expiry = now + timedelta(days=1)
-        
+
         fact_a = FactId.generate()
         fact_b = FactId.generate()
-        
+
         ev = EvidenceRecord(
             id=EvidenceId.generate(),
             hypothesis_ids=[],
@@ -98,7 +100,7 @@ class TestAgreementMetrics(unittest.TestCase):
     def test_diversity(self) -> None:
         now = datetime.now(timezone.utc)
         expiry = now + timedelta(days=1)
-        
+
         ev1 = EvidenceRecord(EvidenceId.generate(), [], [], 1.0, 0.5, 1.0, True, 1.0, EvidenceState.ACTIVE, now, expiry, "REGULATORY")
         ev2 = EvidenceRecord(EvidenceId.generate(), [], [], 1.0, 0.5, 1.0, True, 1.0, EvidenceState.ACTIVE, now, expiry, "NEWS")
 

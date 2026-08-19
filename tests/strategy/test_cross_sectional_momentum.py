@@ -1,6 +1,7 @@
 """Unit tests for CrossSectionalMomentumStrategy and CrossSectionalRankProvider."""
 
 import unittest
+
 from core.strategy.cross_sectional_momentum import (
     CrossSectionalMomentumStrategy,
     CrossSectionalRankProvider,
@@ -12,10 +13,10 @@ class TestCrossSectionalMomentumStrategy(unittest.TestCase):
     def test_rank_provider_initialization_and_caching(self) -> None:
         provider = CrossSectionalRankProvider.get_instance("fixtures/yfinance_historical")
         self.assertIsNotNone(provider)
-        
+
         # Precompute 63-day lookback
         provider.compute_ranks_for_lookback(63)
-        
+
         # Test lookup for RELIANCE.NS on 2020-12-31
         rank, ret = provider.get_rank_and_return("RELIANCE.NS", "2020-12-31", 63)
         self.assertIsNotNone(rank)

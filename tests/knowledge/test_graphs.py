@@ -1,18 +1,17 @@
 """Unit tests for Athena domain Knowledge Graphs."""
 
 import unittest
-from core.knowledge.taxonomy import TaxonomyCategory
+
 from core.knowledge.graphs import (
-    Concept,
-    Relationship,
-    Constraint,
-    PredicateType,
-    FinancialGraph,
-    MarketGraph,
     EconomicGraph,
     EventGraph,
+    FinancialGraph,
+    MarketGraph,
+    PredicateType,
     StrategyGraph,
 )
+from core.knowledge.taxonomy import TaxonomyCategory
+
 
 class TestKnowledgeGraphs(unittest.TestCase):
     """Verifies that all 5 subgraphs construct and register concepts, edges, and constraints."""
@@ -20,7 +19,7 @@ class TestKnowledgeGraphs(unittest.TestCase):
     def test_financial_graph(self) -> None:
         graph = FinancialGraph()
         self.assertEqual(graph.name, "Financial Graph")
-        
+
         # Verify concepts exist
         revenue_node = graph.get_concept("REVENUE")
         self.assertEqual(revenue_node.name, "Revenue")
@@ -29,7 +28,7 @@ class TestKnowledgeGraphs(unittest.TestCase):
         # Verify relationships exist
         relationships = graph.list_relationships()
         self.assertTrue(len(relationships) > 0)
-        
+
         # Find if REVENUE -> EBITDA relationship exists
         found = False
         for rel in relationships:

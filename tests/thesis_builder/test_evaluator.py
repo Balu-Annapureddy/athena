@@ -2,15 +2,17 @@
 
 import unittest
 from datetime import datetime, timezone
-from core.domain.common import ThesisId, HypothesisId, InferenceId, SecurityId
+
+from core.domain.common import HypothesisId, InferenceId, SecurityId, ThesisId
 from core.domain.enums import ThesisDirection
 from core.thesis_builder import (
+    StrategyStyle,
+    ThesisCandidate,
     ThesisEvaluationContext,
     ThesisEvaluator,
-    ThesisCandidate,
     TimeHorizon,
-    StrategyStyle,
 )
+
 
 def _make_candidate(opposing_ids: list = None) -> ThesisCandidate:
     tid = ThesisId.generate()
@@ -56,7 +58,7 @@ class TestThesisEvaluator(unittest.TestCase):
     def test_opposing_hypotheses_reduces_agreement(self) -> None:
         evaluator = ThesisEvaluator()
         context = ThesisEvaluationContext.default()
-        
+
         # 1 opposing hypothesis id
         candidate = _make_candidate(opposing_ids=[HypothesisId.generate()])
 

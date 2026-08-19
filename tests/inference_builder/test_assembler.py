@@ -2,16 +2,17 @@
 
 import unittest
 from datetime import datetime, timezone
+
 from core.domain.common import EvidenceId, FactId
 from core.evidence import EvidenceRecord, EvidenceState
 from core.inference_builder import (
-    InferencePolicy,
-    InferenceCandidateBuilder,
     FundamentalStrengthInferenceRule,
     InferenceAssembler,
-    InferenceCandidate,
+    InferenceCandidateBuilder,
+    InferencePolicy,
 )
 from core.inference_builder.rules import InferenceCandidateRule
+
 
 class CrashingInferenceRule(InferenceCandidateRule):
     """Mock rule designed to raise an exception to verify error isolation."""
@@ -58,7 +59,7 @@ class TestInferenceAssembler(unittest.TestCase):
         ]
 
         candidates = builder.build_candidates(records, policy)
-        
+
         # FundamentalStrengthInferenceRule should succeed, producing 1 candidate
         self.assertEqual(len(candidates), 1)
         # CrashingInferenceRule should be isolated and logged

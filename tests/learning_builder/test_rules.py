@@ -2,22 +2,23 @@
 
 import unittest
 from datetime import datetime, timezone
-from core.domain.common import OutcomeId, DecisionId, SecurityId
-from core.outcome_builder import (
-    OutcomeRecord,
-    OutcomeAssessment,
-    ExecutionQuality,
-    InvestmentOutcome,
-    OutcomeEventType,
-    OutcomeState,
-)
+
+from core.domain.common import DecisionId, OutcomeId, SecurityId
 from core.learning_builder import (
+    LearningEvaluationContext,
     LearningPolicy,
     LearningTarget,
-    LearningEvaluationContext,
     ThresholdCalibrationRule,
-    PolicyCalibrationRule,
 )
+from core.outcome_builder import (
+    ExecutionQuality,
+    InvestmentOutcome,
+    OutcomeAssessment,
+    OutcomeEventType,
+    OutcomeRecord,
+    OutcomeState,
+)
+
 
 def _make_outcome_record() -> OutcomeRecord:
     eq = ExecutionQuality(1.0, 1.0, 15.0, 1.0, 1.0)
@@ -41,7 +42,7 @@ class TestLearningRules(unittest.TestCase):
 
     def test_calibration_rules_require_sample_size(self) -> None:
         policy = LearningPolicy(min_sample_size=3)
-        
+
         # 1. Zero outcome history -> rules shouldn't be able to assemble
         empty_ctx = LearningEvaluationContext(
             current_time=datetime.now(timezone.utc),
@@ -59,7 +60,7 @@ class TestLearningRules(unittest.TestCase):
             active_policy=policy,
             historical_outcomes=outcomes
         )
-        
+
         self.assertTrue(rule.can_assemble(valid_ctx))
         candidates = rule.assemble(valid_ctx)
         self.assertEqual(len(candidates), 1)

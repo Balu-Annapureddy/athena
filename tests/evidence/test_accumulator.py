@@ -1,9 +1,11 @@
 """Unit tests for the Evidence Accumulator and append-only ledger."""
 
 import unittest
-from datetime import datetime, timezone, timedelta
-from core.domain.common import EvidenceId, HypothesisId, FactId
+from datetime import datetime, timedelta, timezone
+
+from core.domain.common import EvidenceId, FactId, HypothesisId
 from core.evidence import EvidenceAccumulator, EvidenceState, LinearDecay
+
 
 class TestEvidenceAccumulator(unittest.TestCase):
     """Verifies evidence creation, merging, decay updates, and ledger audit logging."""
@@ -96,7 +98,7 @@ class TestEvidenceAccumulator(unittest.TestCase):
         accumulator = EvidenceAccumulator()
         ev_id = EvidenceId.generate()
         now = datetime.now(timezone.utc)
-        
+
         accumulator.accumulate(
             evidence_id=ev_id,
             hypothesis_ids=[HypothesisId.generate()],
@@ -114,9 +116,9 @@ class TestEvidenceAccumulator(unittest.TestCase):
         # 50 seconds later, freshness decays by 0.5 under LinearDecay(100)
         decay_strategies = {"SOCIAL": LinearDecay(span_seconds=100.0)}
         evaluation_time = now + timedelta(seconds=50)
-        
+
         accumulator.update_freshness(evaluation_time, decay_strategies)
-        
+
         updated_rec = accumulator.get_active(ev_id)
         self.assertAlmostEqual(updated_rec.freshness, 0.5)
         self.assertEqual(updated_rec.state, EvidenceState.ACTIVE)
@@ -124,7 +126,7 @@ class TestEvidenceAccumulator(unittest.TestCase):
         # 110 seconds later, expires
         expiry_eval_time = now + timedelta(seconds=110)
         accumulator.update_freshness(expiry_eval_time, decay_strategies)
-        
+
         expired_rec = accumulator.get_active(ev_id)
         self.assertEqual(expired_rec.freshness, 0.0)
         self.assertEqual(expired_rec.state, EvidenceState.EXPIRED)
@@ -132,7 +134,7 @@ class TestEvidenceAccumulator(unittest.TestCase):
     def test_invalidation(self) -> None:
         accumulator = EvidenceAccumulator()
         ev_id = EvidenceId.generate()
-        
+
         accumulator.accumulate(
             evidence_id=ev_id,
             hypothesis_ids=[],
@@ -148,7 +150,7 @@ class TestEvidenceAccumulator(unittest.TestCase):
         )
 
         accumulator.invalidate(ev_id)
-        
+
         invalid_rec = accumulator.get_active(ev_id)
         self.assertEqual(invalid_rec.state, EvidenceState.ARCHIVED)
         self.assertEqual(invalid_rec.weight, 0.0)

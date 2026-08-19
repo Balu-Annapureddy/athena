@@ -2,7 +2,7 @@
 
 import unittest
 
-from core.backtest.engine import TransactionCostModel, ZERO_COST_MODEL
+from core.backtest.engine import ZERO_COST_MODEL, TransactionCostModel
 
 
 class TestTransactionCostModelDefaults(unittest.TestCase):

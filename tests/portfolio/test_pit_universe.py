@@ -1,12 +1,15 @@
 """Unit tests for PointInTimeUniverseProvider and CrossSectionalRankProvider PIT integration."""
 
 import unittest
+
 from core.portfolio.universe import (
+    MissingPointInTimeUniverseDataError,
     PointInTimeUniverseProvider,
     UniverseConstituentRecord,
-    MissingPointInTimeUniverseDataError,
 )
-from core.strategy.cross_sectional_momentum import CrossSectionalRankProvider, CrossSectionalMomentumStrategy
+from core.strategy.cross_sectional_momentum import (
+    CrossSectionalRankProvider,
+)
 
 
 class TestPointInTimeUniverseProvider(unittest.TestCase):
@@ -80,7 +83,7 @@ class TestPointInTimeUniverseProvider(unittest.TestCase):
     def test_cross_sectional_rank_provider_pit_filtering(self) -> None:
         """5-8. Prove CrossSectionalRankProvider respects PIT constituent provider deterministically."""
         rank_provider = CrossSectionalRankProvider(fixture_dir="fixtures/yfinance_historical")
-        
+
         # Populate dates & prices for mock ranking
         rank_provider._ticker_dates = {
             "RELIANCE.NS": ["2021-01-01", "2021-03-01"],
@@ -93,10 +96,10 @@ class TestPointInTimeUniverseProvider(unittest.TestCase):
 
         # Case 1: Both active in PIT provider
         rank_provider.compute_ranks_for_lookback(lookback=1, pit_provider=self.provider, index_symbol="NIFTY_50")
-        
+
         r_tcs, ret_tcs = rank_provider.get_rank_and_return("TCS.NS", "2021-03-01", 1, pit_provider=self.provider, index_symbol="NIFTY_50")
         r_rel, ret_rel = rank_provider.get_rank_and_return("RELIANCE.NS", "2021-03-01", 1, pit_provider=self.provider, index_symbol="NIFTY_50")
-        
+
         self.assertEqual(r_tcs, 1)  # TCS return +50% -> Rank 1
         self.assertEqual(r_rel, 2)  # RELIANCE return +20% -> Rank 2
 
@@ -106,10 +109,10 @@ class TestPointInTimeUniverseProvider(unittest.TestCase):
         rank_provider._date_ticker_close["2023-03-01"] = {"RELIANCE.NS": 140.0, "TCS.NS": 200.0}
 
         rank_provider.compute_ranks_for_lookback(lookback=1, pit_provider=self.provider, index_symbol="NIFTY_50")
-        
+
         r_tcs_dropped, ret_tcs_dropped = rank_provider.get_rank_and_return("TCS.NS", "2023-03-01", 1, pit_provider=self.provider, index_symbol="NIFTY_50")
         r_rel_active, ret_rel_active = rank_provider.get_rank_and_return("RELIANCE.NS", "2023-03-01", 1, pit_provider=self.provider, index_symbol="NIFTY_50")
-        
+
         self.assertIsNone(r_tcs_dropped)  # TCS dropped in 2022 -> Excluded from rank on 2023-03-01
         self.assertEqual(r_rel_active, 1)  # RELIANCE is the sole active constituent -> Rank 1
 
