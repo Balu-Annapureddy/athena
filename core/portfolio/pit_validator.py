@@ -329,22 +329,143 @@ class PITDatasetValidator:
 
     def check_source_citations(self, records: List[UniverseConstituentRecord]) -> List[ValidationError]:
         """Check 14: Machine-checkable source requirement.
-        Rejects any record whose source_url does not start with 'http' or source_evidence is missing/empty/short.
+
+        Enforces 4 strict criteria:
+        1. Valid URL format: Must start with http:// or https://
+        2. Evidence length: Must be at least 15 characters.
+        3. URL reuse limits: A single source_url cannot be reused across more than 3 distinct reconstitution dates across the dataset.
+        4. Ticker / Company relevance: source_evidence must explicitly mention the ticker symbol or company name tokens.
         """
         citation_errors: List[ValidationError] = []
+
+        # Track distinct reconstitution event dates per source_url to enforce reuse limits
+        url_dates: Dict[str, Set[str]] = {}
         for r in records:
+            if r.source_url:
+                if r.source_url not in url_dates:
+                    url_dates[r.source_url] = set()
+                # For baseline 2010 records that were dropped, the rebalance event cited is dropped_date;
+                # for all newly added constituents, the rebalance event cited is joined_date.
+                if r.joined_date == "2010-01-01" and r.dropped_date is not None:
+                    event_date = r.dropped_date
+                else:
+                    event_date = r.joined_date
+                url_dates[r.source_url].add(event_date)
+
+        aliases = {
+            "M&M": ["M&M", "MAHINDRA", "MAHINDRA & MAHINDRA"],
+            "LT": ["LT", "L&T", "LARSEN", "LARSEN & TOUBRO"],
+            "TCS": ["TCS", "TATA CONSULTANCY"],
+            "INFY": ["INFY", "INFOSYS"],
+            "HDFCBANK": ["HDFCBANK", "HDFC BANK", "HDFC"],
+            "HDFCLIFE": ["HDFCLIFE", "HDFC LIFE"],
+            "ICICIBANK": ["ICICIBANK", "ICICI BANK", "ICICI"],
+            "SBIN": ["SBIN", "STATE BANK", "SBI"],
+            "SBILIFE": ["SBILIFE", "SBI LIFE"],
+            "BAJFINANCE": ["BAJFINANCE", "BAJAJ FINANCE"],
+            "BAJAJFINSV": ["BAJAJFINSV", "BAJAJ FINSERV"],
+            "BAJAJ-AUTO": ["BAJAJ-AUTO", "BAJAJ AUTO"],
+            "TATAMOTORS": ["TATAMOTORS", "TATA MOTORS"],
+            "TATASTEEL": ["TATASTEEL", "TATA STEEL"],
+            "TATACONSUM": ["TATACONSUM", "TATA CONSUMER"],
+            "HINDUNILVR": ["HINDUNILVR", "HINDUSTAN UNILEVER", "HUL"],
+            "HEROMOTOCO": ["HEROMOTOCO", "HERO MOTOCORP", "HERO HONDA"],
+            "BHARTIARTL": ["BHARTIARTL", "BHARTI AIRTEL", "AIRTEL"],
+            "SUNPHARMA": ["SUNPHARMA", "SUN PHARMA", "SUN PHARMACEUTICAL"],
+            "DIVISLAB": ["DIVISLAB", "DIVI'S", "DIVIS LABORATORIES", "DIVI"],
+            "DRREDDY": ["DRREDDY", "DR. REDDY", "DR REDDY", "REDDY"],
+            "EICHERMOT": ["EICHERMOT", "EICHER MOTORS", "EICHER"],
+            "KOTAKBANK": ["KOTAKBANK", "KOTAK MAHINDRA", "KOTAK BANK"],
+            "POWERGRID": ["POWERGRID", "POWER GRID"],
+            "SHRIRAMFIN": ["SHRIRAMFIN", "SHRIRAM FINANCE", "SHRIRAM TRANSPORT"],
+            "ULTRACEMCO": ["ULTRACEMCO", "ULTRATECH CEMENT", "ULTRATECH"],
+            "LTIM": ["LTIM", "LTIMINDTREE", "L&T INFOTECH", "LTI"],
+            "IBULHSGFIN": ["IBULHSGFIN", "INDIABULLS HOUSING", "INDIABULLS"],
+            "INFRATEL": ["INFRATEL", "BHARTI INFRATEL", "INDUS TOWERS"],
+            "VEDL": ["VEDL", "VEDANTA", "SESA STERLITE", "STERLITE", "SESA GOA"],
+            "ZEEL": ["ZEEL", "ZEE ENTERTAINMENT", "ZEE"],
+            "HINDPETRO": ["HINDPETRO", "HPCL", "HINDUSTAN PETROLEUM"],
+            "BPCL": ["BPCL", "BHARAT PETROLEUM"],
+            "IOC": ["IOC", "INDIAN OIL"],
+            "ONGC": ["ONGC", "OIL AND NATURAL GAS"],
+            "COALINDIA": ["COALINDIA", "COAL INDIA"],
+            "RELCAPITAL": ["RELCAPITAL", "RELIANCE CAPITAL", "REL CAPITAL"],
+            "RPOWER": ["RPOWER", "RELIANCE POWER", "REL POWER"],
+            "ASIANPAINT": ["ASIANPAINT", "ASIAN PAINTS", "ASIAN PAINT"],
+            "TECHM": ["TECHM", "TECH MAHINDRA"],
+            "JPASSOCIAT": ["JPASSOCIAT", "JAIPRAKASH ASSOCIATES", "JP ASSOCIATES", "JAIPRAKASH"],
+            "YESBANK": ["YESBANK", "YES BANK"],
+            "BOSCHLTD": ["BOSCHLTD", "BOSCH"],
+            "ADANIPORTS": ["ADANIPORTS", "ADANI PORTS", "APSEZ"],
+            "AMBUJACEM": ["AMBUJACEM", "AMBUJA CEMENTS", "AMBUJA"],
+            "TATAMTRDVR": ["TATAMTRDVR", "TATA MOTORS", "TATA MOTORS (DVR)", "DVR"],
+            "SESAGOAGOL": ["SESAGOAGOL", "SESA GOA", "VEDANTA"],
+            "BANKBARODA": ["BANKBARODA", "BANK OF BARODA", "BOB"],
+            "TATAPOWER": ["TATAPOWER", "TATA POWER"],
+            "APOLLOHOSP": ["APOLLOHOSP", "APOLLO HOSPITALS", "APOLLO HOSPITAL"],
+            "ADANIENT": ["ADANIENT", "ADANI ENTERPRISES"],
+            "SHREECEM": ["SHREECEM", "SHREE CEMENT", "SHREE CEMENTS"],
+            "JSWSTEEL": ["JSWSTEEL", "JSW STEEL"],
+            "BRITANNIA": ["BRITANNIA", "BRITANNIA INDUSTRIES"],
+            "NESTLEIND": ["NESTLEIND", "NESTLE INDIA", "NESTLE"],
+            "AUROPHARMA": ["AUROPHARMA", "AUROBINDO PHARMA", "AUROBINDO"],
+            "JIOFIN": ["JIOFIN", "JIO FINANCIAL"],
+            "BEL": ["BEL", "BHARAT ELECTRONICS"],
+            "TRENT": ["TRENT"],
+            "INDUSINDBK": ["INDUSINDBK", "INDUSIND BANK", "INDUSIND"],
+            "MAXHEALTH": ["MAXHEALTH", "MAX HEALTHCARE", "MAX HEALTH"],
+            "HDFCLTD": ["HDFCLTD", "HDFC LTD", "HOUSING DEVELOPMENT FINANCE", "HDFC"],
+        }
+
+        for r in records:
+            # 1. URL format check
             if not r.source_url or not (r.source_url.startswith("http://") or r.source_url.startswith("https://")):
                 citation_errors.append(ValidationError(
                     check_id=14, check_name="INVALID_SOURCE_CITATION",
                     record_ticker=r.ticker, index_symbol=r.index_symbol,
                     message=f"Record {r.ticker} ({r.joined_date}) missing valid source_url starting with http(s)://. Got '{r.source_url}'.",
                 ))
-            elif not r.source_evidence or len(r.source_evidence.strip()) < 15:
+                continue
+
+            # 2. Evidence length check
+            if not r.source_evidence or len(r.source_evidence.strip()) < 15:
                 citation_errors.append(ValidationError(
                     check_id=14, check_name="INVALID_SOURCE_CITATION",
                     record_ticker=r.ticker, index_symbol=r.index_symbol,
                     message=f"Record {r.ticker} ({r.joined_date}) missing quoted evidence text (min 15 chars). Got '{r.source_evidence}'.",
                 ))
+                continue
+
+            # 3. URL reuse limits check (max 3 distinct dates per source_url)
+            distinct_dates_for_url = url_dates.get(r.source_url, set())
+            if len(distinct_dates_for_url) > 3:
+                citation_errors.append(ValidationError(
+                    check_id=14, check_name="SOURCE_URL_OVERREUSED",
+                    record_ticker=r.ticker, index_symbol=r.index_symbol,
+                    message=f"URL '{r.source_url}' is reused across {len(distinct_dates_for_url)} distinct reconstitution dates (max allowed: 3). Specific event citations required.",
+                ))
+                continue
+
+            # 4. Ticker / Company relevance check
+            raw_sym = r.ticker.replace(".NS", "").upper()
+            evidence_upper = r.source_evidence.upper()
+
+            sym_tokens = [tok for tok in raw_sym.replace("-", " ").replace("_", " ").split() if len(tok) >= 3]
+            company_aliases = aliases.get(raw_sym, [])
+
+            is_relevant = (
+                (raw_sym in evidence_upper)
+                or any(tok in evidence_upper for tok in sym_tokens)
+                or any(alias in evidence_upper for alias in company_aliases)
+            )
+
+            if not is_relevant:
+                citation_errors.append(ValidationError(
+                    check_id=14, check_name="SOURCE_EVIDENCE_IRRELEVANT",
+                    record_ticker=r.ticker, index_symbol=r.index_symbol,
+                    message=f"Record {r.ticker} ({r.joined_date}) source_evidence does not mention the company or ticker symbol. Evidence quote: '{r.source_evidence}'.",
+                ))
+
         return citation_errors
 
     def classify_dataset_status(
