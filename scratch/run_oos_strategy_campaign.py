@@ -26,6 +26,7 @@ from core.strategy.regime_filtered_golden_cross import RegimeFilteredGoldenCross
 from core.strategy.rsi_mean_reversion import RSIMeanReversionStrategy
 from core.strategy.vwap_bias import VWAPBiasStrategy
 from core.strategy.breakout_volume_atr_hybrid import BreakoutVolumeATRTrailingHybridStrategy
+from core.strategy.macd_atr_hybrid import MACDATRTrailingHybridStrategy
 
 
 def calculate_buy_and_hold_benchmark(
@@ -146,6 +147,7 @@ def main():
         ("VWAPBiasStrategy", VWAPBiasStrategy()),
         ("DualMomentumVolatilityScaledStrategy", DualMomentumVolatilityScaledStrategy()),
         ("BreakoutVolumeATRTrailingHybridStrategy", BreakoutVolumeATRTrailingHybridStrategy()),
+        ("MACDATRTrailingHybridStrategy", MACDATRTrailingHybridStrategy()),
     ]
 
     results = []

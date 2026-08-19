@@ -51,12 +51,12 @@ class TestSignalDeduplicator(unittest.TestCase):
         filtered1, _ = self.dedup.filter_and_register_signals([report1], self.today)
         self.assertEqual(len(filtered1), 1)
 
-        # Same signal next day
+        # Same signal next day (even with different strategy name)
         next_day = datetime.date(2026, 8, 7)
         report2 = SignalReport(
             run_date=next_day,
             ticker="INFY.NS",
-            strategy_name="GoldenCross",
+            strategy_name="MACDCross",
             action=RecommendationAction.BUY,
             entry_price=1850.0,
             validation_status=ValidationStatus.BACKTESTED,
@@ -64,6 +64,32 @@ class TestSignalDeduplicator(unittest.TestCase):
         filtered2, suppressed = self.dedup.filter_and_register_signals([report2], next_day)
         self.assertEqual(len(filtered2), 0)
         self.assertEqual(suppressed, 1)
+
+    def test_signal_auto_expires_after_30_days(self) -> None:
+        report1 = SignalReport(
+            run_date=self.today,
+            ticker="INFY.NS",
+            strategy_name="GoldenCross",
+            action=RecommendationAction.BUY,
+            entry_price=1842.5,
+            validation_status=ValidationStatus.BACKTESTED,
+        )
+        filtered1, _ = self.dedup.filter_and_register_signals([report1], self.today)
+        self.assertEqual(len(filtered1), 1)
+
+        # 31 days later, signal should have auto-expired and new signal should be accepted
+        later_date = self.today + datetime.timedelta(days=31)
+        report2 = SignalReport(
+            run_date=later_date,
+            ticker="INFY.NS",
+            strategy_name="GoldenCross",
+            action=RecommendationAction.BUY,
+            entry_price=1860.0,
+            validation_status=ValidationStatus.BACKTESTED,
+        )
+        filtered2, suppressed = self.dedup.filter_and_register_signals([report2], later_date)
+        self.assertEqual(len(filtered2), 1)
+        self.assertEqual(suppressed, 0)
 
 
 class TestTradeJournal(unittest.TestCase):

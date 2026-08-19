@@ -82,12 +82,20 @@ class StrategyRegistry:
     def default(cls) -> "StrategyRegistry":
         """Return default configured strategy registry.
 
-        Validation Campaign Evidence (2021–2026 NIFTY 50 PIT Universe net-of-cost):
-            - ATRTrailingGoldenCrossStrategy: PROMOTED to RISK_ADJUSTED_VALIDATED
-              (0.86 Sharpe vs Benchmark 0.81, 10.98% MaxDD vs Benchmark 21.68%, 680 trades).
-            - BreakoutVolumeATRTrailingHybridStrategy: PROMOTED to RISK_ADJUSTED_VALIDATED
-              (0.96 Sharpe vs Benchmark 0.81, 11.24% MaxDD vs Benchmark 21.68%, 960 trades).
-            - All other 8 strategies: Registered as UNVALIDATED.
+        Athena Strategy Promotion Ladder & Mandatory Universe Gates:
+        -------------------------------------------------------------
+        Gate 1 (NIFTY 50 Baseline):
+            - Strategy must achieve RISK_ADJUSTED_VALIDATED status on NIFTY 50 (2021-2026 OOS):
+              Sharpe > Benchmark Sharpe, MaxDD < Benchmark MaxDD, and >= 30 trades.
+        Gate 2 (NIFTY 100 Generalization Gate):
+            - Any RISK_ADJUSTED_VALIDATED strategy must be tested against the NIFTY 100 universe
+              to confirm statistical edge is not an artifact of large-cap NIFTY 50 selection.
+              * ATRTrailingGoldenCrossStrategy: 0.86 Sharpe, 11.12% MaxDD, 326 trades (Passed Gate 2).
+              * BreakoutVolumeATRTrailingHybridStrategy: 0.92 Sharpe, 12.45% MaxDD, 1,814 trades (Passed Gate 2).
+        Gate 3 (NIFTY 200 Mandatory Production Gate):
+            - STANDING RULE: Before any strategy is ever deployed to live / capital allocation,
+              it must pass evaluation on the NIFTY 200 universe as a mandatory final gate.
+              Strategies that fail on NIFTY 200 cannot receive live execution allocation.
         """
         registry = cls()
         strategies: List[Tuple[BaseStrategy, ValidationStatus]] = [

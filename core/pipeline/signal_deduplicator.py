@@ -55,10 +55,21 @@ class SignalDeduplicator:
         seq_num = str(abs(hash(clean_ticker + month_day + str(index))) % 90 + 10)
         return f"T{month_day}{seq_num}"
 
+    def _save_all(self) -> None:
+        """Persist all in-memory records back to the JSONL file."""
+        with open(self.ledger_path, "w", encoding="utf-8") as f:
+            for rec in self._records:
+                f.write(json.dumps(asdict(rec)) + "\n")
+
     def filter_and_register_signals(
         self, reports: List[SignalReport], run_date: datetime.date
     ) -> Tuple[List[SignalReport], int]:
         """Filter out duplicate active trend signals and register new ones.
+
+        Invariants:
+            - No duplicate signals for the same open ticker+direction until it resolves.
+            - Signals older than 30 calendar days auto-expire ('setup didn't happen').
+            - Opposite direction signals clear the prior active position.
 
         Returns:
             Tuple of (qualifying_new_reports, suppressed_count)
@@ -66,6 +77,7 @@ class SignalDeduplicator:
         new_reports: List[SignalReport] = []
         suppressed_count = 0
         seq = 1
+        status_changed = False
 
         for report in reports:
             if report.action not in (RecommendationAction.BUY, RecommendationAction.SELL):
@@ -75,25 +87,23 @@ class SignalDeduplicator:
             ticker = report.ticker
             strategy = report.strategy_name
 
-            # Check if there is an active signal matching ticker + strategy + direction
+            # Check if there is an active open signal matching ticker + direction
             active_matching = None
             for rec in self._records:
-                if (
-                    rec.ticker == ticker
-                    and rec.strategy_name == strategy
-                    and rec.status == "ACTIVE"
-                ):
+                if rec.ticker == ticker and rec.status == "ACTIVE":
                     if rec.direction == direction:
                         # Auto-expire if > 30 calendar days old
                         rec_date = datetime.datetime.strptime(rec.signal_date, "%Y-%m-%d").date()
                         if (run_date - rec_date).days > 30:
                             rec.status = "EXPIRED"
+                            status_changed = True
                         else:
                             active_matching = rec
                             break
                     else:
-                        # Opposite direction signal received! Clear old active signal
+                        # Opposite direction signal received: clear old active signal
                         rec.status = "CLEARED"
+                        status_changed = True
 
             if active_matching is not None:
                 # Duplicate trend signal, suppress notification
@@ -114,7 +124,10 @@ class SignalDeduplicator:
                     status="ACTIVE",
                 )
                 self._records.append(rec)
-                self._save_record(rec)
                 new_reports.append(updated_report)
+                status_changed = True
+
+        if status_changed:
+            self._save_all()
 
         return new_reports, suppressed_count
