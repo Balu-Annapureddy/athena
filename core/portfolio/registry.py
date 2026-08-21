@@ -17,6 +17,7 @@ from core.strategy.macd_atr_hybrid import MACDATRTrailingHybridStrategy
 from core.strategy.macd_cross import MACDSignalCrossStrategy
 from core.strategy.regime_filtered_golden_cross import RegimeFilteredGoldenCrossStrategy
 from core.strategy.rsi_mean_reversion import RSIMeanReversionStrategy
+from core.strategy.short_term_pullback import ShortTermPullbackATRStrategy
 from core.strategy.vwap_bias import VWAPBiasStrategy
 
 
@@ -110,6 +111,7 @@ class StrategyRegistry:
             (DualMomentumVolatilityScaledStrategy(), ValidationStatus.UNVALIDATED),
             (BreakoutVolumeATRTrailingHybridStrategy(), ValidationStatus.RISK_ADJUSTED_VALIDATED),
             (MACDATRTrailingHybridStrategy(), ValidationStatus.UNVALIDATED),
+            (ShortTermPullbackATRStrategy(), ValidationStatus.UNVALIDATED),
         ]
         for strat, status in strategies:
             registry.register(

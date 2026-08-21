@@ -49,11 +49,9 @@ class SignalDeduplicator:
             f.write(json.dumps(asdict(record)) + "\n")
 
     def generate_trade_id(self, ticker: str, run_date: datetime.date, index: int = 1) -> str:
-        """Generate a short human-readable Trade ID like T1207 or T8402."""
-        clean_ticker = ticker.split(".")[0].replace("-", "")
+        """Generate a short human-readable Trade ID like T082001 or T082002."""
         month_day = run_date.strftime("%m%d")
-        seq_num = str(abs(hash(clean_ticker + month_day + str(index))) % 90 + 10)
-        return f"T{month_day}{seq_num}"
+        return f"T{month_day}{index:02d}"
 
     def _save_all(self) -> None:
         """Persist all in-memory records back to the JSONL file."""
