@@ -15,7 +15,7 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 
 from core.portfolio.universe import UniverseConstituentRecord
 
-VALID_INDEXES = {"NIFTY_50", "NIFTY_100", "NIFTY_500", "NIFTY_NEXT_50", "NIFTY_MIDCAP_100"}
+VALID_INDEXES = {"NIFTY_50", "NIFTY_100", "NIFTY_200", "NIFTY_500", "NIFTY_NEXT_50", "NIFTY_MIDCAP_100"}
 
 
 @dataclass(frozen=True)

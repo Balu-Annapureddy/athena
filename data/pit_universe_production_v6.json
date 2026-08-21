@@ -1,12 +1,13 @@
 {
-  "dataset_version": "6.0.0",
-  "retrieval_date": "2026-08-19",
+  "dataset_version": "7.0.0",
+  "retrieval_date": "2026-08-21",
   "source": "NSE_OFFICIAL_CIRCULARS_AND_FACTSHEETS",
-  "records_count": 187,
-  "checksum_sha256": "58efd4106157205533c24b27d4d7540d9ef3b0aa5fbd98e1ddb699a0fd553d28",
+  "records_count": 394,
+  "checksum_sha256": "368dbaac06a71afab084e8bfbeb25053ba36b33f2c47a60dc02328de3e535f3d",
   "indexes_covered": [
+    "NIFTY_50",
     "NIFTY_100",
-    "NIFTY_50"
+    "NIFTY_200"
   ],
   "dataset_status": "PARTIAL",
   "records": [
@@ -1505,6 +1506,1662 @@
       "dropped_date": null,
       "source_url": "https://www.icicidirect.com/research/equity/nifty-50-rejig-indigo-max-healthcare-to-enter-hero-motocorp-indusind-bank-to-exit/10925",
       "source_evidence": "IndiGo, Max Healthcare in Nifty 100 w.e.f. September 30, 2025."
+    },
+    {
+      "ticker": "360ONE.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: 360 ONE WAM Ltd. (360ONE)"
+    },
+    {
+      "ticker": "3MINDIA.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: 3M India Ltd. (3MINDIA)"
+    },
+    {
+      "ticker": "ABB.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: ABB India Ltd. (ABB)"
+    },
+    {
+      "ticker": "ACC.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: ACC Ltd. (ACC)"
+    },
+    {
+      "ticker": "ACMESOLAR.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: ACME Solar Holdings Ltd. (ACMESOLAR)"
+    },
+    {
+      "ticker": "AIAENG.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: AIA Engineering Ltd. (AIAENG)"
+    },
+    {
+      "ticker": "APLAPOLLO.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: APL Apollo Tubes Ltd. (APLAPOLLO)"
+    },
+    {
+      "ticker": "AUBANK.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: AU Small Finance Bank Ltd. (AUBANK)"
+    },
+    {
+      "ticker": "AWL.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: AWL Agri Business Ltd. (AWL)"
+    },
+    {
+      "ticker": "AADHARHFC.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Aadhar Housing Finance Ltd. (AADHARHFC)"
+    },
+    {
+      "ticker": "AARTIIND.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Aarti Industries Ltd. (AARTIIND)"
+    },
+    {
+      "ticker": "AAVAS.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Aavas Financiers Ltd. (AAVAS)"
+    },
+    {
+      "ticker": "ABBOTINDIA.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Abbott India Ltd. (ABBOTINDIA)"
+    },
+    {
+      "ticker": "ACE.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Action Construction Equipment Ltd. (ACE)"
+    },
+    {
+      "ticker": "ACUTAAS.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Acutaas Chemicals Ltd. (ACUTAAS)"
+    },
+    {
+      "ticker": "ADANIENSOL.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Adani Energy Solutions Ltd. (ADANIENSOL)"
+    },
+    {
+      "ticker": "ADANIENT.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Adani Enterprises Ltd. (ADANIENT)"
+    },
+    {
+      "ticker": "ADANIGREEN.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Adani Green Energy Ltd. (ADANIGREEN)"
+    },
+    {
+      "ticker": "ADANIPORTS.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Adani Ports and Special Economic Zone Ltd. (ADANIPORTS)"
+    },
+    {
+      "ticker": "ADANIPOWER.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Adani Power Ltd. (ADANIPOWER)"
+    },
+    {
+      "ticker": "ATGL.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Adani Total Gas Ltd. (ATGL)"
+    },
+    {
+      "ticker": "ABCAPITAL.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Aditya Birla Capital Ltd. (ABCAPITAL)"
+    },
+    {
+      "ticker": "ABFRL.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Aditya Birla Fashion and Retail Ltd. (ABFRL)"
+    },
+    {
+      "ticker": "ABLBL.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Aditya Birla Lifestyle Brands Ltd. (ABLBL)"
+    },
+    {
+      "ticker": "ABREL.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Aditya Birla Real Estate Ltd. (ABREL)"
+    },
+    {
+      "ticker": "ABSLAMC.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Aditya Birla Sun Life AMC Ltd. (ABSLAMC)"
+    },
+    {
+      "ticker": "CPPLUS.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Aditya Infotech Ltd. (CPPLUS)"
+    },
+    {
+      "ticker": "AEGISLOG.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Aegis Logistics Ltd. (AEGISLOG)"
+    },
+    {
+      "ticker": "AEGISVOPAK.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Aegis Vopak Terminals Ltd. (AEGISVOPAK)"
+    },
+    {
+      "ticker": "AFCONS.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Afcons Infrastructure Ltd. (AFCONS)"
+    },
+    {
+      "ticker": "AFFLE.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Affle 3i Ltd. (AFFLE)"
+    },
+    {
+      "ticker": "AJANTPHARM.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Ajanta Pharmaceuticals Ltd. (AJANTPHARM)"
+    },
+    {
+      "ticker": "ALKEM.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Alkem Laboratories Ltd. (ALKEM)"
+    },
+    {
+      "ticker": "ABDL.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Allied Blenders and Distillers Ltd. (ABDL)"
+    },
+    {
+      "ticker": "ARE&M.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Amara Raja Energy & Mobility Ltd. (ARE&M)"
+    },
+    {
+      "ticker": "AMBER.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Amber Enterprises India Ltd. (AMBER)"
+    },
+    {
+      "ticker": "AMBUJACEM.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Ambuja Cements Ltd. (AMBUJACEM)"
+    },
+    {
+      "ticker": "ANANDRATHI.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Anand Rathi Wealth Ltd. (ANANDRATHI)"
+    },
+    {
+      "ticker": "ANANTRAJ.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Anant Raj Ltd. (ANANTRAJ)"
+    },
+    {
+      "ticker": "ANGELONE.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Angel One Ltd. (ANGELONE)"
+    },
+    {
+      "ticker": "ANTHEM.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Anthem Biosciences Ltd. (ANTHEM)"
+    },
+    {
+      "ticker": "ANURAS.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Anupam Rasayan India Ltd. (ANURAS)"
+    },
+    {
+      "ticker": "APARINDS.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Apar Industries Ltd. (APARINDS)"
+    },
+    {
+      "ticker": "APOLLOHOSP.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Apollo Hospitals Enterprise Ltd. (APOLLOHOSP)"
+    },
+    {
+      "ticker": "APOLLOTYRE.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Apollo Tyres Ltd. (APOLLOTYRE)"
+    },
+    {
+      "ticker": "APTUS.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Aptus Value Housing Finance India Ltd. (APTUS)"
+    },
+    {
+      "ticker": "ASAHIINDIA.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Asahi India Glass Ltd. (ASAHIINDIA)"
+    },
+    {
+      "ticker": "ASHOKLEY.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Ashok Leyland Ltd. (ASHOKLEY)"
+    },
+    {
+      "ticker": "ASIANPAINT.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Asian Paints Ltd. (ASIANPAINT)"
+    },
+    {
+      "ticker": "ASTERDM.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Aster DM Quality Care Ltd. (ASTERDM)"
+    },
+    {
+      "ticker": "ASTRAL.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Astral Ltd. (ASTRAL)"
+    },
+    {
+      "ticker": "ATHERENERG.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Ather Energy Ltd. (ATHERENERG)"
+    },
+    {
+      "ticker": "ATUL.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Atul Ltd. (ATUL)"
+    },
+    {
+      "ticker": "AUROPHARMA.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Aurobindo Pharma Ltd. (AUROPHARMA)"
+    },
+    {
+      "ticker": "AIIL.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Authum Investment & Infrastructure Ltd. (AIIL)"
+    },
+    {
+      "ticker": "DMART.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Avenue Supermarts Ltd. (DMART)"
+    },
+    {
+      "ticker": "AXISBANK.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Axis Bank Ltd. (AXISBANK)"
+    },
+    {
+      "ticker": "BEML.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: BEML Ltd. (BEML)"
+    },
+    {
+      "ticker": "BLS.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: BLS International Services Ltd. (BLS)"
+    },
+    {
+      "ticker": "BSE.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: BSE Ltd. (BSE)"
+    },
+    {
+      "ticker": "BAJAJ-AUTO.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Bajaj Auto Ltd. (BAJAJ-AUTO)"
+    },
+    {
+      "ticker": "BAJFINANCE.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Bajaj Finance Ltd. (BAJFINANCE)"
+    },
+    {
+      "ticker": "BAJAJFINSV.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Bajaj Finserv Ltd. (BAJAJFINSV)"
+    },
+    {
+      "ticker": "BAJAJHLDNG.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Bajaj Holdings & Investment Ltd. (BAJAJHLDNG)"
+    },
+    {
+      "ticker": "BAJAJHFL.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Bajaj Housing Finance Ltd. (BAJAJHFL)"
+    },
+    {
+      "ticker": "BALKRISIND.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Balkrishna Industries Ltd. (BALKRISIND)"
+    },
+    {
+      "ticker": "BALRAMCHIN.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Balrampur Chini Mills Ltd. (BALRAMCHIN)"
+    },
+    {
+      "ticker": "BANDHANBNK.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Bandhan Bank Ltd. (BANDHANBNK)"
+    },
+    {
+      "ticker": "BANKBARODA.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Bank of Baroda (BANKBARODA)"
+    },
+    {
+      "ticker": "BANKINDIA.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Bank of India (BANKINDIA)"
+    },
+    {
+      "ticker": "MAHABANK.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Bank of Maharashtra (MAHABANK)"
+    },
+    {
+      "ticker": "BATAINDIA.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Bata India Ltd. (BATAINDIA)"
+    },
+    {
+      "ticker": "BAYERCROP.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Bayer Cropscience Ltd. (BAYERCROP)"
+    },
+    {
+      "ticker": "BELRISE.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Belrise Industries Ltd. (BELRISE)"
+    },
+    {
+      "ticker": "BERGEPAINT.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Berger Paints India Ltd. (BERGEPAINT)"
+    },
+    {
+      "ticker": "BDL.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Bharat Dynamics Ltd. (BDL)"
+    },
+    {
+      "ticker": "BEL.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Bharat Electronics Ltd. (BEL)"
+    },
+    {
+      "ticker": "BHARATFORG.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Bharat Forge Ltd. (BHARATFORG)"
+    },
+    {
+      "ticker": "BHEL.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Bharat Heavy Electricals Ltd. (BHEL)"
+    },
+    {
+      "ticker": "BPCL.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Bharat Petroleum Corporation Ltd. (BPCL)"
+    },
+    {
+      "ticker": "BHARTIARTL.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Bharti Airtel Ltd. (BHARTIARTL)"
+    },
+    {
+      "ticker": "BHARTIHEXA.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Bharti Hexacom Ltd. (BHARTIHEXA)"
+    },
+    {
+      "ticker": "BIKAJI.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Bikaji Foods International Ltd. (BIKAJI)"
+    },
+    {
+      "ticker": "GROWW.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Billionbrains Garage Ventures Ltd. (GROWW)"
+    },
+    {
+      "ticker": "BIOCON.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Biocon Ltd. (BIOCON)"
+    },
+    {
+      "ticker": "BSOFT.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Birlasoft Ltd. (BSOFT)"
+    },
+    {
+      "ticker": "BLUEDART.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Blue Dart Express Ltd. (BLUEDART)"
+    },
+    {
+      "ticker": "BLUEJET.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Blue Jet Healthcare Ltd. (BLUEJET)"
+    },
+    {
+      "ticker": "BLUESTARCO.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Blue Star Ltd. (BLUESTARCO)"
+    },
+    {
+      "ticker": "BBTC.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Bombay Burmah Trading Corporation Ltd. (BBTC)"
+    },
+    {
+      "ticker": "BOSCHLTD.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Bosch Ltd. (BOSCHLTD)"
+    },
+    {
+      "ticker": "FIRSTCRY.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Brainbees Solutions Ltd. (FIRSTCRY)"
+    },
+    {
+      "ticker": "BRIGADE.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Brigade Enterprises Ltd. (BRIGADE)"
+    },
+    {
+      "ticker": "BRITANNIA.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Britannia Industries Ltd. (BRITANNIA)"
+    },
+    {
+      "ticker": "MAPMYINDIA.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: C.E. Info Systems Ltd. (MAPMYINDIA)"
+    },
+    {
+      "ticker": "CCL.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: CCL Products (I) Ltd. (CCL)"
+    },
+    {
+      "ticker": "CESC.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: CESC Ltd. (CESC)"
+    },
+    {
+      "ticker": "CGPOWER.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: CG Power and Industrial Solutions Ltd. (CGPOWER)"
+    },
+    {
+      "ticker": "CIEINDIA.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: CIE Automotive India Ltd. (CIEINDIA)"
+    },
+    {
+      "ticker": "CRISIL.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: CRISIL Ltd. (CRISIL)"
+    },
+    {
+      "ticker": "CANFINHOME.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Can Fin Homes Ltd. (CANFINHOME)"
+    },
+    {
+      "ticker": "CANBK.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Canara Bank (CANBK)"
+    },
+    {
+      "ticker": "CANHLIFE.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Canara HSBC Life Insurance Company Ltd. (CANHLIFE)"
+    },
+    {
+      "ticker": "CAPLIPOINT.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Caplin Point Laboratories Ltd. (CAPLIPOINT)"
+    },
+    {
+      "ticker": "CGCL.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Capri Global Capital Ltd. (CGCL)"
+    },
+    {
+      "ticker": "CARBORUNIV.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Carborundum Universal Ltd. (CARBORUNIV)"
+    },
+    {
+      "ticker": "CARTRADE.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Cartrade Tech Ltd. (CARTRADE)"
+    },
+    {
+      "ticker": "CASTROLIND.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Castrol India Ltd. (CASTROLIND)"
+    },
+    {
+      "ticker": "CEATLTD.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Ceat Ltd. (CEATLTD)"
+    },
+    {
+      "ticker": "CEMPRO.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Cemindia Projects Ltd. (CEMPRO)"
+    },
+    {
+      "ticker": "CENTRALBK.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Central Bank of India (CENTRALBK)"
+    },
+    {
+      "ticker": "CDSL.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Central Depository Services (India) Ltd. (CDSL)"
+    },
+    {
+      "ticker": "CHALET.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Chalet Hotels Ltd. (CHALET)"
+    },
+    {
+      "ticker": "CHAMBLFERT.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Chambal Fertilizers & Chemicals Ltd. (CHAMBLFERT)"
+    },
+    {
+      "ticker": "CHENNPETRO.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Chennai Petroleum Corporation Ltd. (CHENNPETRO)"
+    },
+    {
+      "ticker": "CHOICEIN.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Choice International Ltd. (CHOICEIN)"
+    },
+    {
+      "ticker": "CHOLAHLDNG.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Cholamandalam Financial Holdings Ltd. (CHOLAHLDNG)"
+    },
+    {
+      "ticker": "CHOLAFIN.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Cholamandalam Investment and Finance Company Ltd. (CHOLAFIN)"
+    },
+    {
+      "ticker": "CIPLA.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Cipla Ltd. (CIPLA)"
+    },
+    {
+      "ticker": "CUB.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: City Union Bank Ltd. (CUB)"
+    },
+    {
+      "ticker": "CLEAN.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Clean Science and Technology Ltd. (CLEAN)"
+    },
+    {
+      "ticker": "COALINDIA.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Coal India Ltd. (COALINDIA)"
+    },
+    {
+      "ticker": "COCHINSHIP.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Cochin Shipyard Ltd. (COCHINSHIP)"
+    },
+    {
+      "ticker": "COFORGE.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Coforge Ltd. (COFORGE)"
+    },
+    {
+      "ticker": "COHANCE.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Cohance Lifesciences Ltd. (COHANCE)"
+    },
+    {
+      "ticker": "COLPAL.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Colgate Palmolive (India) Ltd. (COLPAL)"
+    },
+    {
+      "ticker": "CAMS.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Computer Age Management Services Ltd. (CAMS)"
+    },
+    {
+      "ticker": "CONCORDBIO.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Concord Biotech Ltd. (CONCORDBIO)"
+    },
+    {
+      "ticker": "CONCOR.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Container Corporation of India Ltd. (CONCOR)"
+    },
+    {
+      "ticker": "COROMANDEL.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Coromandel International Ltd. (COROMANDEL)"
+    },
+    {
+      "ticker": "CRAFTSMAN.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Craftsman Automation Ltd. (CRAFTSMAN)"
+    },
+    {
+      "ticker": "CREDITACC.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: CreditAccess Grameen Ltd. (CREDITACC)"
+    },
+    {
+      "ticker": "CROMPTON.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Crompton Greaves Consumer Electricals Ltd. (CROMPTON)"
+    },
+    {
+      "ticker": "CUMMINSIND.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Cummins India Ltd. (CUMMINSIND)"
+    },
+    {
+      "ticker": "CYIENT.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Cyient Ltd. (CYIENT)"
+    },
+    {
+      "ticker": "DCMSHRIRAM.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: DCM Shriram Ltd. (DCMSHRIRAM)"
+    },
+    {
+      "ticker": "DLF.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: DLF Ltd. (DLF)"
+    },
+    {
+      "ticker": "DOMS.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: DOMS Industries Ltd. (DOMS)"
+    },
+    {
+      "ticker": "DABUR.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Dabur India Ltd. (DABUR)"
+    },
+    {
+      "ticker": "DALBHARAT.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Dalmia Bharat Ltd. (DALBHARAT)"
+    },
+    {
+      "ticker": "DATAPATTNS.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Data Patterns (India) Ltd. (DATAPATTNS)"
+    },
+    {
+      "ticker": "DEEPAKFERT.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Deepak Fertilisers & Petrochemicals Corp. Ltd. (DEEPAKFERT)"
+    },
+    {
+      "ticker": "DEEPAKNTR.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Deepak Nitrite Ltd. (DEEPAKNTR)"
+    },
+    {
+      "ticker": "DELHIVERY.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Delhivery Ltd. (DELHIVERY)"
+    },
+    {
+      "ticker": "DEVYANI.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Devyani International Ltd. (DEVYANI)"
+    },
+    {
+      "ticker": "DIVISLAB.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Divi's Laboratories Ltd. (DIVISLAB)"
+    },
+    {
+      "ticker": "DIXON.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Dixon Technologies (India) Ltd. (DIXON)"
+    },
+    {
+      "ticker": "LALPATHLAB.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Dr. Lal Path Labs Ltd. (LALPATHLAB)"
+    },
+    {
+      "ticker": "DRREDDY.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Dr. Reddy's Laboratories Ltd. (DRREDDY)"
+    },
+    {
+      "ticker": "EIDPARRY.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: E.I.D. Parry (India) Ltd. (EIDPARRY)"
+    },
+    {
+      "ticker": "EIHOTEL.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: EIH Ltd. (EIHOTEL)"
+    },
+    {
+      "ticker": "EICHERMOT.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Eicher Motors Ltd. (EICHERMOT)"
+    },
+    {
+      "ticker": "ELECON.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Elecon Engineering Co. Ltd. (ELECON)"
+    },
+    {
+      "ticker": "ELGIEQUIP.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Elgi Equipments Ltd. (ELGIEQUIP)"
+    },
+    {
+      "ticker": "EMAMILTD.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Emami Ltd. (EMAMILTD)"
+    },
+    {
+      "ticker": "EMCURE.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Emcure Pharmaceuticals Ltd. (EMCURE)"
+    },
+    {
+      "ticker": "EMMVEE.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Emmvee Photovoltaic Power Ltd. (EMMVEE)"
+    },
+    {
+      "ticker": "ENDURANCE.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Endurance Technologies Ltd. (ENDURANCE)"
+    },
+    {
+      "ticker": "ENGINERSIN.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Engineers India Ltd. (ENGINERSIN)"
+    },
+    {
+      "ticker": "ERIS.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Eris Lifesciences Ltd. (ERIS)"
+    },
+    {
+      "ticker": "ESCORTS.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Escorts Kubota Ltd. (ESCORTS)"
+    },
+    {
+      "ticker": "ETERNAL.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Eternal Ltd. (ETERNAL)"
+    },
+    {
+      "ticker": "EXIDEIND.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Exide Industries Ltd. (EXIDEIND)"
+    },
+    {
+      "ticker": "NYKAA.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: FSN E-Commerce Ventures Ltd. (NYKAA)"
+    },
+    {
+      "ticker": "FEDERALBNK.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Federal Bank Ltd. (FEDERALBNK)"
+    },
+    {
+      "ticker": "FACT.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Fertilisers and Chemicals Travancore Ltd. (FACT)"
+    },
+    {
+      "ticker": "FINCABLES.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Finolex Cables Ltd. (FINCABLES)"
+    },
+    {
+      "ticker": "FSL.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Firstsource Solutions Ltd. (FSL)"
+    },
+    {
+      "ticker": "FIVESTAR.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Five-Star Business Finance Ltd. (FIVESTAR)"
+    },
+    {
+      "ticker": "FORCEMOT.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Force Motors Ltd. (FORCEMOT)"
+    },
+    {
+      "ticker": "FORTIS.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Fortis Healthcare Ltd. (FORTIS)"
+    },
+    {
+      "ticker": "GAIL.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: GAIL (India) Ltd. (GAIL)"
+    },
+    {
+      "ticker": "GVT&D.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: GE Vernova T&D India Ltd. (GVT&D)"
+    },
+    {
+      "ticker": "GMRAIRPORT.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: GMR Airports Ltd. (GMRAIRPORT)"
+    },
+    {
+      "ticker": "GABRIEL.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Gabriel India Ltd. (GABRIEL)"
+    },
+    {
+      "ticker": "GALLANTT.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Gallantt Ispat Ltd. (GALLANTT)"
+    },
+    {
+      "ticker": "GRSE.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Garden Reach Shipbuilders & Engineers Ltd. (GRSE)"
+    },
+    {
+      "ticker": "GICRE.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: General Insurance Corporation of India (GICRE)"
+    },
+    {
+      "ticker": "GILLETTE.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Gillette India Ltd. (GILLETTE)"
+    },
+    {
+      "ticker": "GLAND.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Gland Pharma Ltd. (GLAND)"
+    },
+    {
+      "ticker": "GLAXO.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Glaxosmithkline Pharmaceuticals Ltd. (GLAXO)"
+    },
+    {
+      "ticker": "GLENMARK.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Glenmark Pharmaceuticals Ltd. (GLENMARK)"
+    },
+    {
+      "ticker": "MEDANTA.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Global Health Ltd. (MEDANTA)"
+    },
+    {
+      "ticker": "GODIGIT.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Go Digit General Insurance Ltd. (GODIGIT)"
+    },
+    {
+      "ticker": "GPIL.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Godawari Power & Ispat Ltd. (GPIL)"
+    },
+    {
+      "ticker": "GODFRYPHLP.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Godfrey Phillips India Ltd. (GODFRYPHLP)"
+    },
+    {
+      "ticker": "GODREJCP.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Godrej Consumer Products Ltd. (GODREJCP)"
+    },
+    {
+      "ticker": "GODREJIND.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Godrej Industries Ltd. (GODREJIND)"
+    },
+    {
+      "ticker": "GODREJPROP.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Godrej Properties Ltd. (GODREJPROP)"
+    },
+    {
+      "ticker": "GRANULES.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Granules India Ltd. (GRANULES)"
+    },
+    {
+      "ticker": "GRAPHITE.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Graphite India Ltd. (GRAPHITE)"
+    },
+    {
+      "ticker": "GRASIM.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Grasim Industries Ltd. (GRASIM)"
+    },
+    {
+      "ticker": "GRAVITA.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Gravita India Ltd. (GRAVITA)"
+    },
+    {
+      "ticker": "GESHIP.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Great Eastern Shipping Co. Ltd. (GESHIP)"
+    },
+    {
+      "ticker": "FLUOROCHEM.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Gujarat Fluorochemicals Ltd. (FLUOROCHEM)"
+    },
+    {
+      "ticker": "GMDCLTD.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Gujarat Mineral Development Corporation Ltd. (GMDCLTD)"
+    },
+    {
+      "ticker": "HEG.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: H.E.G. Ltd. (HEG)"
+    },
+    {
+      "ticker": "HBLENGINE.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: HBL Engineering Ltd. (HBLENGINE)"
+    },
+    {
+      "ticker": "HCLTECH.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: HCL Technologies Ltd. (HCLTECH)"
+    },
+    {
+      "ticker": "HDBFS.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2010-01-01",
+      "dropped_date": null,
+      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
+      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: HDB Financial Services Ltd. (HDBFS)"
+    },
+    {
+      "ticker": "IREDA.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2024-03-28",
+      "dropped_date": null,
+      "source_url": "https://www.livemint.com/market/stock-market-news/nifty-rebalancing-ireda-jio-financial-trent-among-major-inclusions-11710915234567.html",
+      "source_evidence": "IREDA included in NIFTY 200 index effective March 28 2024 per NSE index review"
+    },
+    {
+      "ticker": "JIOFIN.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2024-03-28",
+      "dropped_date": null,
+      "source_url": "https://www.livemint.com/market/stock-market-news/nifty-rebalancing-ireda-jio-financial-trent-among-major-inclusions-11710915234567.html",
+      "source_evidence": "Jio Financial Services (JIOFIN) included in NIFTY 200 index effective March 28 2024"
+    },
+    {
+      "ticker": "TATAINVEST.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2024-03-28",
+      "dropped_date": null,
+      "source_url": "https://www.livemint.com/market/stock-market-news/nifty-rebalancing-ireda-jio-financial-trent-among-major-inclusions-11710915234567.html",
+      "source_evidence": "Tata Investment Corporation (TATAINVEST) included in NIFTY 200 index effective March 28 2024"
+    },
+    {
+      "ticker": "PRESTIGE.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2024-09-30",
+      "dropped_date": null,
+      "source_url": "https://economictimes.indiatimes.com/markets/stocks/news/nse-semi-annual-index-reconstitution-trent-bel-in-nifty-50-key-changes-in-nifty-next-50-nifty-200/articleshow/112727192.cms",
+      "source_evidence": "Prestige Estates Projects (PRESTIGE) added to NIFTY 200 index effective September 30 2024"
+    },
+    {
+      "ticker": "HUDCO.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2024-09-30",
+      "dropped_date": null,
+      "source_url": "https://economictimes.indiatimes.com/markets/stocks/news/nse-semi-annual-index-reconstitution-trent-bel-in-nifty-50-key-changes-in-nifty-next-50-nifty-200/articleshow/112727192.cms",
+      "source_evidence": "HUDCO included in NIFTY 200 index effective September 30 2024 per NSE circular"
+    },
+    {
+      "ticker": "SWIGGY.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2025-03-28",
+      "dropped_date": null,
+      "source_url": "https://www.moneycontrol.com/news/business/markets/nse-semi-annual-index-changes-march-2025-zomato-jio-financial-swiggy-inclusions-12882341.html",
+      "source_evidence": "Swiggy Ltd (SWIGGY) included in NIFTY 200 index effective March 28 2025"
+    },
+    {
+      "ticker": "HYUNDAI.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2025-03-28",
+      "dropped_date": null,
+      "source_url": "https://www.moneycontrol.com/news/business/markets/nse-semi-annual-index-changes-march-2025-zomato-jio-financial-swiggy-inclusions-12882341.html",
+      "source_evidence": "Hyundai Motor India (HYUNDAI) added to NIFTY 200 index effective March 28 2025"
     }
   ]
 }
