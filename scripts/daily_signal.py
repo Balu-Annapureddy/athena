@@ -121,8 +121,35 @@ def main() -> None:
         action="store_true",
         help="Run even on weekends / NSE trading holidays (overrides holiday guard)"
     )
+    parser.add_argument(
+        "--offline",
+        action="store_true",
+        help="Run in offline replay mode using historical fixtures only (disables live Upstox)"
+    )
+    parser.add_argument(
+        "--use-upstox",
+        action="store_true",
+        default=None,
+        help="Force enable live Upstox V2 data feed"
+    )
 
     args = parser.parse_args()
+
+    # Determine whether to use live Upstox
+    upstox_token = os.environ.get("UPSTOX_ACCESS_TOKEN", "").strip()
+    if args.offline:
+        use_upstox = False
+    elif args.use_upstox is True:
+        if not upstox_token:
+            print("Error: --use-upstox specified, but UPSTOX_ACCESS_TOKEN is not set in environment.")
+            print("Please export UPSTOX_ACCESS_TOKEN=<token> or pass --offline for fixture replay.")
+            sys.exit(1)
+        use_upstox = True
+    elif upstox_token:
+        # Auto-enable live Upstox when credentials exist and not in offline mode
+        use_upstox = True
+    else:
+        use_upstox = False
 
     # Parse date (prefer SCHEDULED_DATE env var if set by GitHub Actions schedule)
     sched_env = os.environ.get("SCHEDULED_DATE", "").strip()
@@ -145,7 +172,8 @@ def main() -> None:
     runner = DailySignalRunner(
         registry=registry,
         include_unvalidated=args.include_unvalidated,
-        fixture_dir=args.fixture_dir
+        fixture_dir=args.fixture_dir,
+        use_upstox=use_upstox,
     )
     ledger = PaperLedger(ledger_path=args.ledger_path)
     deduplicator = SignalDeduplicator()
@@ -180,6 +208,7 @@ def main() -> None:
     print("=" * 95)
     print(f"  Tickers count       : {len(tickers)} ticker(s)")
     print(f"  Include unvalidated : {args.include_unvalidated}")
+    print(f"  Live Upstox Feed    : {'ENABLED (Upstox V2 live market data)' if use_upstox else 'DISABLED (Offline fixture replay)'}")
     print(f"  Ledger path         : {args.ledger_path}")
     print()
 

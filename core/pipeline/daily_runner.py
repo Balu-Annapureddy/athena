@@ -1,12 +1,23 @@
-"""Daily runner executing daily strategy evaluations."""
+"""Daily runner executing daily strategy evaluations with hybrid historical + live Upstox feeds."""
 
 import datetime
+import os
+import uuid
 from dataclasses import dataclass
 from datetime import timedelta
-from typing import List
+from typing import Any, Dict, List, Optional
 
+from core.data.connectors.upstox_connector import UpstoxConnector
 from core.data.connectors.yfinance_connector import YFinanceConnector
+from core.data.contract import (
+    ConnectorPayload,
+    PayloadType,
+    Provenance,
+    SourceType,
+    VerificationStatus,
+)
 from core.data.factory import ObservationFactory
+from core.data.payloads.price import PricePayload
 from core.decision_builder.context import DecisionEvaluationContext
 from core.decision_builder.policies import DecisionPolicy
 from core.decision_builder.portfolio import PortfolioState
@@ -29,13 +40,19 @@ class RunnerBatchResult:
 
 
 class DailySignalRunner:
-    """Orchestrates daily strategy evaluation for a list of tickers and date."""
+    """Orchestrates daily strategy evaluation for a list of tickers and date.
+
+    Supports hybrid data streaming: uses offline/historical fixtures for long lookback
+    windows (200 SMA, ADX, ATR), and live Upstox V2 quotes for today's market price.
+    """
 
     def __init__(
         self,
         registry: StrategyRegistry,
         include_unvalidated: bool = False,
-        fixture_dir: str = "fixtures/yfinance"
+        fixture_dir: str = "fixtures/yfinance",
+        use_upstox: bool = False,
+        upstox_access_token: Optional[str] = None,
     ) -> None:
         self._registry = registry
         self._include_unvalidated = include_unvalidated
@@ -44,7 +61,99 @@ class DailySignalRunner:
         self._obs_factory = ObservationFactory()
         self._fact_builder = FactBuilder(rules=[PriceFactRule()])
 
-    def run_ticker(self, ticker: str, run_date: datetime.date) -> List[SignalReport]:
+        self._use_upstox = use_upstox
+        self._upstox_connector: Optional[UpstoxConnector] = None
+
+        if self._use_upstox:
+            token = upstox_access_token or os.environ.get("UPSTOX_ACCESS_TOKEN")
+            if not token:
+                raise ValueError(
+                    "Upstox live market data requested, but UPSTOX_ACCESS_TOKEN environment "
+                    "variable is not set. Set UPSTOX_ACCESS_TOKEN or run with use_upstox=False."
+                )
+            self._upstox_connector = UpstoxConnector(access_token=token)
+            self._upstox_connector.enable()
+
+    def _fetch_upstox_batch_quotes(self, tickers: List[str]) -> Dict[str, Any]:
+        """Fetch live quotes for a list of NSE tickers in batches from Upstox."""
+        if not self._upstox_connector:
+            return {}
+
+        # Upstox key mapping: RELIANCE.NS -> NSE_EQ|RELIANCE
+        ticker_to_key = {t: f"NSE_EQ|{t.replace('.NS', '')}" for t in tickers}
+        keys = list(ticker_to_key.values())
+        quotes_by_ticker = {}
+
+        # Batch in chunks of 500
+        batch_size = 500
+        for i in range(0, len(keys), batch_size):
+            batch_keys = keys[i : i + batch_size]
+            try:
+                raw_quotes = self._upstox_connector.fetch_market_quotes(batch_keys)
+                for t, key in ticker_to_key.items():
+                    # Upstox returns keys formatted like "NSE_EQ:RELIANCE" or "NSE_EQ|RELIANCE"
+                    alt_key = key.replace("|", ":")
+                    if key in raw_quotes:
+                        quotes_by_ticker[t] = raw_quotes[key]
+                    elif alt_key in raw_quotes:
+                        quotes_by_ticker[t] = raw_quotes[alt_key]
+            except Exception as e:
+                # Log batch failure; individual tickers will fall back to historical bar
+                print(f"  [Warning] Upstox live batch fetch failed: {e}")
+
+        return quotes_by_ticker
+
+    def _create_live_payload(self, ticker: str, quote: Dict[str, Any], run_date: datetime.date) -> Optional[ConnectorPayload]:
+        """Convert a live Upstox quote into a normalized ConnectorPayload for today."""
+        ohlc = quote.get("ohlc", {})
+        last_price = quote.get("last_price")
+        if not last_price and not ohlc.get("close"):
+            return None
+
+        open_p = float(ohlc.get("open") or last_price)
+        high_p = float(ohlc.get("high") or last_price)
+        low_p = float(ohlc.get("low") or last_price)
+        close_p = float(last_price or ohlc.get("close"))
+        vol_p = float(quote.get("volume") or 0.0)
+
+        pub_dt = datetime.datetime.combine(run_date, datetime.time(15, 30), tzinfo=datetime.timezone.utc)
+
+        prov = Provenance(
+            connector_name="UpstoxConnector",
+            provider="UpstoxV2",
+            retrieval_timestamp=datetime.datetime.now(datetime.timezone.utc),
+            publication_timestamp=pub_dt,
+            raw_source_id=f"UPSTOX_LIVE:{ticker}:{run_date.isoformat()}",
+            checksum="upstox_live_feed",
+            connector_version="1.0.0",
+            ingestion_run_id=f"run-daily-{uuid.uuid4().hex[:8]}",
+        )
+
+        price_payload = PricePayload(
+            open=open_p,
+            high=high_p,
+            low=low_p,
+            close=close_p,
+            volume=vol_p,
+            timeframe="1D",
+        )
+
+        return ConnectorPayload(
+            source_id=f"UPSTOX_LIVE_{ticker}",
+            entity=ticker,
+            payload_type=PayloadType.PRICE,
+            payload=price_payload,
+            source_type=SourceType.BROKER,
+            verification=VerificationStatus.VERIFIED,
+            provenance=prov,
+        )
+
+    def run_ticker(
+        self,
+        ticker: str,
+        run_date: datetime.date,
+        live_quote: Optional[Dict[str, Any]] = None,
+    ) -> List[SignalReport]:
         """Run daily evaluations for a single ticker on the target date."""
         reports = []
         active_strategies = self._registry.get_active_strategies()
@@ -60,6 +169,19 @@ class DailySignalRunner:
 
             # Fetch trailing daily OHLCV
             payloads = self._connector.fetch_data(ticker, start=start_date_str, end=end_date_str, timeout=1)
+
+            # If live quote is provided, append/replace today's live bar
+            if live_quote:
+                live_payload = self._create_live_payload(ticker, live_quote, run_date)
+                if live_payload:
+                    if payloads:
+                        last_ts = str(payloads[-1].provenance.publication_timestamp)[:10]
+                        if last_ts == run_date.isoformat():
+                            payloads[-1] = live_payload
+                        else:
+                            payloads.append(live_payload)
+                    else:
+                        payloads = [live_payload]
 
             if len(payloads) < strategy.required_history_bars:
                 raise ValueError(
@@ -91,7 +213,7 @@ class DailySignalRunner:
                 active_policy=dec_policy,
                 portfolio=sim_portfolio,
                 existing_records=[],
-                target_security_id=ticker
+                target_security_id=ticker,
             )
 
             # Evaluate strategy rules
@@ -99,7 +221,7 @@ class DailySignalRunner:
                 facts=merged_facts,
                 portfolio=sim_portfolio,
                 dec_policy=dec_policy,
-                dec_ctx=dec_ctx
+                dec_ctx=dec_ctx,
             )
 
             if result is not None:
@@ -123,7 +245,6 @@ class DailySignalRunner:
                 if not reasoning and thesis_rec:
                     reasoning = f"{thesis_rec.rule_name} direction: {thesis_rec.thesis_direction.value}"
 
-                # Calculate composite confidence score (0 to 95%)
                 if status == ValidationStatus.BACKTESTED:
                     base_score = 50.0
                 elif status == ValidationStatus.RISK_ADJUSTED_VALIDATED:
@@ -138,7 +259,7 @@ class DailySignalRunner:
                         rr_boost = 10.0
 
                 pattern_boost = 15.0 if len(all_pattern_facts) > 0 else 0.0
-                trend_boost = 10.0  # Golden cross strategy already verifies trend alignment
+                trend_boost = 10.0
 
                 confidence = min(95.0, base_score + rr_boost + pattern_boost + trend_boost)
                 if confidence >= 70.0:
@@ -148,30 +269,34 @@ class DailySignalRunner:
                 else:
                     quality = "LOW"
 
-                reports.append(SignalReport(
-                    run_date=run_date,
-                    ticker=ticker,
-                    strategy_name=strategy.name,
-                    action=action,
-                    entry_price=entry_price,
-                    stop_loss_price=stop_loss_price,
-                    target_price=target_price,
-                    position_size=position_size,
-                    validation_status=status,
-                    reasoning=reasoning,
-                    confidence_score=confidence,
-                    reward_to_risk=reward_to_risk,
-                    signal_quality=quality
-                ))
+                reports.append(
+                    SignalReport(
+                        run_date=run_date,
+                        ticker=ticker,
+                        strategy_name=strategy.name,
+                        action=action,
+                        entry_price=entry_price,
+                        stop_loss_price=stop_loss_price,
+                        target_price=target_price,
+                        position_size=position_size,
+                        validation_status=status,
+                        reasoning=reasoning,
+                        confidence_score=confidence,
+                        reward_to_risk=reward_to_risk,
+                        signal_quality=quality,
+                    )
+                )
             else:
-                reports.append(SignalReport(
-                    run_date=run_date,
-                    ticker=ticker,
-                    strategy_name=strategy.name,
-                    action=RecommendationAction.HOLD,
-                    validation_status=status,
-                    reasoning=f"No crossover signal generated at {run_date} close."
-                ))
+                reports.append(
+                    SignalReport(
+                        run_date=run_date,
+                        ticker=ticker,
+                        strategy_name=strategy.name,
+                        action=RecommendationAction.HOLD,
+                        validation_status=status,
+                        reasoning=f"No crossover signal generated at {run_date} close.",
+                    )
+                )
 
         return reports
 
@@ -182,11 +307,21 @@ class DailySignalRunner:
         failed_count = 0
         total_tickers = len(tickers)
 
+        # Pre-fetch live quotes from Upstox if enabled
+        live_quotes: Dict[str, Any] = {}
+        if self._use_upstox and self._upstox_connector:
+            if verbose:
+                print(f"Fetching live Upstox quotes for {len(tickers)} tickers in batch...")
+            live_quotes = self._fetch_upstox_batch_quotes(tickers)
+            if verbose:
+                print(f"  Received live quotes for {len(live_quotes)} tickers.")
+
         for idx, ticker in enumerate(tickers, start=1):
             if verbose and (idx % 25 == 1 or idx == total_tickers):
                 print(f"  [{idx}/{total_tickers}] Evaluating {ticker}...")
             try:
-                reports = self.run_ticker(ticker, run_date)
+                t_quote = live_quotes.get(ticker)
+                reports = self.run_ticker(ticker, run_date, live_quote=t_quote)
                 all_reports.extend(reports)
                 success_count += 1
             except Exception as e:
