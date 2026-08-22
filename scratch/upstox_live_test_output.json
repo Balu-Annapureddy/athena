@@ -1,0 +1,952 @@
+{
+  "metadata": {
+    "test_run_utc": "2026-08-22T04:08:11.155450+00:00",
+    "test_run_ist": "2026-08-22T09:38:11.155450",
+    "instruments_queried": [
+      "NSE_EQ|INE002A01018",
+      "NSE_EQ|INE040A01034",
+      "NSE_EQ|INE009A01021",
+      "NSE_EQ|INE467B01029",
+      "NSE_EQ|INE090A01021"
+    ]
+  },
+  "ltp_test": {
+    "request_url": "https://api.upstox.com/v2/market-quote/ltp?instrument_key=NSE_EQ%7CINE002A01018%2CNSE_EQ%7CINE040A01034%2CNSE_EQ%7CINE009A01021%2CNSE_EQ%7CINE467B01029%2CNSE_EQ%7CINE090A01021",
+    "request_timestamp_utc": "2026-08-22T04:08:11.155450+00:00",
+    "raw_response": {
+      "status": "success",
+      "data": {
+        "NSE_EQ:HDFCBANK": {
+          "last_price": 726.95,
+          "instrument_token": "NSE_EQ|INE040A01034"
+        },
+        "NSE_EQ:TCS": {
+          "last_price": 2302.0,
+          "instrument_token": "NSE_EQ|INE467B01029"
+        },
+        "NSE_EQ:RELIANCE": {
+          "last_price": 1316.0,
+          "instrument_token": "NSE_EQ|INE002A01018"
+        },
+        "NSE_EQ:ICICIBANK": {
+          "last_price": 1420.0,
+          "instrument_token": "NSE_EQ|INE090A01021"
+        },
+        "NSE_EQ:INFY": {
+          "last_price": 1121.0,
+          "instrument_token": "NSE_EQ|INE009A01021"
+        }
+      }
+    }
+  },
+  "market_quotes_test": {
+    "request_url": "https://api.upstox.com/v2/market-quote/quotes?instrument_key=NSE_EQ%7CINE002A01018%2CNSE_EQ%7CINE040A01034%2CNSE_EQ%7CINE009A01021%2CNSE_EQ%7CINE467B01029%2CNSE_EQ%7CINE090A01021",
+    "request_timestamp_utc": "2026-08-22T04:08:13.572201+00:00",
+    "raw_response": {
+      "status": "success",
+      "data": {
+        "NSE_EQ:HDFCBANK": {
+          "ohlc": {
+            "open": 728.3,
+            "high": 732.8,
+            "low": 726.6,
+            "close": 726.95
+          },
+          "depth": {
+            "buy": [
+              {
+                "quantity": 18859,
+                "price": 726.95,
+                "orders": 99
+              },
+              {
+                "quantity": 0,
+                "price": 0.0,
+                "orders": 0
+              },
+              {
+                "quantity": 0,
+                "price": 0.0,
+                "orders": 0
+              },
+              {
+                "quantity": 0,
+                "price": 0.0,
+                "orders": 0
+              },
+              {
+                "quantity": 0,
+                "price": 0.0,
+                "orders": 0
+              }
+            ],
+            "sell": [
+              {
+                "quantity": 0,
+                "price": 0.0,
+                "orders": 0
+              },
+              {
+                "quantity": 0,
+                "price": 0.0,
+                "orders": 0
+              },
+              {
+                "quantity": 0,
+                "price": 0.0,
+                "orders": 0
+              },
+              {
+                "quantity": 0,
+                "price": 0.0,
+                "orders": 0
+              },
+              {
+                "quantity": 0,
+                "price": 0.0,
+                "orders": 0
+              }
+            ]
+          },
+          "timestamp": "2026-08-22T09:38:32.027+05:30",
+          "instrument_token": "NSE_EQ|INE040A01034",
+          "symbol": "HDFCBANK",
+          "last_price": 726.95,
+          "volume": 26029811,
+          "average_price": 730.4,
+          "oi": 0.0,
+          "net_change": 1.9,
+          "total_buy_quantity": 18859.0,
+          "total_sell_quantity": 0.0,
+          "lower_circuit_limit": 654.3,
+          "upper_circuit_limit": 799.6,
+          "last_trade_time": "1787308175264",
+          "oi_day_high": 0.0,
+          "oi_day_low": 0.0
+        },
+        "NSE_EQ:TCS": {
+          "ohlc": {
+            "open": 2290.1,
+            "high": 2307.2,
+            "low": 2263.3,
+            "close": 2302.0
+          },
+          "depth": {
+            "buy": [
+              {
+                "quantity": 0,
+                "price": 0.0,
+                "orders": 0
+              },
+              {
+                "quantity": 0,
+                "price": 0.0,
+                "orders": 0
+              },
+              {
+                "quantity": 0,
+                "price": 0.0,
+                "orders": 0
+              },
+              {
+                "quantity": 0,
+                "price": 0.0,
+                "orders": 0
+              },
+              {
+                "quantity": 0,
+                "price": 0.0,
+                "orders": 0
+              }
+            ],
+            "sell": [
+              {
+                "quantity": 1924,
+                "price": 2302.0,
+                "orders": 23
+              },
+              {
+                "quantity": 0,
+                "price": 0.0,
+                "orders": 0
+              },
+              {
+                "quantity": 0,
+                "price": 0.0,
+                "orders": 0
+              },
+              {
+                "quantity": 0,
+                "price": 0.0,
+                "orders": 0
+              },
+              {
+                "quantity": 0,
+                "price": 0.0,
+                "orders": 0
+              }
+            ]
+          },
+          "timestamp": "2026-08-22T09:38:32.027+05:30",
+          "instrument_token": "NSE_EQ|INE467B01029",
+          "symbol": "TCS",
+          "last_price": 2302.0,
+          "volume": 2066749,
+          "average_price": 2290.6,
+          "oi": 0.0,
+          "net_change": 4.0,
+          "total_buy_quantity": 0.0,
+          "total_sell_quantity": 1924.0,
+          "lower_circuit_limit": 2071.8,
+          "upper_circuit_limit": 2532.2,
+          "last_trade_time": "1787308197723",
+          "oi_day_high": 0.0,
+          "oi_day_low": 0.0
+        },
+        "NSE_EQ:RELIANCE": {
+          "ohlc": {
+            "open": 1314.0,
+            "high": 1316.0,
+            "low": 1308.0,
+            "close": 1316.0
+          },
+          "depth": {
+            "buy": [
+              {
+                "quantity": 0,
+                "price": 0.0,
+                "orders": 0
+              },
+              {
+                "quantity": 0,
+                "price": 0.0,
+                "orders": 0
+              },
+              {
+                "quantity": 0,
+                "price": 0.0,
+                "orders": 0
+              },
+              {
+                "quantity": 0,
+                "price": 0.0,
+                "orders": 0
+              },
+              {
+                "quantity": 0,
+                "price": 0.0,
+                "orders": 0
+              }
+            ],
+            "sell": [
+              {
+                "quantity": 36133,
+                "price": 1316.0,
+                "orders": 59
+              },
+              {
+                "quantity": 0,
+                "price": 0.0,
+                "orders": 0
+              },
+              {
+                "quantity": 0,
+                "price": 0.0,
+                "orders": 0
+              },
+              {
+                "quantity": 0,
+                "price": 0.0,
+                "orders": 0
+              },
+              {
+                "quantity": 0,
+                "price": 0.0,
+                "orders": 0
+              }
+            ]
+          },
+          "timestamp": "2026-08-22T09:38:32.027+05:30",
+          "instrument_token": "NSE_EQ|INE002A01018",
+          "symbol": "RELIANCE",
+          "last_price": 1316.0,
+          "volume": 5434871,
+          "average_price": 1311.2,
+          "oi": 0.0,
+          "net_change": 2.8,
+          "total_buy_quantity": 0.0,
+          "total_sell_quantity": 36133.0,
+          "lower_circuit_limit": 1184.4,
+          "upper_circuit_limit": 1447.6,
+          "last_trade_time": "1787308033247",
+          "oi_day_high": 0.0,
+          "oi_day_low": 0.0
+        },
+        "NSE_EQ:ICICIBANK": {
+          "ohlc": {
+            "open": 1417.0,
+            "high": 1420.0,
+            "low": 1411.2,
+            "close": 1420.0
+          },
+          "depth": {
+            "buy": [
+              {
+                "quantity": 0,
+                "price": 0.0,
+                "orders": 0
+              },
+              {
+                "quantity": 0,
+                "price": 0.0,
+                "orders": 0
+              },
+              {
+                "quantity": 0,
+                "price": 0.0,
+                "orders": 0
+              },
+              {
+                "quantity": 0,
+                "price": 0.0,
+                "orders": 0
+              },
+              {
+                "quantity": 0,
+                "price": 0.0,
+                "orders": 0
+              }
+            ],
+            "sell": [
+              {
+                "quantity": 4295,
+                "price": 1420.0,
+                "orders": 17
+              },
+              {
+                "quantity": 0,
+                "price": 0.0,
+                "orders": 0
+              },
+              {
+                "quantity": 0,
+                "price": 0.0,
+                "orders": 0
+              },
+              {
+                "quantity": 0,
+                "price": 0.0,
+                "orders": 0
+              },
+              {
+                "quantity": 0,
+                "price": 0.0,
+                "orders": 0
+              }
+            ]
+          },
+          "timestamp": "2026-08-22T09:38:32.027+05:30",
+          "instrument_token": "NSE_EQ|INE090A01021",
+          "symbol": "ICICIBANK",
+          "last_price": 1420.0,
+          "volume": 4565280,
+          "average_price": 1417.2,
+          "oi": 0.0,
+          "net_change": 8.1,
+          "total_buy_quantity": 0.0,
+          "total_sell_quantity": 4295.0,
+          "lower_circuit_limit": 1278.0,
+          "upper_circuit_limit": 1562.0,
+          "last_trade_time": "1787308106915",
+          "oi_day_high": 0.0,
+          "oi_day_low": 0.0
+        },
+        "NSE_EQ:INFY": {
+          "ohlc": {
+            "open": 1133.0,
+            "high": 1133.5,
+            "low": 1118.0,
+            "close": 1121.0
+          },
+          "depth": {
+            "buy": [
+              {
+                "quantity": 0,
+                "price": 0.0,
+                "orders": 0
+              },
+              {
+                "quantity": 0,
+                "price": 0.0,
+                "orders": 0
+              },
+              {
+                "quantity": 0,
+                "price": 0.0,
+                "orders": 0
+              },
+              {
+                "quantity": 0,
+                "price": 0.0,
+                "orders": 0
+              },
+              {
+                "quantity": 0,
+                "price": 0.0,
+                "orders": 0
+              }
+            ],
+            "sell": [
+              {
+                "quantity": 992,
+                "price": 1121.0,
+                "orders": 2
+              },
+              {
+                "quantity": 0,
+                "price": 0.0,
+                "orders": 0
+              },
+              {
+                "quantity": 0,
+                "price": 0.0,
+                "orders": 0
+              },
+              {
+                "quantity": 0,
+                "price": 0.0,
+                "orders": 0
+              },
+              {
+                "quantity": 0,
+                "price": 0.0,
+                "orders": 0
+              }
+            ]
+          },
+          "timestamp": "2026-08-22T09:38:32.027+05:30",
+          "instrument_token": "NSE_EQ|INE009A01021",
+          "symbol": "INFY",
+          "last_price": 1121.0,
+          "volume": 6094967,
+          "average_price": 1126.03,
+          "oi": 0.0,
+          "net_change": -9.0,
+          "total_buy_quantity": 0.0,
+          "total_sell_quantity": 992.0,
+          "lower_circuit_limit": 1008.9,
+          "upper_circuit_limit": 1233.1,
+          "last_trade_time": "1787308098031",
+          "oi_day_high": 0.0,
+          "oi_day_low": 0.0
+        }
+      }
+    }
+  },
+  "historical_candles_test": {
+    "request_url": "https://api.upstox.com/v2/historical-candle/NSE_EQ%7CINE002A01018/day/2026-08-20/2026-08-01",
+    "request_timestamp_utc": "2026-08-22T04:08:13.916320+00:00",
+    "raw_response": {
+      "status": "success",
+      "data": {
+        "candles": [
+          [
+            "2026-08-20T00:00:00+05:30",
+            1315.5,
+            1316.5,
+            1307.0,
+            1313.2,
+            5546227,
+            0
+          ],
+          [
+            "2026-08-19T00:00:00+05:30",
+            1320.3,
+            1321.6,
+            1303.5,
+            1311.0,
+            7489365,
+            0
+          ],
+          [
+            "2026-08-18T00:00:00+05:30",
+            1314.0,
+            1328.6,
+            1311.2,
+            1322.0,
+            10180567,
+            0
+          ],
+          [
+            "2026-08-17T00:00:00+05:30",
+            1314.0,
+            1320.8,
+            1298.1,
+            1316.0,
+            13383867,
+            0
+          ],
+          [
+            "2026-08-14T00:00:00+05:30",
+            1317.0,
+            1317.5,
+            1301.5,
+            1310.0,
+            10497358,
+            0
+          ],
+          [
+            "2026-08-13T00:00:00+05:30",
+            1327.8,
+            1327.8,
+            1307.2,
+            1317.0,
+            9397301,
+            0
+          ],
+          [
+            "2026-08-12T00:00:00+05:30",
+            1323.9,
+            1329.0,
+            1309.2,
+            1329.0,
+            7901012,
+            0
+          ],
+          [
+            "2026-08-11T00:00:00+05:30",
+            1326.6,
+            1328.7,
+            1314.1,
+            1323.9,
+            9953124,
+            0
+          ],
+          [
+            "2026-08-10T00:00:00+05:30",
+            1330.1,
+            1332.9,
+            1321.3,
+            1327.3,
+            8207102,
+            0
+          ],
+          [
+            "2026-08-07T00:00:00+05:30",
+            1320.0,
+            1337.0,
+            1316.6,
+            1334.8,
+            9885638,
+            0
+          ],
+          [
+            "2026-08-06T00:00:00+05:30",
+            1285.0,
+            1325.2,
+            1281.2,
+            1325.0,
+            20342297,
+            0
+          ],
+          [
+            "2026-08-05T00:00:00+05:30",
+            1293.0,
+            1299.0,
+            1270.1,
+            1280.0,
+            24820782,
+            0
+          ],
+          [
+            "2026-08-04T00:00:00+05:30",
+            1315.0,
+            1315.0,
+            1286.4,
+            1290.9,
+            10759546,
+            0
+          ],
+          [
+            "2026-08-03T00:00:00+05:30",
+            1315.2,
+            1319.0,
+            1306.0,
+            1319.0,
+            7508023,
+            0
+          ]
+        ]
+      }
+    }
+  },
+  "normalized_connector_payloads": {
+    "count": 14,
+    "payloads": [
+      {
+        "source_id": "UPSTOX_NSE_EQ|INE002A01018",
+        "entity": "NSE_EQ|INE002A01018",
+        "payload_type": "PRICE",
+        "payload_class": "PricePayload",
+        "payload": {
+          "open": 1315.5,
+          "high": 1316.5,
+          "low": 1307.0,
+          "close": 1313.2,
+          "volume": 5546227.0,
+          "timeframe": "1D"
+        },
+        "source_type": "BROKER",
+        "verification": "VERIFIED",
+        "provenance": {
+          "connector_name": "UpstoxConnector",
+          "provider": "UpstoxV2",
+          "retrieval_timestamp": "2026-08-22T04:08:14.575454+00:00",
+          "publication_timestamp": "2026-08-20T00:00:00+05:30",
+          "raw_source_id": "UPSTOX:NSE_EQ|INE002A01018:2026-08-20T00:00:00+05:30",
+          "checksum": "upstox_sha256",
+          "connector_version": "1.0.0",
+          "ingestion_run_id": "run-upstox-c520dc6c"
+        }
+      },
+      {
+        "source_id": "UPSTOX_NSE_EQ|INE002A01018",
+        "entity": "NSE_EQ|INE002A01018",
+        "payload_type": "PRICE",
+        "payload_class": "PricePayload",
+        "payload": {
+          "open": 1320.3,
+          "high": 1321.6,
+          "low": 1303.5,
+          "close": 1311.0,
+          "volume": 7489365.0,
+          "timeframe": "1D"
+        },
+        "source_type": "BROKER",
+        "verification": "VERIFIED",
+        "provenance": {
+          "connector_name": "UpstoxConnector",
+          "provider": "UpstoxV2",
+          "retrieval_timestamp": "2026-08-22T04:08:14.575454+00:00",
+          "publication_timestamp": "2026-08-19T00:00:00+05:30",
+          "raw_source_id": "UPSTOX:NSE_EQ|INE002A01018:2026-08-19T00:00:00+05:30",
+          "checksum": "upstox_sha256",
+          "connector_version": "1.0.0",
+          "ingestion_run_id": "run-upstox-c520dc6c"
+        }
+      },
+      {
+        "source_id": "UPSTOX_NSE_EQ|INE002A01018",
+        "entity": "NSE_EQ|INE002A01018",
+        "payload_type": "PRICE",
+        "payload_class": "PricePayload",
+        "payload": {
+          "open": 1314.0,
+          "high": 1328.6,
+          "low": 1311.2,
+          "close": 1322.0,
+          "volume": 10180567.0,
+          "timeframe": "1D"
+        },
+        "source_type": "BROKER",
+        "verification": "VERIFIED",
+        "provenance": {
+          "connector_name": "UpstoxConnector",
+          "provider": "UpstoxV2",
+          "retrieval_timestamp": "2026-08-22T04:08:14.575454+00:00",
+          "publication_timestamp": "2026-08-18T00:00:00+05:30",
+          "raw_source_id": "UPSTOX:NSE_EQ|INE002A01018:2026-08-18T00:00:00+05:30",
+          "checksum": "upstox_sha256",
+          "connector_version": "1.0.0",
+          "ingestion_run_id": "run-upstox-c520dc6c"
+        }
+      },
+      {
+        "source_id": "UPSTOX_NSE_EQ|INE002A01018",
+        "entity": "NSE_EQ|INE002A01018",
+        "payload_type": "PRICE",
+        "payload_class": "PricePayload",
+        "payload": {
+          "open": 1314.0,
+          "high": 1320.8,
+          "low": 1298.1,
+          "close": 1316.0,
+          "volume": 13383867.0,
+          "timeframe": "1D"
+        },
+        "source_type": "BROKER",
+        "verification": "VERIFIED",
+        "provenance": {
+          "connector_name": "UpstoxConnector",
+          "provider": "UpstoxV2",
+          "retrieval_timestamp": "2026-08-22T04:08:14.575454+00:00",
+          "publication_timestamp": "2026-08-17T00:00:00+05:30",
+          "raw_source_id": "UPSTOX:NSE_EQ|INE002A01018:2026-08-17T00:00:00+05:30",
+          "checksum": "upstox_sha256",
+          "connector_version": "1.0.0",
+          "ingestion_run_id": "run-upstox-c520dc6c"
+        }
+      },
+      {
+        "source_id": "UPSTOX_NSE_EQ|INE002A01018",
+        "entity": "NSE_EQ|INE002A01018",
+        "payload_type": "PRICE",
+        "payload_class": "PricePayload",
+        "payload": {
+          "open": 1317.0,
+          "high": 1317.5,
+          "low": 1301.5,
+          "close": 1310.0,
+          "volume": 10497358.0,
+          "timeframe": "1D"
+        },
+        "source_type": "BROKER",
+        "verification": "VERIFIED",
+        "provenance": {
+          "connector_name": "UpstoxConnector",
+          "provider": "UpstoxV2",
+          "retrieval_timestamp": "2026-08-22T04:08:14.575454+00:00",
+          "publication_timestamp": "2026-08-14T00:00:00+05:30",
+          "raw_source_id": "UPSTOX:NSE_EQ|INE002A01018:2026-08-14T00:00:00+05:30",
+          "checksum": "upstox_sha256",
+          "connector_version": "1.0.0",
+          "ingestion_run_id": "run-upstox-c520dc6c"
+        }
+      },
+      {
+        "source_id": "UPSTOX_NSE_EQ|INE002A01018",
+        "entity": "NSE_EQ|INE002A01018",
+        "payload_type": "PRICE",
+        "payload_class": "PricePayload",
+        "payload": {
+          "open": 1327.8,
+          "high": 1327.8,
+          "low": 1307.2,
+          "close": 1317.0,
+          "volume": 9397301.0,
+          "timeframe": "1D"
+        },
+        "source_type": "BROKER",
+        "verification": "VERIFIED",
+        "provenance": {
+          "connector_name": "UpstoxConnector",
+          "provider": "UpstoxV2",
+          "retrieval_timestamp": "2026-08-22T04:08:14.575454+00:00",
+          "publication_timestamp": "2026-08-13T00:00:00+05:30",
+          "raw_source_id": "UPSTOX:NSE_EQ|INE002A01018:2026-08-13T00:00:00+05:30",
+          "checksum": "upstox_sha256",
+          "connector_version": "1.0.0",
+          "ingestion_run_id": "run-upstox-c520dc6c"
+        }
+      },
+      {
+        "source_id": "UPSTOX_NSE_EQ|INE002A01018",
+        "entity": "NSE_EQ|INE002A01018",
+        "payload_type": "PRICE",
+        "payload_class": "PricePayload",
+        "payload": {
+          "open": 1323.9,
+          "high": 1329.0,
+          "low": 1309.2,
+          "close": 1329.0,
+          "volume": 7901012.0,
+          "timeframe": "1D"
+        },
+        "source_type": "BROKER",
+        "verification": "VERIFIED",
+        "provenance": {
+          "connector_name": "UpstoxConnector",
+          "provider": "UpstoxV2",
+          "retrieval_timestamp": "2026-08-22T04:08:14.575454+00:00",
+          "publication_timestamp": "2026-08-12T00:00:00+05:30",
+          "raw_source_id": "UPSTOX:NSE_EQ|INE002A01018:2026-08-12T00:00:00+05:30",
+          "checksum": "upstox_sha256",
+          "connector_version": "1.0.0",
+          "ingestion_run_id": "run-upstox-c520dc6c"
+        }
+      },
+      {
+        "source_id": "UPSTOX_NSE_EQ|INE002A01018",
+        "entity": "NSE_EQ|INE002A01018",
+        "payload_type": "PRICE",
+        "payload_class": "PricePayload",
+        "payload": {
+          "open": 1326.6,
+          "high": 1328.7,
+          "low": 1314.1,
+          "close": 1323.9,
+          "volume": 9953124.0,
+          "timeframe": "1D"
+        },
+        "source_type": "BROKER",
+        "verification": "VERIFIED",
+        "provenance": {
+          "connector_name": "UpstoxConnector",
+          "provider": "UpstoxV2",
+          "retrieval_timestamp": "2026-08-22T04:08:14.575454+00:00",
+          "publication_timestamp": "2026-08-11T00:00:00+05:30",
+          "raw_source_id": "UPSTOX:NSE_EQ|INE002A01018:2026-08-11T00:00:00+05:30",
+          "checksum": "upstox_sha256",
+          "connector_version": "1.0.0",
+          "ingestion_run_id": "run-upstox-c520dc6c"
+        }
+      },
+      {
+        "source_id": "UPSTOX_NSE_EQ|INE002A01018",
+        "entity": "NSE_EQ|INE002A01018",
+        "payload_type": "PRICE",
+        "payload_class": "PricePayload",
+        "payload": {
+          "open": 1330.1,
+          "high": 1332.9,
+          "low": 1321.3,
+          "close": 1327.3,
+          "volume": 8207102.0,
+          "timeframe": "1D"
+        },
+        "source_type": "BROKER",
+        "verification": "VERIFIED",
+        "provenance": {
+          "connector_name": "UpstoxConnector",
+          "provider": "UpstoxV2",
+          "retrieval_timestamp": "2026-08-22T04:08:14.575454+00:00",
+          "publication_timestamp": "2026-08-10T00:00:00+05:30",
+          "raw_source_id": "UPSTOX:NSE_EQ|INE002A01018:2026-08-10T00:00:00+05:30",
+          "checksum": "upstox_sha256",
+          "connector_version": "1.0.0",
+          "ingestion_run_id": "run-upstox-c520dc6c"
+        }
+      },
+      {
+        "source_id": "UPSTOX_NSE_EQ|INE002A01018",
+        "entity": "NSE_EQ|INE002A01018",
+        "payload_type": "PRICE",
+        "payload_class": "PricePayload",
+        "payload": {
+          "open": 1320.0,
+          "high": 1337.0,
+          "low": 1316.6,
+          "close": 1334.8,
+          "volume": 9885638.0,
+          "timeframe": "1D"
+        },
+        "source_type": "BROKER",
+        "verification": "VERIFIED",
+        "provenance": {
+          "connector_name": "UpstoxConnector",
+          "provider": "UpstoxV2",
+          "retrieval_timestamp": "2026-08-22T04:08:14.575454+00:00",
+          "publication_timestamp": "2026-08-07T00:00:00+05:30",
+          "raw_source_id": "UPSTOX:NSE_EQ|INE002A01018:2026-08-07T00:00:00+05:30",
+          "checksum": "upstox_sha256",
+          "connector_version": "1.0.0",
+          "ingestion_run_id": "run-upstox-c520dc6c"
+        }
+      },
+      {
+        "source_id": "UPSTOX_NSE_EQ|INE002A01018",
+        "entity": "NSE_EQ|INE002A01018",
+        "payload_type": "PRICE",
+        "payload_class": "PricePayload",
+        "payload": {
+          "open": 1285.0,
+          "high": 1325.2,
+          "low": 1281.2,
+          "close": 1325.0,
+          "volume": 20342297.0,
+          "timeframe": "1D"
+        },
+        "source_type": "BROKER",
+        "verification": "VERIFIED",
+        "provenance": {
+          "connector_name": "UpstoxConnector",
+          "provider": "UpstoxV2",
+          "retrieval_timestamp": "2026-08-22T04:08:14.575454+00:00",
+          "publication_timestamp": "2026-08-06T00:00:00+05:30",
+          "raw_source_id": "UPSTOX:NSE_EQ|INE002A01018:2026-08-06T00:00:00+05:30",
+          "checksum": "upstox_sha256",
+          "connector_version": "1.0.0",
+          "ingestion_run_id": "run-upstox-c520dc6c"
+        }
+      },
+      {
+        "source_id": "UPSTOX_NSE_EQ|INE002A01018",
+        "entity": "NSE_EQ|INE002A01018",
+        "payload_type": "PRICE",
+        "payload_class": "PricePayload",
+        "payload": {
+          "open": 1293.0,
+          "high": 1299.0,
+          "low": 1270.1,
+          "close": 1280.0,
+          "volume": 24820782.0,
+          "timeframe": "1D"
+        },
+        "source_type": "BROKER",
+        "verification": "VERIFIED",
+        "provenance": {
+          "connector_name": "UpstoxConnector",
+          "provider": "UpstoxV2",
+          "retrieval_timestamp": "2026-08-22T04:08:14.575454+00:00",
+          "publication_timestamp": "2026-08-05T00:00:00+05:30",
+          "raw_source_id": "UPSTOX:NSE_EQ|INE002A01018:2026-08-05T00:00:00+05:30",
+          "checksum": "upstox_sha256",
+          "connector_version": "1.0.0",
+          "ingestion_run_id": "run-upstox-c520dc6c"
+        }
+      },
+      {
+        "source_id": "UPSTOX_NSE_EQ|INE002A01018",
+        "entity": "NSE_EQ|INE002A01018",
+        "payload_type": "PRICE",
+        "payload_class": "PricePayload",
+        "payload": {
+          "open": 1315.0,
+          "high": 1315.0,
+          "low": 1286.4,
+          "close": 1290.9,
+          "volume": 10759546.0,
+          "timeframe": "1D"
+        },
+        "source_type": "BROKER",
+        "verification": "VERIFIED",
+        "provenance": {
+          "connector_name": "UpstoxConnector",
+          "provider": "UpstoxV2",
+          "retrieval_timestamp": "2026-08-22T04:08:14.575454+00:00",
+          "publication_timestamp": "2026-08-04T00:00:00+05:30",
+          "raw_source_id": "UPSTOX:NSE_EQ|INE002A01018:2026-08-04T00:00:00+05:30",
+          "checksum": "upstox_sha256",
+          "connector_version": "1.0.0",
+          "ingestion_run_id": "run-upstox-c520dc6c"
+        }
+      },
+      {
+        "source_id": "UPSTOX_NSE_EQ|INE002A01018",
+        "entity": "NSE_EQ|INE002A01018",
+        "payload_type": "PRICE",
+        "payload_class": "PricePayload",
+        "payload": {
+          "open": 1315.2,
+          "high": 1319.0,
+          "low": 1306.0,
+          "close": 1319.0,
+          "volume": 7508023.0,
+          "timeframe": "1D"
+        },
+        "source_type": "BROKER",
+        "verification": "VERIFIED",
+        "provenance": {
+          "connector_name": "UpstoxConnector",
+          "provider": "UpstoxV2",
+          "retrieval_timestamp": "2026-08-22T04:08:14.575454+00:00",
+          "publication_timestamp": "2026-08-03T00:00:00+05:30",
+          "raw_source_id": "UPSTOX:NSE_EQ|INE002A01018:2026-08-03T00:00:00+05:30",
+          "checksum": "upstox_sha256",
+          "connector_version": "1.0.0",
+          "ingestion_run_id": "run-upstox-c520dc6c"
+        }
+      }
+    ]
+  }
+}
