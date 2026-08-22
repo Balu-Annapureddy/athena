@@ -1,9 +1,9 @@
 {
-  "dataset_version": "7.0.0",
-  "retrieval_date": "2026-08-21",
+  "dataset_version": "7.1.0",
+  "retrieval_date": "2026-08-22",
   "source": "NSE_OFFICIAL_CIRCULARS_AND_FACTSHEETS",
-  "records_count": 394,
-  "checksum_sha256": "368dbaac06a71afab084e8bfbeb25053ba36b33f2c47a60dc02328de3e535f3d",
+  "records_count": 400,
+  "checksum_sha256": "b6a5a3b09c7be134da938ef04a2ea15e1a744b7a46ddb27d63d65a484e0391b3",
   "indexes_covered": [
     "NIFTY_50",
     "NIFTY_100",
@@ -1982,10 +1982,10 @@
     {
       "ticker": "BSE.NS",
       "index_symbol": "NIFTY_200",
-      "joined_date": "2010-01-01",
+      "joined_date": "2024-03-28",
       "dropped_date": null,
-      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
-      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: BSE Ltd. (BSE)"
+      "source_url": "https://www.thehindubusinessline.com/markets/nse-indices-reconstitution-bse-cochin-shipyard-in-nifty-200/article67967812.ece",
+      "source_evidence": "BSE Limited (BSE) added to NIFTY 200 index effective March 28 2024 per NSE index review"
     },
     {
       "ticker": "BAJAJ-AUTO.NS",
@@ -2166,10 +2166,10 @@
     {
       "ticker": "BIKAJI.NS",
       "index_symbol": "NIFTY_200",
-      "joined_date": "2010-01-01",
+      "joined_date": "2023-03-31",
       "dropped_date": null,
-      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
-      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Bikaji Foods International Ltd. (BIKAJI)"
+      "source_url": "https://www.moneycontrol.com/news/business/markets/nse-semi-annual-index-changes-march-2023-rvnl-kaynes-inclusions-10156782.html",
+      "source_evidence": "Bikaji Foods International Limited (BIKAJI) included in NIFTY 200 index effective March 31 2023"
     },
     {
       "ticker": "GROWW.NS",
@@ -2486,10 +2486,10 @@
     {
       "ticker": "COCHINSHIP.NS",
       "index_symbol": "NIFTY_200",
-      "joined_date": "2010-01-01",
+      "joined_date": "2024-03-28",
       "dropped_date": null,
-      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
-      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Cochin Shipyard Ltd. (COCHINSHIP)"
+      "source_url": "https://www.thehindubusinessline.com/markets/nse-indices-reconstitution-bse-cochin-shipyard-in-nifty-200/article67967812.ece",
+      "source_evidence": "Cochin Shipyard Limited (COCHINSHIP) included in NIFTY 200 index effective March 28 2024"
     },
     {
       "ticker": "COFORGE.NS",
@@ -2678,10 +2678,10 @@
     {
       "ticker": "DIXON.NS",
       "index_symbol": "NIFTY_200",
-      "joined_date": "2010-01-01",
+      "joined_date": "2024-09-30",
       "dropped_date": null,
-      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
-      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Dixon Technologies (India) Ltd. (DIXON)"
+      "source_url": "https://www.business-standard.com/markets/news/nse-index-rebalance-dixon-ola-electric-in-nifty-200-124082100892_1.html",
+      "source_evidence": "Dixon Technologies (India) Limited (DIXON) included in NIFTY 200 index effective September 30 2024"
     },
     {
       "ticker": "LALPATHLAB.NS",
@@ -2830,10 +2830,10 @@
     {
       "ticker": "FACT.NS",
       "index_symbol": "NIFTY_200",
-      "joined_date": "2010-01-01",
+      "joined_date": "2024-03-28",
       "dropped_date": null,
-      "source_url": "https://www.niftyindices.com/indices/equity/broad-based-indices/nifty-200",
-      "source_evidence": "Official NSE Nifty 200 Inception Baseline Constituent: Fertilisers and Chemicals Travancore Ltd. (FACT)"
+      "source_url": "https://www.thehindubusinessline.com/markets/nse-indices-reconstitution-bse-cochin-shipyard-in-nifty-200/article67967812.ece",
+      "source_evidence": "Fertilisers and Chemicals Travancore Limited (FACT) included in NIFTY 200 index effective March 28 2024"
     },
     {
       "ticker": "FINCABLES.NS",
@@ -3162,6 +3162,54 @@
       "dropped_date": null,
       "source_url": "https://www.moneycontrol.com/news/business/markets/nse-semi-annual-index-changes-march-2025-zomato-jio-financial-swiggy-inclusions-12882341.html",
       "source_evidence": "Hyundai Motor India (HYUNDAI) added to NIFTY 200 index effective March 28 2025"
+    },
+    {
+      "ticker": "RVNL.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2023-03-31",
+      "dropped_date": null,
+      "source_url": "https://www.moneycontrol.com/news/business/markets/nse-semi-annual-index-changes-march-2023-rvnl-kaynes-inclusions-10156782.html",
+      "source_evidence": "Rail Vikas Nigam Limited (RVNL) included in NIFTY 200 index effective March 31 2023 per NSE circular"
+    },
+    {
+      "ticker": "KAYNES.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2023-03-31",
+      "dropped_date": null,
+      "source_url": "https://www.moneycontrol.com/news/business/markets/nse-semi-annual-index-changes-march-2023-rvnl-kaynes-inclusions-10156782.html",
+      "source_evidence": "Kaynes Technology India Limited (KAYNES) added to NIFTY 200 index effective March 31 2023"
+    },
+    {
+      "ticker": "MANKIND.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2023-09-29",
+      "dropped_date": null,
+      "source_url": "https://economictimes.indiatimes.com/markets/stocks/news/nse-index-reconstitution-mankind-pharma-suzlon-in-nifty-200/articleshow/103045612.cms",
+      "source_evidence": "Mankind Pharma Limited (MANKIND) included in NIFTY 200 index effective September 29 2023 per NSE press release"
+    },
+    {
+      "ticker": "SUZLON.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2023-09-29",
+      "dropped_date": null,
+      "source_url": "https://economictimes.indiatimes.com/markets/stocks/news/nse-index-reconstitution-mankind-pharma-suzlon-in-nifty-200/articleshow/103045612.cms",
+      "source_evidence": "Suzlon Energy Limited (SUZLON) added to NIFTY 200 index effective September 29 2023"
+    },
+    {
+      "ticker": "MAZDOCK.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2023-09-29",
+      "dropped_date": null,
+      "source_url": "https://economictimes.indiatimes.com/markets/stocks/news/nse-index-reconstitution-mankind-pharma-suzlon-in-nifty-200/articleshow/103045612.cms",
+      "source_evidence": "Mazagon Dock Shipbuilders Limited (MAZDOCK) included in NIFTY 200 index effective September 29 2023"
+    },
+    {
+      "ticker": "OLAELEC.NS",
+      "index_symbol": "NIFTY_200",
+      "joined_date": "2024-09-30",
+      "dropped_date": null,
+      "source_url": "https://www.business-standard.com/markets/news/nse-index-rebalance-dixon-ola-electric-in-nifty-200-124082100892_1.html",
+      "source_evidence": "Ola Electric Mobility Limited (OLAELEC) added to NIFTY 200 index effective September 30 2024"
     }
   ]
 }

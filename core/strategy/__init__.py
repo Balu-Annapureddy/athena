@@ -8,6 +8,7 @@ from core.strategy.breakout_volume_atr_hybrid import (
 )
 from core.strategy.cross_sectional_momentum import CrossSectionalMomentumStrategy
 from core.strategy.dual_momentum import DualMomentumVolatilityScaledStrategy
+from core.strategy.dual_regime_breakout import DualRegimeBreakoutVolumeATRStrategy
 from core.strategy.golden_cross import GoldenCrossDeathCrossStrategy
 from core.strategy.macd_cross import MACDSignalCrossStrategy
 from core.strategy.momentum_continuation import MomentumContinuationATRStrategy
@@ -30,6 +31,7 @@ __all__ = [
     "BreakoutVolumeATRTrailingHybridStrategy",
     "ShortTermPullbackATRStrategy",
     "MomentumContinuationATRStrategy",
+    "DualRegimeBreakoutVolumeATRStrategy",
     "CrossSectionalMomentumStrategy",
     "DualMomentumVolatilityScaledStrategy",
 ]
