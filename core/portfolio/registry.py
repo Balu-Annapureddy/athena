@@ -11,6 +11,7 @@ from core.strategy.breakout_volume_atr_hybrid import (
     BreakoutVolumeATRTrailingHybridStrategy,
 )
 from core.strategy.cross_sectional_momentum import CrossSectionalMomentumStrategy
+from core.strategy.donchian_trend_atr import DonchianTrendATRStrategy
 from core.strategy.dual_momentum import DualMomentumVolatilityScaledStrategy
 from core.strategy.dual_regime_breakout import DualRegimeBreakoutVolumeATRStrategy
 from core.strategy.golden_cross import GoldenCrossDeathCrossStrategy
@@ -116,6 +117,7 @@ class StrategyRegistry:
             (ShortTermPullbackATRStrategy(), ValidationStatus.UNVALIDATED),
             (MomentumContinuationATRStrategy(), ValidationStatus.UNVALIDATED),
             (DualRegimeBreakoutVolumeATRStrategy(), ValidationStatus.UNVALIDATED),
+            (DonchianTrendATRStrategy(), ValidationStatus.UNVALIDATED),
         ]
         for strat, status in strategies:
             registry.register(
