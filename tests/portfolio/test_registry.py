@@ -72,13 +72,14 @@ class TestStrategyRegistry(unittest.TestCase):
             "DualMomentumVolatilityScaledStrategy",
             "MACDATRTrailingHybridStrategy",
             "ShortTermPullbackATRStrategy",
+            "MomentumContinuationATRStrategy",
         ]
 
         for name in unvalidated_names:
             self.assertEqual(registry.get_status(name), ValidationStatus.UNVALIDATED)
 
         active = registry.get_active_strategies()
-        self.assertEqual(len(active), 12)
+        self.assertEqual(len(active), 13)
 
 
 if __name__ == "__main__":

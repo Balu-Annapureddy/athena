@@ -5,6 +5,7 @@ from core.data.connectors.corporate import CorporateConnector, MockCorporateConn
 from core.data.connectors.economic import EconomicConnector, MockEconomicConnector
 from core.data.connectors.market import MarketConnector, MockMarketConnector
 from core.data.connectors.news import MockNewsConnector, NewsConnector
+from core.data.connectors.upstox_connector import UpstoxConnector
 
 __all__ = [
     "Capabilities",
@@ -17,4 +18,5 @@ __all__ = [
     "MockNewsConnector",
     "EconomicConnector",
     "MockEconomicConnector",
+    "UpstoxConnector",
 ]
