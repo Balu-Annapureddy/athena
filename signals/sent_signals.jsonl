@@ -79,3 +79,12 @@
 {"trade_id": "T082714", "ticker": "MRPL.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-08-27", "status": "ACTIVE"}
 {"trade_id": "T082715", "ticker": "PCBL.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-08-27", "status": "ACTIVE"}
 {"trade_id": "T082716", "ticker": "TATACAP.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-08-27", "status": "ACTIVE"}
+{"trade_id": "T082801", "ticker": "APLAPOLLO.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-08-28", "status": "ACTIVE"}
+{"trade_id": "T082802", "ticker": "CRISIL.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-08-28", "status": "ACTIVE"}
+{"trade_id": "T082803", "ticker": "DEVYANI.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-08-28", "status": "ACTIVE"}
+{"trade_id": "T082804", "ticker": "MEDANTA.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-08-28", "status": "ACTIVE"}
+{"trade_id": "T082805", "ticker": "HAL.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-08-28", "status": "ACTIVE"}
+{"trade_id": "T082806", "ticker": "LICHSGFIN.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-08-28", "status": "ACTIVE"}
+{"trade_id": "T082807", "ticker": "SONACOMS.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-08-28", "status": "ACTIVE"}
+{"trade_id": "T082808", "ticker": "TITAN.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-08-28", "status": "ACTIVE"}
+{"trade_id": "T082809", "ticker": "TRAVELFOOD.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-08-28", "status": "ACTIVE"}
