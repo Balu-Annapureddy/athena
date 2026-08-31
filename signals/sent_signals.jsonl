@@ -88,3 +88,13 @@
 {"trade_id": "T082807", "ticker": "SONACOMS.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-08-28", "status": "ACTIVE"}
 {"trade_id": "T082808", "ticker": "TITAN.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-08-28", "status": "ACTIVE"}
 {"trade_id": "T082809", "ticker": "TRAVELFOOD.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-08-28", "status": "ACTIVE"}
+{"trade_id": "T083101", "ticker": "ATHERENERG.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-08-31", "status": "ACTIVE"}
+{"trade_id": "T083102", "ticker": "COFORGE.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-08-31", "status": "ACTIVE"}
+{"trade_id": "T083103", "ticker": "MINDACORP.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-08-31", "status": "ACTIVE"}
+{"trade_id": "T083104", "ticker": "NSLNISP.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-08-31", "status": "ACTIVE"}
+{"trade_id": "T083105", "ticker": "PERSISTENT.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-08-31", "status": "ACTIVE"}
+{"trade_id": "T083106", "ticker": "PIRAMALFIN.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-08-31", "status": "ACTIVE"}
+{"trade_id": "T083107", "ticker": "RKFORGE.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-08-31", "status": "ACTIVE"}
+{"trade_id": "T083108", "ticker": "REDINGTON.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-08-31", "status": "ACTIVE"}
+{"trade_id": "T083109", "ticker": "SAGILITY.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-08-31", "status": "ACTIVE"}
+{"trade_id": "T083110", "ticker": "SHYAMMETL.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-08-31", "status": "ACTIVE"}
