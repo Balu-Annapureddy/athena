@@ -98,3 +98,17 @@
 {"trade_id": "T083108", "ticker": "REDINGTON.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-08-31", "status": "ACTIVE"}
 {"trade_id": "T083109", "ticker": "SAGILITY.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-08-31", "status": "ACTIVE"}
 {"trade_id": "T083110", "ticker": "SHYAMMETL.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-08-31", "status": "ACTIVE"}
+{"trade_id": "T090101", "ticker": "AJANTPHARM.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-01", "status": "ACTIVE"}
+{"trade_id": "T090102", "ticker": "BALRAMCHIN.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-01", "status": "ACTIVE"}
+{"trade_id": "T090103", "ticker": "BHARATFORG.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-01", "status": "ACTIVE"}
+{"trade_id": "T090104", "ticker": "NYKAA.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-01", "status": "ACTIVE"}
+{"trade_id": "T090105", "ticker": "IDFCFIRSTB.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-01", "status": "ACTIVE"}
+{"trade_id": "T090106", "ticker": "INDIANB.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-01", "status": "ACTIVE"}
+{"trade_id": "T090107", "ticker": "JUBLFOOD.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-01", "status": "ACTIVE"}
+{"trade_id": "T090108", "ticker": "KPRMILL.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-01", "status": "ACTIVE"}
+{"trade_id": "T090109", "ticker": "KEI.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-01", "status": "ACTIVE"}
+{"trade_id": "T090110", "ticker": "LENSKART.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-01", "status": "ACTIVE"}
+{"trade_id": "T090111", "ticker": "OIL.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-01", "status": "ACTIVE"}
+{"trade_id": "T090112", "ticker": "RRKABEL.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-01", "status": "ACTIVE"}
+{"trade_id": "T090113", "ticker": "SAPPHIRE.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-01", "status": "ACTIVE"}
+{"trade_id": "T090114", "ticker": "NIACL.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-01", "status": "ACTIVE"}
