@@ -112,3 +112,7 @@
 {"trade_id": "T090112", "ticker": "RRKABEL.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-01", "status": "ACTIVE"}
 {"trade_id": "T090113", "ticker": "SAPPHIRE.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-01", "status": "ACTIVE"}
 {"trade_id": "T090114", "ticker": "NIACL.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-01", "status": "ACTIVE"}
+{"trade_id": "T090201", "ticker": "BAJAJ-AUTO.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-02", "status": "ACTIVE"}
+{"trade_id": "T090202", "ticker": "DEEPAKNTR.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-02", "status": "ACTIVE"}
+{"trade_id": "T090203", "ticker": "GRAPHITE.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-02", "status": "ACTIVE"}
+{"trade_id": "T090204", "ticker": "SAILIFE.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-02", "status": "ACTIVE"}
