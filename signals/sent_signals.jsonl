@@ -116,3 +116,7 @@
 {"trade_id": "T090202", "ticker": "DEEPAKNTR.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-02", "status": "ACTIVE"}
 {"trade_id": "T090203", "ticker": "GRAPHITE.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-02", "status": "ACTIVE"}
 {"trade_id": "T090204", "ticker": "SAILIFE.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-02", "status": "ACTIVE"}
+{"trade_id": "T090301", "ticker": "BEML.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-03", "status": "ACTIVE"}
+{"trade_id": "T090302", "ticker": "CLEAN.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-03", "status": "ACTIVE"}
+{"trade_id": "T090303", "ticker": "PNB.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-03", "status": "ACTIVE"}
+{"trade_id": "T090304", "ticker": "ZENTEC.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-03", "status": "ACTIVE"}
