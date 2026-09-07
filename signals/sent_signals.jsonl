@@ -124,3 +124,12 @@
 {"trade_id": "T090402", "ticker": "APARINDS.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-04", "status": "ACTIVE"}
 {"trade_id": "T090403", "ticker": "CEMPRO.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-04", "status": "ACTIVE"}
 {"trade_id": "T090404", "ticker": "TEJASNET.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-04", "status": "ACTIVE"}
+{"trade_id": "T090701", "ticker": "ACMESOLAR.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-07", "status": "ACTIVE"}
+{"trade_id": "T090702", "ticker": "AFFLE.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-07", "status": "ACTIVE"}
+{"trade_id": "T090703", "ticker": "BSE.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-07", "status": "ACTIVE"}
+{"trade_id": "T090704", "ticker": "CARBORUNIV.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-07", "status": "ACTIVE"}
+{"trade_id": "T090705", "ticker": "JSWDULUX.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-07", "status": "ACTIVE"}
+{"trade_id": "T090706", "ticker": "PNBHOUSING.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-07", "status": "ACTIVE"}
+{"trade_id": "T090707", "ticker": "PAGEIND.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-07", "status": "ACTIVE"}
+{"trade_id": "T090708", "ticker": "RBLBANK.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-07", "status": "ACTIVE"}
+{"trade_id": "T090709", "ticker": "TATACOMM.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-07", "status": "ACTIVE"}
