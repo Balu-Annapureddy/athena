@@ -133,3 +133,8 @@
 {"trade_id": "T090707", "ticker": "PAGEIND.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-07", "status": "ACTIVE"}
 {"trade_id": "T090708", "ticker": "RBLBANK.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-07", "status": "ACTIVE"}
 {"trade_id": "T090709", "ticker": "TATACOMM.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-07", "status": "ACTIVE"}
+{"trade_id": "T090801", "ticker": "ABREL.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-08", "status": "ACTIVE"}
+{"trade_id": "T090802", "ticker": "BOSCHLTD.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-08", "status": "ACTIVE"}
+{"trade_id": "T090803", "ticker": "COALINDIA.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-08", "status": "ACTIVE"}
+{"trade_id": "T090804", "ticker": "NCC.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-08", "status": "ACTIVE"}
+{"trade_id": "T090805", "ticker": "SOLARINDS.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-08", "status": "ACTIVE"}
