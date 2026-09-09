@@ -138,3 +138,15 @@
 {"trade_id": "T090803", "ticker": "COALINDIA.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-08", "status": "ACTIVE"}
 {"trade_id": "T090804", "ticker": "NCC.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-08", "status": "ACTIVE"}
 {"trade_id": "T090805", "ticker": "SOLARINDS.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-08", "status": "ACTIVE"}
+{"trade_id": "T090901", "ticker": "AARTIIND.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-09", "status": "ACTIVE"}
+{"trade_id": "T090902", "ticker": "ASTERDM.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-09", "status": "ACTIVE"}
+{"trade_id": "T090903", "ticker": "BHARTIARTL.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-09", "status": "ACTIVE"}
+{"trade_id": "T090904", "ticker": "CCL.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-09", "status": "ACTIVE"}
+{"trade_id": "T090905", "ticker": "FINCABLES.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-09", "status": "ACTIVE"}
+{"trade_id": "T090906", "ticker": "FLUOROCHEM.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-09", "status": "ACTIVE"}
+{"trade_id": "T090907", "ticker": "HEROMOTOCO.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-09", "status": "ACTIVE"}
+{"trade_id": "T090908", "ticker": "LGEINDIA.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-09", "status": "ACTIVE"}
+{"trade_id": "T090909", "ticker": "NEULANDLAB.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-09", "status": "ACTIVE"}
+{"trade_id": "T090910", "ticker": "PVRINOX.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-09", "status": "ACTIVE"}
+{"trade_id": "T090911", "ticker": "PPLPHARMA.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-09", "status": "ACTIVE"}
+{"trade_id": "T090912", "ticker": "SYRMA.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-09", "status": "ACTIVE"}
