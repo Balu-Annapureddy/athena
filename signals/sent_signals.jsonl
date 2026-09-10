@@ -150,3 +150,8 @@
 {"trade_id": "T090910", "ticker": "PVRINOX.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-09", "status": "ACTIVE"}
 {"trade_id": "T090911", "ticker": "PPLPHARMA.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-09", "status": "ACTIVE"}
 {"trade_id": "T090912", "ticker": "SYRMA.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-09", "status": "ACTIVE"}
+{"trade_id": "T091001", "ticker": "ADANIENT.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-10", "status": "ACTIVE"}
+{"trade_id": "T091002", "ticker": "ADANIGREEN.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-10", "status": "ACTIVE"}
+{"trade_id": "T091003", "ticker": "GLAND.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-10", "status": "ACTIVE"}
+{"trade_id": "T091004", "ticker": "NAVINFLUOR.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-10", "status": "ACTIVE"}
+{"trade_id": "T091005", "ticker": "ECLERX.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-10", "status": "ACTIVE"}
