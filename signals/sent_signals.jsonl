@@ -155,3 +155,5 @@
 {"trade_id": "T091003", "ticker": "GLAND.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-10", "status": "ACTIVE"}
 {"trade_id": "T091004", "ticker": "NAVINFLUOR.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-10", "status": "ACTIVE"}
 {"trade_id": "T091005", "ticker": "ECLERX.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-10", "status": "ACTIVE"}
+{"trade_id": "T091101", "ticker": "COHANCE.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-11", "status": "ACTIVE"}
+{"trade_id": "T091102", "ticker": "ZFCVINDIA.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-11", "status": "ACTIVE"}
