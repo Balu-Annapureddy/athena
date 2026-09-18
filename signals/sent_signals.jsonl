@@ -159,3 +159,8 @@
 {"trade_id": "T091102", "ticker": "ZFCVINDIA.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-11", "status": "ACTIVE"}
 {"trade_id": "T091401", "ticker": "PINELABS.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-14", "status": "ACTIVE"}
 {"trade_id": "T091601", "ticker": "EMCURE.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-16", "status": "ACTIVE"}
+{"trade_id": "T091801", "ticker": "GRANULES.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-18", "status": "ACTIVE"}
+{"trade_id": "T091802", "ticker": "INDGN.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-18", "status": "ACTIVE"}
+{"trade_id": "T091803", "ticker": "PETRONET.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-18", "status": "ACTIVE"}
+{"trade_id": "T091804", "ticker": "TATACHEM.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-18", "status": "ACTIVE"}
+{"trade_id": "T091805", "ticker": "TATAINVEST.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-18", "status": "ACTIVE"}
