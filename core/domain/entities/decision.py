@@ -3,7 +3,6 @@
 from datetime import datetime
 from types import MappingProxyType
 from typing import Optional
-import copy
 
 from core.domain.common import DomainMetadata, ThesisId
 from core.domain.entities.base import BaseEntity

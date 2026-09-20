@@ -156,16 +156,21 @@ class PaperLedger:
         """Synthesize and record a verified OutcomeRecord to the outcomes ledger upon trade exit."""
         try:
             import logging
+
             from core.decision_builder.candidate import DecisionRationale
             from core.decision_builder.ledger import DecisionRecord, DecisionState
-            from core.decision_builder.policies import DecisionAssessment, DecisionPolicyResult, Priority
+            from core.decision_builder.policies import (
+                DecisionAssessment,
+                DecisionPolicyResult,
+                Priority,
+            )
             from core.domain.common import DecisionId, SecurityId, ThesisId
             from core.domain.enums import RecommendationAction
             from core.outcome_builder import (
                 OutcomeAssembler,
                 OutcomeCandidateBuilder,
-                OutcomeEventType,
                 OutcomeEvaluationContext,
+                OutcomeEventType,
                 OutcomePolicy,
                 ReconciliationOutcomeRule,
             )

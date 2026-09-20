@@ -25,6 +25,7 @@ import os
 import uuid
 from datetime import datetime, timezone
 from typing import List
+from zoneinfo import ZoneInfo
 
 import yfinance as yf
 
@@ -32,6 +33,8 @@ from core.data.connectors.base import BaseConnector, Capabilities
 from core.data.contract import ConnectorPayload
 from core.data.normalization.yfinance_provider import YFinanceNormalizer
 from core.infrastructure.recorder import PayloadRecorder, _deserialize_connector_payload
+
+_IST = ZoneInfo("Asia/Kolkata")
 
 
 class YFinanceConnector(BaseConnector):
@@ -101,8 +104,8 @@ class YFinanceConnector(BaseConnector):
         if not force_network and os.path.exists(fixture_path) and os.path.getsize(fixture_path) > 0:
             start_str = kwargs.get("start")
             end_str = kwargs.get("end")
-            start_dt = datetime.strptime(start_str, "%Y-%m-%d").replace(tzinfo=timezone.utc) if start_str and len(start_str) == 10 else None
-            end_dt = datetime.strptime(end_str, "%Y-%m-%d").replace(tzinfo=timezone.utc) if end_str and len(end_str) == 10 else None
+            start_date = datetime.strptime(start_str, "%Y-%m-%d").date() if start_str and len(start_str) == 10 else None
+            end_date = datetime.strptime(end_str, "%Y-%m-%d").date() if end_str and len(end_str) == 10 else None
 
             payloads: List[ConnectorPayload] = []
             with open(fixture_path, "r", encoding="utf-8") as f:
@@ -113,9 +116,13 @@ class YFinanceConnector(BaseConnector):
                     rec = json.loads(line)
                     cp = _deserialize_connector_payload(rec["normalized"])
                     pub_ts = cp.provenance.publication_timestamp
-                    if start_dt and pub_ts < start_dt:
+                    # Map publication timestamp to canonical IST calendar date
+                    if pub_ts.tzinfo is None:
+                        pub_ts = pub_ts.replace(tzinfo=timezone.utc)
+                    bar_date = pub_ts.astimezone(_IST).date()
+                    if start_date and bar_date < start_date:
                         continue
-                    if end_dt and pub_ts > end_dt:
+                    if end_date and bar_date > end_date:
                         continue
                     payloads.append(cp)
 

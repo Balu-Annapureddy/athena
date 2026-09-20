@@ -644,12 +644,12 @@ class TestValidationCampaign(unittest.TestCase):
         campaign._compute_passive_benchmark = MagicMock(return_value=1.00)
 
         result = campaign.execute(strategy=None, account_size=10000.0)
-        self.assertTrue(result.passed)
+        self.assertFalse(result.passed)
         self.assertAlmostEqual(result.benchmark_return, 1.00)
         self.assertAlmostEqual(result.strategy_return, 0.02)
         self.assertAlmostEqual(result.excess_return, -0.98)
         self.assertTrue(result.benchmark_underperformance_flag)
-        self.assertIn("BENCHMARK FLAG", result.reason)
+        self.assertIn("BENCHMARK", result.reason)
 
 
 if __name__ == "__main__":

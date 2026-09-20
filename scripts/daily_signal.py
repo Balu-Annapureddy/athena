@@ -18,61 +18,85 @@ from core.portfolio.registry import StrategyRegistry
 from core.portfolio.trade_journal import TradeJournal
 from core.portfolio.universe import NIFTY_500
 
+
 # ── NSE Trading Holiday Calendar ──────────────────────────────────────────────
 # Official NSE equity segment trading holidays (source: NSE India circular).
-# Weekends (Sat/Sun) are handled separately below.
-# Update this set each year when NSE publishes the next year's holiday schedule.
-_NSE_HOLIDAYS: frozenset[datetime.date] = frozenset({
-    # 2025 NSE Holidays
-    datetime.date(2025, 1, 26),   # Republic Day
-    datetime.date(2025, 2, 26),   # Mahashivratri
-    datetime.date(2025, 3, 14),   # Holi
-    datetime.date(2025, 3, 31),   # Id-Ul-Fitr (Ramzan Id)
-    datetime.date(2025, 4, 10),   # Shri Ram Navami
-    datetime.date(2025, 4, 14),   # Dr. Baba Saheb Ambedkar Jayanti
-    datetime.date(2025, 4, 18),   # Good Friday
-    datetime.date(2025, 5, 1),    # Maharashtra Day
-    datetime.date(2025, 8, 15),   # Independence Day
-    datetime.date(2025, 8, 27),   # Ganesh Chaturthi
-    datetime.date(2025, 10, 2),   # Mahatma Gandhi Jayanti
-    datetime.date(2025, 10, 2),   # Dussehra (same day — only one entry needed)
-    datetime.date(2025, 10, 20),  # Diwali Laxmi Pujan
-    datetime.date(2025, 10, 21),  # Diwali-Balipratipada
-    datetime.date(2025, 11, 5),   # Prakash Gurpurb Sri Guru Nanak Dev Ji
-    datetime.date(2025, 12, 25),  # Christmas
-    # 2026 NSE Holidays
-    datetime.date(2026, 1, 26),   # Republic Day
-    datetime.date(2026, 2, 26),   # Mahashivratri
-    datetime.date(2026, 3, 20),   # Holi
-    datetime.date(2026, 3, 30),   # Id-Ul-Fitr (Ramzan Id)
-    datetime.date(2026, 4, 2),    # Ugadi / Gudi Padwa
-    datetime.date(2026, 4, 3),    # Good Friday
-    datetime.date(2026, 4, 14),   # Dr. Baba Saheb Ambedkar Jayanti
-    datetime.date(2026, 5, 1),    # Maharashtra Day
-    datetime.date(2026, 8, 15),   # Independence Day
-    datetime.date(2026, 9, 17),   # Ganesh Chaturthi
-    datetime.date(2026, 10, 2),   # Mahatma Gandhi Jayanti
-    datetime.date(2026, 10, 22),  # Diwali Laxmi Pujan
-    datetime.date(2026, 10, 23),  # Diwali-Balipratipada
-    datetime.date(2026, 11, 3),   # Dussehra
-    datetime.date(2026, 11, 25),  # Prakash Gurpurb Sri Guru Nanak Dev Ji
-    datetime.date(2026, 12, 25),  # Christmas
-    # 2027 NSE Holidays (preliminary — update when NSE publishes official list)
-    datetime.date(2027, 1, 26),   # Republic Day
-    datetime.date(2027, 8, 15),   # Independence Day
-    datetime.date(2027, 10, 2),   # Mahatma Gandhi Jayanti
-    datetime.date(2027, 12, 25),  # Christmas
+# Weekends (Sat/Sun) are handled separately, except special Muhurat Trading sessions.
+def _load_holidays() -> frozenset[datetime.date]:
+    holidays: set[datetime.date] = set()
+    # Try loading from CSV files in data/ if present
+    data_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
+    for year in (2025, 2026, 2027):
+        csv_file = os.path.join(data_dir, f"nse_holidays_{year}.csv")
+        if os.path.exists(csv_file):
+            try:
+                import csv
+                with open(csv_file, "r", encoding="utf-8") as f:
+                    reader = csv.DictReader(f)
+                    for row in reader:
+                        d_str = row.get("date", "").strip()
+                        if d_str:
+                            holidays.add(datetime.datetime.strptime(d_str, "%Y-%m-%d").date())
+            except Exception:
+                pass
+
+    if holidays:
+        return frozenset(holidays)
+
+    # Fallback built-in verified holidays
+    return frozenset({
+        # 2025 NSE Holidays
+        datetime.date(2025, 1, 26),   # Republic Day
+        datetime.date(2025, 2, 26),   # Mahashivratri
+        datetime.date(2025, 3, 14),   # Holi
+        datetime.date(2025, 3, 31),   # Id-Ul-Fitr (Ramzan Id)
+        datetime.date(2025, 4, 10),   # Shri Ram Navami
+        datetime.date(2025, 4, 14),   # Dr. Baba Saheb Ambedkar Jayanti
+        datetime.date(2025, 4, 18),   # Good Friday
+        datetime.date(2025, 5, 1),    # Maharashtra Day
+        datetime.date(2025, 8, 15),   # Independence Day
+        datetime.date(2025, 8, 27),   # Ganesh Chaturthi
+        datetime.date(2025, 10, 2),   # Mahatma Gandhi Jayanti / Dussehra
+        datetime.date(2025, 10, 21),  # Diwali-Balipratipada
+        datetime.date(2025, 11, 5),   # Prakash Gurpurb Sri Guru Nanak Dev Ji
+        datetime.date(2025, 12, 25),  # Christmas
+        # 2026 NSE Holidays
+        datetime.date(2026, 1, 26),   # Republic Day
+        datetime.date(2026, 2, 15),   # Mahashivratri
+        datetime.date(2026, 3, 4),    # Holi
+        datetime.date(2026, 3, 21),   # Id-Ul-Fitr (Ramzan Id)
+        datetime.date(2026, 3, 27),   # Shri Ram Navami
+        datetime.date(2026, 3, 31),   # Mahavir Jayanti
+        datetime.date(2026, 4, 3),    # Good Friday
+        datetime.date(2026, 4, 14),   # Dr. Baba Saheb Ambedkar Jayanti
+        datetime.date(2026, 5, 1),    # Maharashtra Day
+        datetime.date(2026, 5, 27),   # Bakri Id
+        datetime.date(2026, 6, 26),   # Muharram
+        datetime.date(2026, 8, 15),   # Independence Day
+        datetime.date(2026, 8, 26),   # Milad-un-Nabi
+        datetime.date(2026, 10, 2),   # Mahatma Gandhi Jayanti
+        datetime.date(2026, 10, 20),  # Dussehra
+        datetime.date(2026, 11, 10),  # Diwali-Balipratipada
+        datetime.date(2026, 11, 24),  # Prakash Gurpurb Sri Guru Nanak Dev Ji
+        datetime.date(2026, 12, 25),  # Christmas
+    })
+
+
+_NSE_HOLIDAYS: frozenset[datetime.date] = _load_holidays()
+
+# Special Muhurat Trading sessions conducted on weekends / festival evenings
+_MUHURAT_TRADING_DAYS: frozenset[datetime.date] = frozenset({
+    datetime.date(2026, 11, 8),   # Diwali Laxmi Pujan (Sunday evening Muhurat Trading)
 })
 
 
 def is_nse_trading_day(date: datetime.date) -> bool:
     """Return True if `date` is an NSE equity segment trading day.
 
-    A trading day is any weekday (Mon–Fri) that is not in the official
-    NSE holiday calendar.  The check is intentionally conservative:
-    an unknown date is treated as a trading day (the pipeline will still
-    log a clean error if yfinance returns no data).
+    Accounts for official NSE holiday circular and special weekend Muhurat trading.
     """
+    if date in _MUHURAT_TRADING_DAYS:
+        return True
     if date.weekday() >= 5:  # Saturday=5, Sunday=6
         return False
     return date not in _NSE_HOLIDAYS

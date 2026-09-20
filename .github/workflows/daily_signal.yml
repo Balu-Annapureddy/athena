@@ -16,6 +16,7 @@ concurrency:
 jobs:
   run-daily-signals:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
       - name: Checkout repository
@@ -38,10 +39,12 @@ jobs:
 
       - name: Run Daily Signal Pipeline
         env:
-          SCHEDULED_DATE: ${{ github.event.schedule && '$(date -u +%Y-%m-%d)' || '' }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            export SCHEDULED_DATE=$(date -u +%Y-%m-%d)
+          fi
           python scripts/daily_signal.py
 
       - name: Commit and push updated paper trading & journal ledgers

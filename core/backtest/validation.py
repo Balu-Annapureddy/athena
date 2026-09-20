@@ -8,7 +8,9 @@ import dataclasses
 import json
 import os
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple
+from zoneinfo import ZoneInfo
 
 from core.backtest.engine import BacktestEngine, TransactionCostModel
 from core.domain.enums import ValidationStatus
@@ -16,6 +18,8 @@ from core.portfolio.engine import MultiAssetPortfolioEngine
 from core.portfolio.universe import (
     PointInTimeUniverseProvider,
 )
+
+_IST = ZoneInfo("Asia/Kolkata")
 
 
 @dataclass
@@ -56,6 +60,7 @@ class CampaignResult:
     portfolio_metrics: Optional[Any] = None
     ticker_diagnostics: Optional[List[Dict[str, Any]]] = None
     portfolio_config: Optional[Dict[str, Any]] = None
+    error_runs_count: int = 0
 
 
 class ValidationCampaign:
@@ -128,24 +133,45 @@ class ValidationCampaign:
                             if not line.strip():
                                 continue
                             d = json.loads(line).get("normalized", {})
-                            dt = d.get("provenance", {}).get("publication_timestamp", "")[:10]
+                            pub_raw = d.get("provenance", {}).get("publication_timestamp", "")
+                            if pub_raw:
+                                try:
+                                    dt_obj = datetime.fromisoformat(pub_raw)
+                                    if dt_obj.tzinfo is None:
+                                        dt_obj = dt_obj.replace(tzinfo=timezone.utc)
+                                    dt = dt_obj.astimezone(_IST).strftime("%Y-%m-%d")
+                                except Exception:
+                                    dt = pub_raw[:10]
+                            else:
+                                dt = ""
                             c = d.get("payload", {}).get("close")
                             if dt and c is not None:
                                 date_closes[dt] = float(c)
-                except Exception:
-                    pass
+                except Exception as err:
+                    print(f"Warning reading benchmark fixture {fpath}: {err}", flush=True)
 
             if not date_closes:
                 try:
-                    payloads = self._engine._connector.fetch_data(ticker, start="2010-01-01", end="2026-08-01")
-                    for p in payloads:
-                        raw = p.get("raw", {})
-                        dt = raw.get("__timestamp__", "")[:10]
-                        c = p.get("payload", {}).get("close")
-                        if dt and c is not None:
-                            date_closes[dt] = float(c)
-                except Exception:
-                    pass
+                    connector = getattr(self._engine, "_connector", None)
+                    if connector is not None:
+                        payloads = connector.fetch_data(ticker, start="2010-01-01", end="2026-08-01")
+                        for p in payloads:
+                            if hasattr(p, "provenance") and hasattr(p, "payload"):
+                                pub_dt = p.provenance.publication_timestamp
+                                if pub_dt.tzinfo is None:
+                                    pub_dt = pub_dt.replace(tzinfo=timezone.utc)
+                                dt = pub_dt.astimezone(_IST).strftime("%Y-%m-%d")
+                                c = getattr(p.payload, "close", None)
+                            elif isinstance(p, dict):
+                                dt = p.get("raw", {}).get("__timestamp__", "")[:10]
+                                c = p.get("payload", {}).get("close")
+                            else:
+                                dt = None
+                                c = None
+                            if dt and c is not None:
+                                date_closes[dt] = float(c)
+                except Exception as err:
+                    print(f"Warning fetching benchmark fallback for {ticker}: {err}", flush=True)
 
             if not date_closes:
                 continue
@@ -219,7 +245,7 @@ class ValidationCampaign:
                 run_trade_count = len(res.trades)
                 total_trades += run_trade_count
                 all_portfolio_returns.append(res.total_return)
-                is_passing = res.metrics.avg_pnl_per_trade > 0.0 or res.total_return > 0.0
+                is_passing = res.metrics.avg_pnl_per_trade > 0.0
                 if is_passing:
                     passing_runs += 1
 
@@ -254,7 +280,14 @@ class ValidationCampaign:
             )
 
             passed = (total_trades >= self._min_total_trades) and (passing_ratio >= self._min_passing_ratio)
-            reason = f"Portfolio Campaign {'approved' if passed else 'rejected'}. Runs passed: {passing_runs}/{total_runs}, Total trades: {total_trades}."
+            if benchmark_underperformance_flag:
+                passed = False
+                reason = (
+                    f"Portfolio Campaign rejected: benchmark underperformance flag triggered. "
+                    f"Strategy net return ({strategy_return * 100:+.1f}%) lagged benchmark ({benchmark_return * 100:+.1f}%)."
+                )
+            else:
+                reason = f"Portfolio Campaign {'approved' if passed else 'rejected'}. Runs passed: {passing_runs}/{total_runs}, Total trades: {total_trades}."
 
             return CampaignResult(
                 passed=passed,
@@ -281,6 +314,7 @@ class ValidationCampaign:
         total_trades = 0
         passing_runs = 0
         total_runs = 0
+        error_runs = 0
         total_expected = len(self._tickers) * len(self._date_ranges)
         # Execute backtest runs for every ticker and date range combination
         for ticker in self._tickers:
@@ -329,6 +363,7 @@ class ValidationCampaign:
                         "total_costs": total_costs,
                     })
                 except Exception as err:
+                    error_runs += 1
                     import traceback
                     tb_text = traceback.format_exc()
                     print(f"    -> ERROR backtesting {ticker} ({start_date} to {end_date}):\n{tb_text}", flush=True)
@@ -347,7 +382,8 @@ class ValidationCampaign:
                         "error": tb_text or str(err) or repr(err)
                     })
 
-        passing_ratio = passing_runs / total_runs if total_runs > 0 else 0.0
+        valid_runs = total_runs - error_runs
+        passing_ratio = passing_runs / valid_runs if valid_runs > 0 else 0.0
 
         # Passive equal-weight benchmark computation & relative performance comparison
         benchmark_return = self._compute_passive_benchmark()
@@ -374,7 +410,14 @@ class ValidationCampaign:
             print("=" * 85, flush=True)
 
         # Enforce validation rules
-        if total_trades < self._min_total_trades:
+        error_ratio = error_runs / total_runs if total_runs > 0 else 0.0
+        if error_ratio > 0.02:
+            passed = False
+            reason = (
+                f"Campaign rejected due to infrastructure error rate ({error_runs}/{total_runs} runs failed, "
+                f"error rate {error_ratio:.1%} exceeds 2.0% maximum allowable tolerance)."
+            )
+        elif total_trades < self._min_total_trades:
             passed = False
             reason = (
                 f"Campaign rejected due to insufficient trade count ({total_trades} trades executed, "
@@ -383,20 +426,20 @@ class ValidationCampaign:
         elif passing_ratio < self._min_passing_ratio:
             passed = False
             reason = (
-                f"Campaign rejected due to insufficient passing ratio ({passing_runs}/{total_runs} runs passed, "
+                f"Campaign rejected due to insufficient passing ratio ({passing_runs}/{valid_runs} runs passed, "
                 f"ratio {passing_ratio:.2f} is below the required {self._min_passing_ratio:.2f})."
+            )
+        elif benchmark_underperformance_flag:
+            passed = False
+            reason = (
+                f"Campaign rejected: [BENCHMARK FLAG: Strategy net return ({strategy_return * 100:+.1f}%) "
+                f"substantially lagged passive buy-and-hold benchmark ({benchmark_return * 100:+.1f}%)]"
             )
         else:
             passed = True
             reason = (
-                f"Campaign approved. {passing_runs}/{total_runs} runs passed (ratio {passing_ratio:.2f} >= "
+                f"Campaign approved. {passing_runs}/{valid_runs} runs passed (ratio {passing_ratio:.2f} >= "
                 f"{self._min_passing_ratio:.2f}) with {total_trades} total trades."
-            )
-
-        if benchmark_underperformance_flag:
-            reason += (
-                f" [BENCHMARK FLAG: Strategy net return ({strategy_return * 100:+.1f}%) "
-                f"dramatically underperforms passive buy-and-hold benchmark ({benchmark_return * 100:+.1f}%)]"
             )
 
         return CampaignResult(
@@ -414,6 +457,7 @@ class ValidationCampaign:
             excess_return=excess_return,
             benchmark_underperformance_flag=benchmark_underperformance_flag,
             mode="single_stock",
+            error_runs_count=error_runs,
         )
 
     def promote_records(self, thesis_records: List[Any], decision_records: List[Any]) -> Tuple[List[Any], List[Any]]:

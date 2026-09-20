@@ -98,6 +98,8 @@ class RiskEngine:
         # Calculate ATR-based stop loss
         if is_long:
             stop_loss = entry_price - (atr_value * atr_multiplier)
+            if stop_loss <= 0.0:
+                stop_loss = 0.05
         else:
             stop_loss = entry_price + (atr_value * atr_multiplier)
 
@@ -106,8 +108,11 @@ class RiskEngine:
         if risk_per_share <= 0.0:
             return None
 
-        # Position sizing (shares)
+        # Position sizing (shares) with max account capital allocation cap
         position_size = math.floor((account_size * risk_percent) / risk_per_share)
+        if entry_price > 0.0:
+            max_capital_shares = math.floor(account_size / entry_price)
+            position_size = min(position_size, max_capital_shares)
 
         # Default target price based on DEFAULT_TARGET_REWARD_RISK_RATIO reward:risk if target_price is not provided
         if target_price is None:

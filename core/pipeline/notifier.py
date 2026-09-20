@@ -8,6 +8,7 @@ Security Invariants:
 """
 
 import datetime
+import html
 import json
 import os
 import sys
@@ -36,8 +37,8 @@ class TelegramNotifier:
             self._chat_id = cid
             self.is_enabled = True
 
-    def _send_telegram_message(self, text: str) -> bool:
-        """Send message via Telegram API. Returns True if successful."""
+    def _send_single_message(self, text: str) -> bool:
+        """Send a single message via Telegram Bot API."""
         if not self.is_enabled:
             return False
 
@@ -45,7 +46,7 @@ class TelegramNotifier:
         payload = {
             "chat_id": self._chat_id,
             "text": text,
-            "parse_mode": "Markdown",
+            "parse_mode": "HTML",
             "disable_web_page_preview": True,
         }
         data = json.dumps(payload).encode("utf-8")
@@ -65,6 +66,38 @@ class TelegramNotifier:
             sanitized_err = sanitized_err.replace(self._chat_id, "***REDACTED_CHAT_ID***")
             print(f"Failed to send Telegram message: {sanitized_err}", file=sys.stderr)
             return False
+
+    def _send_telegram_message(self, text: str) -> bool:
+        """Send message via Telegram API with 4000-character chunking."""
+        if not self.is_enabled:
+            return False
+
+        # Telegram hard limit is 4096 characters; chunk safely at 4000 chars
+        if len(text) <= 4000:
+            return self._send_single_message(text)
+
+        chunks: List[str] = []
+        current_chunk: List[str] = []
+        current_len = 0
+
+        for line in text.splitlines(keepends=True):
+            if current_len + len(line) > 4000 and current_chunk:
+                chunks.append("".join(current_chunk))
+                current_chunk = [line]
+                current_len = len(line)
+            else:
+                current_chunk.append(line)
+                current_len += len(line)
+
+        if current_chunk:
+            chunks.append("".join(current_chunk))
+
+        all_ok = True
+        for chunk in chunks:
+            ok = self._send_single_message(chunk)
+            if not ok:
+                all_ok = False
+        return all_ok
 
     def send_morning_brief(
         self,
@@ -91,39 +124,39 @@ class TelegramNotifier:
 
         day_str = run_date.strftime("%a %d %b %Y")
         lines = [
-            f"🦉 *ATHENA MORNING BRIEF* — {day_str}",
+            f"🦉 <b>ATHENA MORNING BRIEF</b> — {html.escape(day_str)}",
             "Based on yesterday's close · 8:30 AM IST · Nifty 500",
             "",
         ]
 
-        for r in qualifying_reports:
+        for i, r in enumerate(qualifying_reports):
             action_emoji = "🟢 BUY" if r.action == RecommendationAction.BUY else "🔴 SELL"
             stars = "★★★★☆" if r.signal_quality == "HIGH" else "★★★☆☆"
-            trade_id = r.trade_id or "T1001"
+            trade_id = r.trade_id or f"T{i + 1:04d}"
 
             lines.append("━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-            lines.append(f"{action_emoji} · `{r.ticker}`  {stars}  {r.confidence_score:.0f}%  #{trade_id}")
+            lines.append(f"{action_emoji} · <code>{html.escape(r.ticker)}</code>  {stars}  {r.confidence_score:.0f}%  #{html.escape(str(trade_id))}")
             lines.append("━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
 
             if r.entry_price and r.stop_loss_price and r.target_price:
                 stop_pct = abs(r.entry_price - r.stop_loss_price) / r.entry_price * 100.0
                 target_pct = abs(r.target_price - r.entry_price) / r.entry_price * 100.0
-                lines.append(f"📌 *Entry*: ₹{r.entry_price:,.2f} (prev close)")
-                lines.append(f"  *Stop*: ₹{r.stop_loss_price:,.2f} (−{stop_pct:.1f}%)")
-                lines.append(f"  *Target*: ₹{r.target_price:,.2f} (+{target_pct:.1f}%)")
+                lines.append(f"📌 <b>Entry</b>: ₹{r.entry_price:,.2f} (prev close)")
+                lines.append(f"  <b>Stop</b>: ₹{r.stop_loss_price:,.2f} (−{stop_pct:.1f}%)")
+                lines.append(f"  <b>Target</b>: ₹{r.target_price:,.2f} (+{target_pct:.1f}%)")
 
             if r.reward_to_risk and r.position_size and r.entry_price:
                 notional = r.position_size * r.entry_price
-                lines.append(f"📊 *R:R Ratio*: 1:{r.reward_to_risk:.1f} ✅ · *Size*: {r.position_size} shares (~₹{notional:,.0f})")
+                lines.append(f"📊 <b>R:R Ratio</b>: 1:{r.reward_to_risk:.1f} ✅ · <b>Size</b>: {r.position_size} shares (~₹{notional:,.0f})")
 
-            lines.append(f"🔎 *Rationale*: {r.reasoning}")
-            lines.append(f"✅ *Status*: {r.validation_status.value}")
-            lines.append(f"👉 *Action*: Reply `{trade_id} bought` to track this trade")
+            lines.append(f"🔎 <b>Rationale</b>: {html.escape(r.reasoning or '')}")
+            lines.append(f"✅ <b>Status</b>: {html.escape(r.validation_status.value)}")
+            lines.append(f"👉 <b>Action</b>: Reply <code>{html.escape(str(trade_id))} bought</code> to track this trade")
             lines.append("")
 
         hold_count = total_tickers - len(qualifying_reports)
-        lines.append(f"📈 *{len(qualifying_reports)} active signals* · {hold_count} HOLD · {suppressed_count} suppressed (already active)")
-        lines.append("⚠️ *Disclaimer*: Research automation only. Not SEBI investment advice.")
+        lines.append(f"📈 <b>{len(qualifying_reports)} active signals</b> · {hold_count} HOLD · {suppressed_count} suppressed (already active)")
+        lines.append("⚠️ <b>Disclaimer</b>: Research automation only. Not SEBI investment advice.")
 
         text = "\n".join(lines)
         return self._send_telegram_message(text)
@@ -148,22 +181,22 @@ class TelegramNotifier:
 
         day_str = run_date.strftime("%a %d %b %Y")
         lines = [
-            f"📋 *ATHENA TRADE CHECK-IN* — {day_str}",
+            f"📋 <b>ATHENA TRADE CHECK-IN</b> — {html.escape(day_str)}",
             "Reviewing active predictions & pending trades",
             "",
         ]
 
         for e in expired:
-            lines.append(f"⏰ *#{e.trade_id} ({e.ticker}) EXPIRED*")
-            lines.append(f"  Signal from {e.signal_date} reached 30-day limit without execution.")
-            lines.append(f"  Auto-closing pending trade ID #{e.trade_id}.")
+            lines.append(f"⏰ <b>#{html.escape(str(e.trade_id))} ({html.escape(str(e.ticker))}) EXPIRED</b>")
+            lines.append(f"  Signal from {html.escape(str(e.signal_date))} reached 30-day limit without execution.")
+            lines.append(f"  Auto-closing pending trade ID #{html.escape(str(e.trade_id))}.")
             lines.append("")
 
         for e in all_due:
-            lines.append(f"📌 *#{e.trade_id} · {e.ticker} {e.action}* (Signal Date: {e.signal_date})")
+            lines.append(f"📌 <b>#{html.escape(str(e.trade_id))} · {html.escape(str(e.ticker))} {html.escape(str(e.action))}</b> (Signal Date: {html.escape(str(e.signal_date))})")
             lines.append(f"  Suggested: Entry ₹{e.suggested_entry:,.2f} → Stop ₹{e.suggested_stop:,.2f} → Target ₹{e.suggested_target:,.2f}")
-            lines.append(f"  Status: {e.status}")
-            lines.append(f"  Reply: `{e.trade_id} bought` / `{e.trade_id} skip` / `{e.trade_id} open`")
+            lines.append(f"  Status: {html.escape(str(e.status))}")
+            lines.append(f"  Reply: <code>{html.escape(str(e.trade_id))} bought</code> / <code>{html.escape(str(e.trade_id))} skip</code> / <code>{html.escape(str(e.trade_id))} open</code>")
             lines.append("")
 
         text = "\n".join(lines)
@@ -180,8 +213,8 @@ class TelegramNotifier:
 
         fail_pct = (failed_count / total_count * 100.0) if total_count > 0 else 0.0
         text = (
-            f"⚠️ *ATHENA DEGRADED RUN* — {run_date_str}\n\n"
-            f"*{failed_count}/{total_count}* tickers failed evaluation (failure rate: {fail_pct:.1f}%).\n"
+            f"⚠️ <b>ATHENA DEGRADED RUN</b> — {html.escape(run_date_str)}\n\n"
+            f"<b>{failed_count}/{total_count}</b> tickers failed evaluation (failure rate: {fail_pct:.1f}%).\n"
             "Results may be incomplete due to data provider rate blocks or timeout issues."
         )
         return self._send_telegram_message(text)
@@ -194,7 +227,7 @@ class TelegramNotifier:
         # Sanitize error message if it accidentally contains secrets
         sanitized = error_message.replace(self._bot_token, "***REDACTED***") if self._bot_token else error_message
         text = (
-            f"❌ *ATHENA PIPELINE CRASH* — {run_date_str}\n\n"
-            f"Error: `{sanitized[:500]}`"
+            f"❌ <b>ATHENA PIPELINE CRASH</b> — {html.escape(run_date_str)}\n\n"
+            f"Error: <code>{html.escape(sanitized[:500])}</code>"
         )
         return self._send_telegram_message(text)
