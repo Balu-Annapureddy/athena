@@ -1,7 +1,7 @@
 """LearningAssembler materializing candidates to Learning domain entities."""
 
 from datetime import datetime, timezone
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 from core.domain.common import DomainMetadata
 from core.domain.entities import Learning
@@ -41,7 +41,8 @@ class LearningAssembler:
 
     def assemble_learnings(
         self,
-        context: LearningEvaluationContext
+        context: LearningEvaluationContext,
+        as_of: Optional[datetime] = None
     ) -> List[Tuple[Learning, LearningRecord]]:
         """Synthesize recommendations, evaluate confidence, and return materialized domain entities."""
         candidates = self._builder.build_candidates(context)
@@ -49,6 +50,7 @@ class LearningAssembler:
         # Perform set-based evaluation
         assessments = self._evaluator.evaluate(candidates, context)
 
+        ts = as_of if as_of is not None else datetime.now(timezone.utc)
         materialized = []
         for candidate in candidates:
             assessment = assessments.get(candidate.candidate_id)
@@ -62,7 +64,8 @@ class LearningAssembler:
             metadata = DomainMetadata.create(
                 entity_id=candidate.candidate_id,
                 source="LearningAssembler",
-                created_by=candidate.rule_name
+                created_by=candidate.rule_name,
+                as_of=ts
             )
 
             # Map parameter adjustments
@@ -87,7 +90,7 @@ class LearningAssembler:
                 outcome_id=first_outcome_id,
                 insights=insights,
                 adjustments_made=adjustments,
-                learned_at=datetime.now(timezone.utc)
+                learned_at=ts
             )
 
             materialized.append((learning_entity, record))

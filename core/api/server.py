@@ -4,7 +4,7 @@ import json
 import logging
 import urllib.parse
 from datetime import datetime
-from http.server import BaseHTTPRequestHandler, HTTPServer
+from http.server import BaseHTTPRequestHandler, HTTPServer, ThreadingHTTPServer
 from typing import Any, Optional
 
 from core.api.auth import APIKeyAuthenticator
@@ -245,19 +245,25 @@ class AthenaRESTServer:
             operations = self.operations
             authenticator = self.authenticator
 
-        self._server = HTTPServer((self.host, self.port), CustomAPIHandler)
+        self._server = ThreadingHTTPServer((self.host, self.port), CustomAPIHandler)
+        self._is_serving = False
 
     def start(self) -> None:
         """Start serving REST requests synchronously."""
         logging.info(f"Athena REST Server running at http://{self.host}:{self.port}/")
 
+        self._is_serving = True
         try:
             self._server.serve_forever()
         except KeyboardInterrupt:
             self.stop()
+        finally:
+            self._is_serving = False
 
     def stop(self) -> None:
-        """Terminate active serving socket connections."""
+        """Terminate active serving socket connections safely without deadlock."""
         logging.info("Stopping Athena REST Server...")
-        self._server.shutdown()
+        if getattr(self, "_is_serving", False):
+            self._server.shutdown()
         self._server.server_close()
+

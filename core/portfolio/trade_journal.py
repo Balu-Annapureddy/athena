@@ -3,6 +3,7 @@
 import datetime
 import json
 import os
+import tempfile
 from dataclasses import asdict, dataclass
 from typing import Dict, List, Optional
 
@@ -56,9 +57,13 @@ class TradeJournal:
         return entries
 
     def _save_all(self) -> None:
-        with open(self.journal_path, "w", encoding="utf-8") as f:
+        dir_name = os.path.dirname(os.path.abspath(self.journal_path))
+        os.makedirs(dir_name, exist_ok=True)
+        with tempfile.NamedTemporaryFile("w", dir=dir_name, delete=False, encoding="utf-8") as tf:
             for entry in self.entries:
-                f.write(json.dumps(asdict(entry)) + "\n")
+                tf.write(json.dumps(asdict(entry)) + "\n")
+            temp_path = tf.name
+        os.replace(temp_path, self.journal_path)
 
     def register_suggestion(self, report: SignalReport) -> Optional[JournalEntry]:
         """Record a new signal prediction into the journal as PENDING."""

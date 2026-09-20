@@ -68,7 +68,8 @@ class OutcomeAssembler:
             metadata = DomainMetadata.create(
                 entity_id=candidate.candidate_id,
                 source="OutcomeAssembler",
-                created_by=candidate.event_source
+                created_by=candidate.event_source,
+                as_of=candidate.execution_timestamp
             )
 
             # Map variance parameters

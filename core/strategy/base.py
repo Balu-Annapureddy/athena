@@ -1,7 +1,7 @@
 """Base strategy class and interfaces for Athena's Strategy Engine."""
 
 from abc import ABC, abstractmethod
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, NamedTuple, Optional, Tuple
 
 from core.decision_builder.context import DecisionEvaluationContext
 from core.decision_builder.ledger import DecisionRecord
@@ -10,6 +10,21 @@ from core.decision_builder.portfolio import PortfolioState
 from core.domain.common import ObservationId
 from core.domain.entities import Decision, Fact, InvestmentThesis
 from core.thesis_builder.ledger import ThesisRecord
+
+
+class OHLCVBarSeries(NamedTuple):
+    """Typed container for aligned OHLCV price series extracted from Fact lists.
+
+    Keeps numeric data as flat Python lists — cheap to slice and pass to
+    indicator functions — while retaining the ordered observation IDs for
+    provenance tracing.
+    """
+    opens: List[float]
+    highs: List[float]
+    lows: List[float]
+    closes: List[float]
+    volumes: List[float]
+    observation_ids: List
 
 
 class BaseStrategy(ABC):
@@ -61,18 +76,21 @@ class BaseStrategy(ABC):
     def _extract_ohlcv(
         self,
         facts: List[Fact]
-    ) -> Tuple[List[float], List[float], List[float], List[float], List[float], List[ObservationId]]:
-        """Extract aligned OHLCV series and observation IDs from a list of Facts.
+    ) -> OHLCVBarSeries:
+        """Extract aligned OHLCV series from a list of Facts in a single pass.
+
+        Groups facts by observation ID (bar), builds per-bar dicts, then
+        assembles typed flat lists for efficient indicator calculations.
 
         Returns:
-            A 6-tuple of (opens, highs, lows, closes, volumes, observation_ids)
-            aligned in chronological order.
+            OHLCVBarSeries namedtuple of (opens, highs, lows, closes, volumes, observation_ids).
         """
         from core.facts.taxonomy import FactType
 
-        bar_map: Dict = {}
-        bar_order = []
-        obs_ids = []
+        # Single-pass grouping: obs_id_str → {fact_name: float_value}
+        bar_map: Dict[str, Dict[str, float]] = {}
+        bar_order: List[str] = []
+        obs_id_map: Dict[str, object] = {}
 
         for fact in facts:
             obs_id = fact.source_observation_id
@@ -80,7 +98,7 @@ class BaseStrategy(ABC):
             if obs_id_str not in bar_map:
                 bar_map[obs_id_str] = {}
                 bar_order.append(obs_id_str)
-                obs_ids.append(obs_id)
+                obs_id_map[obs_id_str] = obs_id
 
             val = fact.value.value
             if isinstance(val, bool):
@@ -91,13 +109,27 @@ class BaseStrategy(ABC):
                 except (ValueError, TypeError):
                     pass
 
-        opens = [bar_map[oid].get(FactType.PRICE_OPEN.value, 0.0) for oid in bar_order]
-        highs = [bar_map[oid].get(FactType.PRICE_HIGH.value, 0.0) for oid in bar_order]
-        lows = [bar_map[oid].get(FactType.PRICE_LOW.value, 0.0) for oid in bar_order]
-        closes = [bar_map[oid].get(FactType.PRICE_CLOSE.value, 0.0) for oid in bar_order]
-        volumes = [bar_map[oid].get(FactType.PRICE_VOLUME.value, 0.0) for oid in bar_order]
+        open_key = FactType.PRICE_OPEN.value
+        high_key = FactType.PRICE_HIGH.value
+        low_key = FactType.PRICE_LOW.value
+        close_key = FactType.PRICE_CLOSE.value
+        vol_key = FactType.PRICE_VOLUME.value
 
-        return opens, highs, lows, closes, volumes, obs_ids
+        opens = [bar_map[oid].get(open_key, 0.0) for oid in bar_order]
+        highs = [bar_map[oid].get(high_key, 0.0) for oid in bar_order]
+        lows = [bar_map[oid].get(low_key, 0.0) for oid in bar_order]
+        closes = [bar_map[oid].get(close_key, 0.0) for oid in bar_order]
+        volumes = [bar_map[oid].get(vol_key, 0.0) for oid in bar_order]
+        obs_ids = [obs_id_map[oid] for oid in bar_order]
+
+        return OHLCVBarSeries(
+            opens=opens,
+            highs=highs,
+            lows=lows,
+            closes=closes,
+            volumes=volumes,
+            observation_ids=obs_ids
+        )
 
 
 
@@ -149,7 +181,15 @@ class BaseStrategy(ABC):
         from core.thesis_builder.candidate import StrategyStyle, TimeHorizon
         from core.thesis_builder.ledger import ThesisRecord, ThesisState
 
-        now = datetime.now(timezone.utc)
+        # Resolve point-in-time timestamp from decision context or latest fact
+        now = None
+        if dec_ctx is not None and getattr(dec_ctx, "current_time", None) is not None:
+            now = dec_ctx.current_time
+        elif facts and len(facts) > 0 and hasattr(facts[-1], "value") and hasattr(facts[-1].value, "timestamp"):
+            now = facts[-1].value.timestamp
+        if now is None:
+            now = datetime.now(timezone.utc)
+
         dir_enum = ThesisDirection(direction)
 
         # 1. Create Inference
@@ -157,7 +197,8 @@ class BaseStrategy(ABC):
         inf_metadata = DomainMetadata.create(
             entity_id=inf_id,
             source="StrategyEngine",
-            created_by=self.name
+            created_by=self.name,
+            as_of=now
         )
         Inference(
             metadata=inf_metadata,
@@ -234,7 +275,8 @@ class BaseStrategy(ABC):
         thesis_metadata = DomainMetadata.create(
             entity_id=thesis_id,
             source="StrategyEngine",
-            created_by=self.name
+            created_by=self.name,
+            as_of=now
         )
         investment_thesis = InvestmentThesis(
             metadata=thesis_metadata,

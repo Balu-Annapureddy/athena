@@ -3,6 +3,7 @@
 from datetime import datetime
 from types import MappingProxyType
 from typing import Optional
+import copy
 
 from core.domain.common import DomainMetadata, ThesisId
 from core.domain.entities.base import BaseEntity
@@ -68,6 +69,18 @@ class Decision(BaseEntity):
         """Calculated risk profile for this decision."""
         return self._risk_assessment
 
-    @risk_assessment.setter
-    def risk_assessment(self, value: Optional[RiskAssessment]) -> None:
-        self._risk_assessment = value
+    def with_risk_assessment(self, value: Optional[RiskAssessment]) -> "Decision":
+        """Return a new immutable Decision with the given risk assessment attached.
+
+        Preserves all other fields. Use instead of the (now removed) setter.
+        """
+        return Decision(
+            metadata=self._metadata,
+            thesis_id=self._thesis_id,
+            action=self._action,
+            executed_at=self._executed_at,
+            execution_parameters=dict(self._execution_parameters),
+            entry_price=self._entry_price,
+            target_price=self._target_price,
+            risk_assessment=value
+        )

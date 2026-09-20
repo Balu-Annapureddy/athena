@@ -167,6 +167,7 @@ class BacktestEngine:
         interval: str = "1d",
         periods_per_year: Optional[float] = None,
         timeframe: Optional[str] = None,
+        allow_short: bool = True,
         **kwargs
     ) -> Dict[str, Any]:
         """Run walk-forward daily backtest for a strategy on a ticker.
@@ -397,6 +398,10 @@ class BacktestEngine:
                         is_bullish = True
                     elif action == RecommendationAction.SELL:
                         is_bearish = True
+
+                    # Restrict naked overnight short selling if allow_short is False (e.g. Indian cash equity delivery)
+                    if is_bearish and not allow_short:
+                        is_bearish = False
 
                     if is_bullish or is_bearish:
                         risk_assessment = getattr(decision, "risk_assessment", None)

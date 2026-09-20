@@ -227,7 +227,7 @@ class TestBacktestEngine(unittest.TestCase):
                         metadata=DomainMetadata.create(did), thesis_id=tid, action=RecommendationAction.BUY,
                         executed_at=datetime.now(timezone.utc), execution_parameters={}, entry_price=500.0, target_price=550.0
                     )
-                    dec_entity.risk_assessment = dec_rec.risk_assessment
+                    dec_entity = dec_entity.with_risk_assessment(dec_rec.risk_assessment)
 
                     return thesis_entity, thesis_rec, dec_entity, dec_rec
                 return None

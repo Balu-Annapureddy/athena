@@ -103,7 +103,7 @@ class DecisionAssembler:
             )
 
             if risk_assessment:
-                decision_entity.risk_assessment = risk_assessment
+                decision_entity = decision_entity.with_risk_assessment(risk_assessment)
 
             # Record to transaction ledger
             record = self._ledger.record_decision(

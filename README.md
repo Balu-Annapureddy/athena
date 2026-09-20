@@ -111,7 +111,10 @@ Athena enforces a strict testing discipline. The entire suite runs deterministic
 pytest tests/ -q
 ```
 
-Total Test Cases: **421 tests** (all green, 100% pass rate).
+Total Test Cases: **571+ tests** (all green, 100% pass rate).
+- Fully deterministic point-in-time replayability.
+- SEBI cash market delivery compliance (`allow_short=False`).
+- Closed-loop post-trade reconciliation (`OutcomeAssembler`).
 
 ---
 

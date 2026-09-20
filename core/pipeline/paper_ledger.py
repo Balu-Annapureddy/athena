@@ -3,6 +3,7 @@
 import datetime
 import json
 import os
+import tempfile
 import uuid
 from typing import Any, Dict, List
 
@@ -17,12 +18,14 @@ class PaperLedger:
     Handles trade opening, same-bar stop/target exits, and P&L calculations.
     """
 
-    def __init__(self, ledger_path: str = "signals/paper_trades.jsonl") -> None:
+    def __init__(self, ledger_path: str = "signals/paper_trades.jsonl", outcome_ledger_path: str = "signals/outcomes.jsonl") -> None:
         self._ledger_path = ledger_path
-        # Create directory if needed
-        dir_name = os.path.dirname(ledger_path)
-        if dir_name and not os.path.exists(dir_name):
-            os.makedirs(dir_name)
+        self._outcome_ledger_path = outcome_ledger_path
+        # Create directories if needed
+        for p in (ledger_path, outcome_ledger_path):
+            dir_name = os.path.dirname(p)
+            if dir_name and not os.path.exists(dir_name):
+                os.makedirs(dir_name, exist_ok=True)
 
     def _load_trades(self) -> List[Dict[str, Any]]:
         if not os.path.exists(self._ledger_path):
@@ -36,9 +39,13 @@ class PaperLedger:
         return trades
 
     def _write_all_trades(self, trades: List[Dict[str, Any]]) -> None:
-        with open(self._ledger_path, "w", encoding="utf-8") as f:
+        dir_name = os.path.dirname(os.path.abspath(self._ledger_path))
+        os.makedirs(dir_name, exist_ok=True)
+        with tempfile.NamedTemporaryFile("w", dir=dir_name, delete=False, encoding="utf-8") as tf:
             for t in trades:
-                f.write(json.dumps(t) + "\n")
+                tf.write(json.dumps(t) + "\n")
+            temp_path = tf.name
+        os.replace(temp_path, self._ledger_path)
 
     def get_open_trades(self) -> List[Dict[str, Any]]:
         """Return all active OPEN trades."""
@@ -62,7 +69,7 @@ class PaperLedger:
         # Open new trade
         direction = "LONG" if signal.action == RecommendationAction.BUY else "SHORT"
         new_trade = {
-            "trade_id": str(uuid.uuid4()),
+            "trade_id": signal.trade_id or str(uuid.uuid4()),
             "entry_date": signal.run_date.isoformat(),
             "ticker": signal.ticker,
             "strategy_name": signal.strategy_name,
@@ -138,11 +145,164 @@ class PaperLedger:
 
                 updated_any = True
                 closed_this_run.append(t)
+                self._record_closed_outcome(t, runner_date)
 
         if updated_any:
             self._write_all_trades(trades)
 
         return closed_this_run
+
+    def _record_closed_outcome(self, trade: Dict[str, Any], exit_date: datetime.date) -> None:
+        """Synthesize and record a verified OutcomeRecord to the outcomes ledger upon trade exit."""
+        try:
+            import logging
+            from core.decision_builder.candidate import DecisionRationale
+            from core.decision_builder.ledger import DecisionRecord, DecisionState
+            from core.decision_builder.policies import DecisionAssessment, DecisionPolicyResult, Priority
+            from core.domain.common import DecisionId, SecurityId, ThesisId
+            from core.domain.enums import RecommendationAction
+            from core.outcome_builder import (
+                OutcomeAssembler,
+                OutcomeCandidateBuilder,
+                OutcomeEventType,
+                OutcomeEvaluationContext,
+                OutcomePolicy,
+                ReconciliationOutcomeRule,
+            )
+
+            trade_id_str = str(trade.get("trade_id", ""))
+            try:
+                dec_uuid = uuid.UUID(trade_id_str)
+            except (ValueError, TypeError):
+                dec_uuid = uuid.uuid5(uuid.NAMESPACE_DNS, trade_id_str) if trade_id_str else uuid.uuid4()
+
+            decision_id = DecisionId(dec_uuid)
+            security_id = SecurityId(uuid.uuid5(uuid.NAMESPACE_DNS, trade.get("ticker", "UNKNOWN")))
+
+            action = RecommendationAction.BUY if trade.get("direction") == "LONG" else RecommendationAction.SELL
+            entry_price = float(trade.get("entry_price") or 0.0)
+            exit_price = float(trade.get("exit_price") or entry_price)
+            target_price = float(trade.get("target_price") or entry_price)
+            shares = float(trade.get("shares") or 1.0)
+
+            # Reconstruct DecisionRecord for reconciliation audit
+            if "entry_date" in trade and trade["entry_date"]:
+                try:
+                    entry_dt = datetime.datetime.combine(
+                        datetime.date.fromisoformat(trade["entry_date"]),
+                        datetime.time(9, 15),
+                        tzinfo=datetime.timezone.utc
+                    )
+                except Exception:
+                    entry_dt = datetime.datetime.now(datetime.timezone.utc)
+            else:
+                entry_dt = datetime.datetime.now(datetime.timezone.utc)
+
+            decision_rec = DecisionRecord(
+                id=decision_id,
+                thesis_id=ThesisId(uuid.uuid4()),
+                proposed_action=action,
+                target_weight=1.0,
+                rationale=DecisionRationale(
+                    supporting_thesis_ids=[],
+                    policy_constraints=[],
+                    rejected_alternatives=[],
+                    explanation=f"Paper trade {trade_id_str} on {trade.get('ticker')}"
+                ),
+                assessment=DecisionAssessment(
+                    policy_result=DecisionPolicyResult(passed=True),
+                    execution_priority=Priority.NORMAL,
+                    overall_score=1.0
+                ),
+                rule_name=trade.get("strategy_name", "PaperTradingStrategy"),
+                rule_version="1.0.0",
+                policy_version="1.0.0",
+                state=DecisionState.APPROVED,
+                timestamp=entry_dt,
+                entry_price=entry_price,
+                target_price=target_price
+            )
+
+            builder = OutcomeCandidateBuilder(rules=[ReconciliationOutcomeRule()])
+            assembler = OutcomeAssembler(builder=builder)
+
+            exit_dt = datetime.datetime.combine(
+                exit_date,
+                datetime.time(15, 30),
+                tzinfo=datetime.timezone.utc
+            )
+
+            execution_details = {
+                "security_id": security_id,
+                "filled_quantity": shares,
+                "filled_price": exit_price,
+                "expected_quantity": shares,
+                "expected_price": target_price if trade.get("exit_reason") == "TARGET_PRICE" else entry_price,
+                "market_price_at_decision": entry_price,
+                "market_price_at_execution": exit_price,
+                "execution_timestamp": exit_dt,
+                "event_source": "PaperLedger"
+            }
+
+            policy = OutcomePolicy()
+            ctx = OutcomeEvaluationContext(
+                current_time=exit_dt,
+                active_policy=policy
+            )
+
+            materialized = assembler.assemble_outcomes(
+                decision=decision_rec,
+                event_type=OutcomeEventType.EXECUTED,
+                execution_details=execution_details,
+                policy=policy,
+                context=ctx
+            )
+
+            if materialized:
+                outcome_entity, outcome_rec = materialized[0]
+                self._append_outcome_record(trade, outcome_entity, outcome_rec)
+
+        except Exception as e:
+            import logging
+            logging.error(f"PaperLedger: failed to record outcome for trade {trade.get('trade_id')}: {e}", exc_info=True)
+
+    def _append_outcome_record(self, trade: Dict[str, Any], outcome_entity: Any, outcome_rec: Any) -> None:
+        """Append serialized outcome record to outcomes.jsonl."""
+        entry = {
+            "outcome_id": str(outcome_rec.id),
+            "decision_id": str(outcome_rec.decision_id),
+            "security_id": str(outcome_rec.security_id),
+            "event_type": outcome_rec.event_type.name,
+            "trade_id": trade.get("trade_id"),
+            "ticker": trade.get("ticker"),
+            "strategy_name": trade.get("strategy_name"),
+            "direction": trade.get("direction"),
+            "exit_reason": trade.get("exit_reason"),
+            "entry_price": trade.get("entry_price"),
+            "exit_price": trade.get("exit_price"),
+            "pnl": trade.get("pnl"),
+            "realized_return": outcome_rec.assessment.investment_outcome.realized_return,
+            "slippage": outcome_rec.assessment.execution_quality.slippage,
+            "execution_timestamp": outcome_rec.execution_timestamp.isoformat(),
+            "recorded_at": datetime.datetime.now(datetime.timezone.utc).isoformat()
+        }
+        dir_name = os.path.dirname(os.path.abspath(self._outcome_ledger_path))
+        if dir_name:
+            os.makedirs(dir_name, exist_ok=True)
+        with open(self._outcome_ledger_path, "a", encoding="utf-8") as f:
+            f.write(json.dumps(entry) + "\n")
+
+    def get_outcomes(self) -> List[Dict[str, Any]]:
+        """Return all recorded trade outcomes from the outcomes ledger."""
+        if not os.path.exists(self._outcome_ledger_path):
+            return []
+        outcomes = []
+        with open(self._outcome_ledger_path, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if line:
+                    outcomes.append(json.loads(line))
+        return outcomes
 
     def get_summary_stats(self) -> Dict[str, Any]:
         """Compute key summary stats for all closed trades."""

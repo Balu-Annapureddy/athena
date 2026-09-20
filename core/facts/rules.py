@@ -61,10 +61,12 @@ class FactExtractionRule(ABC):
             confidence_score=1.0 if verification == "VERIFIED" else 0.5
         )
 
+        obs_time = getattr(observation, "timestamp", None)
         metadata = DomainMetadata.create(
             entity_id=fact_id,
             source=observation.source,
-            created_by=self.name
+            created_by=self.name,
+            as_of=obs_time,
         )
 
         return Fact(
@@ -72,7 +74,7 @@ class FactExtractionRule(ABC):
             source_observation_id=observation.id,
             name=fact_type.value,
             value=meas,
-            extracted_at=datetime.now(timezone.utc)
+            extracted_at=obs_time if obs_time is not None else datetime.now(timezone.utc)
         )
 
 

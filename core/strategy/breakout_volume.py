@@ -44,8 +44,8 @@ class BreakoutVolumeConfirmationStrategy(BaseStrategy):
 
     @property
     def required_history_bars(self) -> int:
-        # Needs lookback_period bars for high/low channel + 1 for current bar
-        return self._lookback_period + 5
+        # Needs lookback_period for channel + sufficient history for ATR volatility warmup
+        return max(50, self._lookback_period + 15)
 
     def evaluate(
         self,

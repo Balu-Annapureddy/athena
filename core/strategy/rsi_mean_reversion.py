@@ -40,8 +40,8 @@ class RSIMeanReversionStrategy(BaseStrategy):
 
     @property
     def required_history_bars(self) -> int:
-        # RSI(14) needs 14+1 bars; add small buffer for candlestick pattern lookback.
-        return self._rsi_period + 10
+        # Minimum lookback to ensure Wilder's smoothing (k=1/period) reaches numerical stability
+        return max(100, self._rsi_period + 20)
 
     def evaluate(
         self,

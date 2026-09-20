@@ -20,6 +20,7 @@ import datetime
 import json
 import os
 import sys
+import tempfile
 import time
 from typing import Any, Dict, List, Optional
 
@@ -89,9 +90,13 @@ class IntradayPaperLedger:
         return trades
 
     def _save_all(self) -> None:
-        with open(self.ledger_path, "w", encoding="utf-8") as f:
+        dir_name = os.path.dirname(os.path.abspath(self.ledger_path))
+        os.makedirs(dir_name, exist_ok=True)
+        with tempfile.NamedTemporaryFile("w", dir=dir_name, delete=False, encoding="utf-8") as tf:
             for t in self._trades:
-                f.write(json.dumps(dataclasses.asdict(t)) + "\n")
+                tf.write(json.dumps(dataclasses.asdict(t)) + "\n")
+            temp_path = tf.name
+        os.replace(temp_path, self.ledger_path)
 
     def open_trade(
         self,
