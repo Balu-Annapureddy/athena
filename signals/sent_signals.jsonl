@@ -12,7 +12,7 @@
 {"trade_id": "T082012", "ticker": "M&MFIN.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-08-20", "status": "ACTIVE"}
 {"trade_id": "T082013", "ticker": "POLICYBZR.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-08-20", "status": "ACTIVE"}
 {"trade_id": "T082014", "ticker": "PFIZER.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-08-20", "status": "ACTIVE"}
-{"trade_id": "T082015", "ticker": "WELSPUNLIV.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-08-20", "status": "ACTIVE"}
+{"trade_id": "T082015", "ticker": "WELSPUNLIV.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-08-20", "status": "EXPIRED"}
 {"trade_id": "T082401", "ticker": "AUBANK.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-08-24", "status": "ACTIVE"}
 {"trade_id": "T082402", "ticker": "ADANIPORTS.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-08-24", "status": "ACTIVE"}
 {"trade_id": "T082403", "ticker": "AEGISLOG.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-08-24", "status": "ACTIVE"}
@@ -186,3 +186,9 @@
 {"trade_id": "T092120", "ticker": "TVSMOTOR.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-21", "status": "ACTIVE"}
 {"trade_id": "T092121", "ticker": "TRENT.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-21", "status": "ACTIVE"}
 {"trade_id": "T092122", "ticker": "VIJAYA.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-21", "status": "ACTIVE"}
+{"trade_id": "T092301", "ticker": "DLF.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-23", "status": "ACTIVE"}
+{"trade_id": "T092302", "ticker": "GABRIEL.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-23", "status": "ACTIVE"}
+{"trade_id": "T092303", "ticker": "INDIGO.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-23", "status": "ACTIVE"}
+{"trade_id": "T092304", "ticker": "MANKIND.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-23", "status": "ACTIVE"}
+{"trade_id": "T092305", "ticker": "NIVABUPA.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-23", "status": "ACTIVE"}
+{"trade_id": "T092306", "ticker": "WELSPUNLIV.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-23", "status": "ACTIVE"}
