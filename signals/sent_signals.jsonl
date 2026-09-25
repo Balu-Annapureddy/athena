@@ -202,3 +202,7 @@
 {"trade_id": "T092408", "ticker": "UNITDSPR.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-24", "status": "ACTIVE"}
 {"trade_id": "T092409", "ticker": "WHIRLPOOL.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-24", "status": "ACTIVE"}
 {"trade_id": "T092410", "ticker": "WOCKPHARMA.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-24", "status": "ACTIVE"}
+{"trade_id": "T092501", "ticker": "ABDL.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-25", "status": "ACTIVE"}
+{"trade_id": "T092502", "ticker": "CIPLA.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-25", "status": "ACTIVE"}
+{"trade_id": "T092503", "ticker": "LALPATHLAB.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-25", "status": "ACTIVE"}
+{"trade_id": "T092504", "ticker": "OLAELEC.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-25", "status": "ACTIVE"}
