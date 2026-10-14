@@ -28,7 +28,7 @@
 {"trade_id": "T082413", "ticker": "HINDCOPPER.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-08-24", "status": "ACTIVE"}
 {"trade_id": "T082414", "ticker": "POWERINDIA.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-08-24", "status": "ACTIVE"}
 {"trade_id": "T082415", "ticker": "IIFL.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-08-24", "status": "ACTIVE"}
-{"trade_id": "T082416", "ticker": "KALYANKJIL.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-08-24", "status": "ACTIVE"}
+{"trade_id": "T082416", "ticker": "KALYANKJIL.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-08-24", "status": "EXPIRED"}
 {"trade_id": "T082417", "ticker": "KFINTECH.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-08-24", "status": "ACTIVE"}
 {"trade_id": "T082418", "ticker": "KOTAKBANK.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-08-24", "status": "EXPIRED"}
 {"trade_id": "T082419", "ticker": "THELEELA.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-08-24", "status": "EXPIRED"}
@@ -119,7 +119,7 @@
 {"trade_id": "T090301", "ticker": "BEML.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-03", "status": "ACTIVE"}
 {"trade_id": "T090302", "ticker": "CLEAN.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-03", "status": "EXPIRED"}
 {"trade_id": "T090303", "ticker": "PNB.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-03", "status": "ACTIVE"}
-{"trade_id": "T090304", "ticker": "ZENTEC.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-03", "status": "ACTIVE"}
+{"trade_id": "T090304", "ticker": "ZENTEC.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-03", "status": "EXPIRED"}
 {"trade_id": "T090401", "ticker": "ACE.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-04", "status": "ACTIVE"}
 {"trade_id": "T090402", "ticker": "APARINDS.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-04", "status": "ACTIVE"}
 {"trade_id": "T090403", "ticker": "CEMPRO.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-04", "status": "ACTIVE"}
@@ -261,3 +261,6 @@
 {"trade_id": "T101203", "ticker": "COFORGE.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-10-12", "status": "ACTIVE"}
 {"trade_id": "T101204", "ticker": "FEDERALBNK.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-10-12", "status": "ACTIVE"}
 {"trade_id": "T101205", "ticker": "MOTILALOFS.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-10-12", "status": "ACTIVE"}
+{"trade_id": "T101401", "ticker": "KALYANKJIL.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-10-14", "status": "ACTIVE"}
+{"trade_id": "T101402", "ticker": "MOTHERSON.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-10-14", "status": "ACTIVE"}
+{"trade_id": "T101403", "ticker": "ZENTEC.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-10-14", "status": "ACTIVE"}
