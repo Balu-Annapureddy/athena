@@ -118,7 +118,7 @@
 {"trade_id": "T090204", "ticker": "SAILIFE.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-02", "status": "ACTIVE"}
 {"trade_id": "T090301", "ticker": "BEML.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-03", "status": "ACTIVE"}
 {"trade_id": "T090302", "ticker": "CLEAN.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-03", "status": "EXPIRED"}
-{"trade_id": "T090303", "ticker": "PNB.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-03", "status": "ACTIVE"}
+{"trade_id": "T090303", "ticker": "PNB.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-09-03", "status": "EXPIRED"}
 {"trade_id": "T090304", "ticker": "ZENTEC.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-03", "status": "EXPIRED"}
 {"trade_id": "T090401", "ticker": "ACE.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-04", "status": "ACTIVE"}
 {"trade_id": "T090402", "ticker": "APARINDS.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-09-04", "status": "ACTIVE"}
@@ -288,3 +288,6 @@
 {"trade_id": "T101908", "ticker": "SHYAMMETL.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-10-19", "status": "ACTIVE"}
 {"trade_id": "T101909", "ticker": "ZYDUSWELL.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-10-19", "status": "ACTIVE"}
 {"trade_id": "T102101", "ticker": "JSWSTEEL.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-10-21", "status": "ACTIVE"}
+{"trade_id": "T102201", "ticker": "HEXT.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-10-22", "status": "ACTIVE"}
+{"trade_id": "T102202", "ticker": "PNB.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-10-22", "status": "ACTIVE"}
+{"trade_id": "T102203", "ticker": "TECHM.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-10-22", "status": "ACTIVE"}
