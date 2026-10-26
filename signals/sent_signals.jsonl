@@ -5,7 +5,7 @@
 {"trade_id": "T082005", "ticker": "DIXON.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-08-20", "status": "EXPIRED"}
 {"trade_id": "T082006", "ticker": "ELGIEQUIP.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-08-20", "status": "ACTIVE"}
 {"trade_id": "T082007", "ticker": "GLAXO.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-08-20", "status": "EXPIRED"}
-{"trade_id": "T082008", "ticker": "IPCALAB.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-08-20", "status": "ACTIVE"}
+{"trade_id": "T082008", "ticker": "IPCALAB.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-08-20", "status": "EXPIRED"}
 {"trade_id": "T082009", "ticker": "JSWSTEEL.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-08-20", "status": "EXPIRED"}
 {"trade_id": "T082010", "ticker": "JYOTICNC.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-08-20", "status": "EXPIRED"}
 {"trade_id": "T082011", "ticker": "MGL.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-08-20", "status": "ACTIVE"}
@@ -292,3 +292,5 @@
 {"trade_id": "T102202", "ticker": "PNB.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-10-22", "status": "ACTIVE"}
 {"trade_id": "T102203", "ticker": "TECHM.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-10-22", "status": "ACTIVE"}
 {"trade_id": "T102301", "ticker": "CASTROLIND.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-10-23", "status": "ACTIVE"}
+{"trade_id": "T102601", "ticker": "IGIL.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-10-26", "status": "ACTIVE"}
+{"trade_id": "T102602", "ticker": "IPCALAB.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-10-26", "status": "ACTIVE"}
