@@ -14,7 +14,7 @@
 {"trade_id": "T082014", "ticker": "PFIZER.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-08-20", "status": "ACTIVE"}
 {"trade_id": "T082015", "ticker": "WELSPUNLIV.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-08-20", "status": "EXPIRED"}
 {"trade_id": "T082401", "ticker": "AUBANK.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-08-24", "status": "ACTIVE"}
-{"trade_id": "T082402", "ticker": "ADANIPORTS.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-08-24", "status": "ACTIVE"}
+{"trade_id": "T082402", "ticker": "ADANIPORTS.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-08-24", "status": "EXPIRED"}
 {"trade_id": "T082403", "ticker": "AEGISLOG.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-08-24", "status": "EXPIRED"}
 {"trade_id": "T082404", "ticker": "AEGISVOPAK.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-08-24", "status": "EXPIRED"}
 {"trade_id": "T082405", "ticker": "AIIL.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-08-24", "status": "ACTIVE"}
@@ -294,3 +294,4 @@
 {"trade_id": "T102301", "ticker": "CASTROLIND.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-10-23", "status": "ACTIVE"}
 {"trade_id": "T102601", "ticker": "IGIL.NS", "strategy_name": "BreakoutVolumeATRTrailingHybridStrategy", "direction": "BUY", "signal_date": "2026-10-26", "status": "ACTIVE"}
 {"trade_id": "T102602", "ticker": "IPCALAB.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-10-26", "status": "ACTIVE"}
+{"trade_id": "T102701", "ticker": "ADANIPORTS.NS", "strategy_name": "ATRTrailingGoldenCrossStrategy", "direction": "BUY", "signal_date": "2026-10-27", "status": "ACTIVE"}
