@@ -257,3 +257,42 @@ Reported TRIDENT history showed 1,875 one-minute bars across five sessions. Sess
 The historical chart now has a replay slider, previous/next candle controls, and full-history reset. Chart candles, overlay series, event markers, technical values and the evidence-mode explanations are restricted to the revealed historical prefix, rather than using future observations. A standalone Python replay helper and offline causal tests provide a reusable reference computation. Users may export only revealed history as CSV, including OHLCV, EMA, SMA, VWAP and RSI; timestamps are UTC ISO strings in the export. Replay is research-only: it is not a trading strategy backtest or a realistic execution simulator.
 
 The current implementation does not yet provide broker stream-to-browser updates, portfolio accounting costs, sourced market news or an actual conversational language model. The new replay UI has been syntax checked but not browser acceptance tested. Run all nine test modules including tests/test_historical_replay.py and load a 5-day historical chart, replay from candle 1 onward, compare technical readings, and export a CSV at an intermediate replay position.
+
+## Engineering release gate — beyond M0–M6
+
+Before describing the feature branch as a stable local application:
+
+1. Run the entire offline suite and JavaScript syntax check on Windows and CI.
+   Check output, do not infer a pass merely because code was committed.
+2. Exercise browser workflows end-to-end: NSE and BSE search, multi-day 1m/5m/15m
+   historical charts, session-boundary indicators, historical replay at an
+   intermediate candle, CSV export, watchlist persistence, price rules, and
+   open/close of simulated trades.
+3. Verify a real Upstox market-session WebSocket with resubscription,
+   heartbeat, freshness labeling and bounded recovery after interruption.
+   Do not send live alerts until feed freshness has been established.
+4. Source accuracy: Upstox instrument keys, exchange/trading-day calendar,
+   interval alignment, zero-volume candles, price adjustment choices, missing
+   sessions and provider API entitlement/rate limits must be tested.
+5. Security and privacy: protect bearer tokens; keep localhost binding; review
+   request bounds, hostile origins, CSV input, SQLite backup and schema
+   migrations. Historical research data must not be sent externally.
+6. Shipping: pin dependencies, make the chart library available offline rather
+   than requiring a CDN, add a one-command Windows launcher, structured error
+   messages, user settings, and an upgrade/migration path for the SQLite DB.
+7. Reliability: instrument independent logging, stale-data flags,
+   non-secret diagnostics and clear failure modes; execute browser smoke tests.
+8. Financial quality: define fees, slippage, market impact and risk for paper
+   trading, with no claims that hypothetical returns are real achievable P&L.
+   Do not imply that retrospective crosses predict returns.
+9. Research integrity: source and timestamp all news/fundamentals if added,
+   manage publication freshness, permissions and missing data. Explain that
+   current evidence-mode answers are templated and not a conversational model.
+10. Release discipline: tagged tested release on main only after acceptance;
+    leave the old daily signal/Telegram schedule paused unless explicitly
+    approved for reactivation.
+
+October 2026 development branch status: offline framework and historical
+Upstox candles previously demonstrated; newest checks and replay features
+are committed but have not been independently accepted by Windows browser
+or CI. The application is not a validated production trading platform.
