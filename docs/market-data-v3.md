@@ -247,3 +247,7 @@ in the watchlist and choose **Compare saved instruments**.
 These newest frontend features and tests have not been independently executed
 in a browser in this session. Historical broker authentication/candles and
 the earlier base chart had already been confirmed by the project owner.
+
+## Multi-session analysis correction
+
+Reported TRIDENT history showed 1,875 one-minute bars across five sessions. Session VWAP must not pool earlier trading days: the analytical engine now resets volume and price-volume accumulators at exchange-local (Asia/Kolkata) date boundaries. Retrospective crossing events now require 20 completed reference candles from the same date, and repeated crossings of the same type within five candles are consolidated. The base EMA and RSI intentionally remain continuous across sessions; indicators still depend on the selected history window, so warm-up context affects results. Updated unit tests include the VWAP boundary case. Frontend copy no longer falsely describes implemented tools as missing. Please rerun tests and inspect a multi-day chart; these new revisions have not yet been observed in the user's environment.
