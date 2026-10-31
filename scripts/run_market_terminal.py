@@ -20,6 +20,7 @@ from core.data.paper_journal import PaperJournal
 from core.data.research_store import ResearchStore, historical_crossings
 from core.data.market_overview import compare_watchlist
 from core.data.market_bar import MarketBar
+from core.data.connectors.upstox_v3_athena_adapter import candle_payload
 from core.data.paper_journal import database_path
 from core.data.terminal_backup import integrity_check
 
@@ -151,6 +152,17 @@ class Handler(BaseHTTPRequestHandler):
             from_day = date - dt.timedelta(days=span-1)
             candles = client.candles(key, interval=interval, from_date=from_day.isoformat(), to_date=day)
             bars = [MarketBar.from_upstox(c).display_row() for c in candles]
+            retrieved = dt.datetime.now(dt.timezone.utc)
+            # Canonical source boundary for the terminal's latest observation.
+            # Do not materialize a second copy of every observation for chart rendering.
+            provenance = None
+            if candles:
+                p = candle_payload(candles[-1], retrieved_at=retrieved).provenance
+                provenance = {"provider": p.provider, "source_id": p.raw_source_id,
+                              "checksum": p.checksum, "connector_version": p.connector_version,
+                              "retrieval_timestamp": p.retrieval_timestamp.isoformat(),
+                              "bar_timestamp": p.publication_timestamp.isoformat(),
+                              "finality": candles[-1].is_final}
             store = ResearchStore()
             try:
                 rules = [x for x in store.alerts() if x["instrument_key"] == key]
@@ -160,7 +172,7 @@ class Handler(BaseHTTPRequestHandler):
             return json_response(self, 200, {
                 "instrument_key": key, "interval": interval, "date": day,
                 "from_date": from_day.isoformat(), "historical_alert_crossings": crossings,
-                "source": "Upstox V3 historical candles",
+                "source": "Upstox V3 historical candles", "latest_provenance": provenance,
                 "retrieved_at": dt.datetime.now(dt.timezone.utc).isoformat(),
                 "realtime": False, "bars": bars,
                 "analysis": analyze(bars),
