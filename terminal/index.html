@@ -37,14 +37,14 @@ input{min-width:120px}.grow{flex:1;min-width:150px}.chart{height:470px;position:
 <div class="controls">
 <div class="grow"><label for="instrument">Instrument key (resolved through Upstox)</label><input id="instrument" class="grow" readonly value="NSE_EQ|INE002A01018"/></div>
 <div><label for="day">Trading date</label><input type="date" id="day" value="2026-10-30"/></div>
-<div><label for="interval">Candle</label><select id="interval"><option value="1">1 minute</option><option value="5" selected>5 minutes</option><option value="15">15 minutes</option></select></div>
+<div><label for="days">History window</label><select id="days"><option value="1">1 day</option><option value="5">5 days</option><option value="10">10 days</option><option value="20">20 days</option></select></div><div><label for="interval">Candle</label><select id="interval"><option value="1">1 minute</option><option value="5" selected>5 minutes</option><option value="15">15 minutes</option></select></div>
 <button id="load">Load chart</button><button id="savewatch" type="button" style="background:#253a58;border-color:#415978">+ Watchlist</button>
 </div>
 <div id="notice" role="status" aria-live="polite">Historical candles are not live prices.</div>
 <div class="controls"><label><input type="checkbox" id="showema" checked/> EMA 9/21</label><label><input type="checkbox" id="showsma" checked/> SMA 20</label><label><input type="checkbox" id="showvwap" checked/> VWAP</label><label><input type="checkbox" id="showevents" checked/> Breakout markers</label></div><div class="chart"><div id="chart"></div></div><small class="muted">Chart times are Indian Standard Time (IST). Indicators are retrospective historical observations.</small>
 </section>
 <aside class="panel">
-<h2>Watchlist</h2><div id="watchlist" class="chips">No saved instruments</div><h2 id="heading" style="margin-top:24px">RELIANCE</h2>
+<h2>Watchlist</h2><div id="watchlist" class="chips">No saved instruments</div><small class="muted">Saved to local SQLite. Click a symbol to select; × removes it.</small><h2 id="heading" style="margin-top:24px">RELIANCE</h2>
 <small id="metadata">NSE equity · No data loaded</small>
 <p class="price" id="last">—</p>
 <small>Last close on selected historical chart (not current LTP)</small>
@@ -56,7 +56,7 @@ input{min-width:120px}.grow{flex:1;min-width:150px}.chart{height:470px;position:
 <div class="stat"><small>Candles</small><strong id="count">—</strong></div>
 <div class="stat"><small>Interval</small><strong id="selectedinterval">5m</strong></div>
 </div>
-<h2 style="margin-top:28px">Technical context</h2><div class="chips" id="indicators">Load a chart to calculate indicators.</div><h2 style="margin-top:24px">Observed events</h2><ul id="events" class="analysis-list"><li>No analysis loaded.</li></ul><h2 style="margin-top:24px">Ask Athena · evidence mode</h2><label for="ask">Ask about the loaded historical chart</label><div class="controls"><select id="ask" class="grow"><option value="trend">How is the trend?</option><option value="rsi">What does RSI show?</option><option value="vwap">Price versus VWAP?</option><option value="events">Were there breakouts?</option><option value="levels">Support and resistance?</option></select><button id="askbtn">Explain</button></div><p id="answer" class="muted" style="font-size:13px;line-height:1.5">Load a historical chart first. Answers only reference deterministic measurements.</p><p class="muted" style="font-size:13px;margin-top:26px">This is M1's first read-only interface. Breakout annotations, news, AI research, live streaming, watchlists, and paper trading are not implemented here yet.</p>
+<h2 style="margin-top:28px">Technical context</h2><div class="chips" id="indicators">Load a chart to calculate indicators.</div><h2 style="margin-top:24px">Observed events</h2><ul id="events" class="analysis-list"><li>No analysis loaded.</li></ul><h2 style="margin-top:24px">Historical price rules</h2><div class="controls"><select id="alertDirection"><option value="ABOVE">Cross above</option><option value="BELOW">Cross below</option></select><input id="alertLevel" type="number" min="0.01" step="0.01" placeholder="Price ₹"/><button id="addAlert">Save rule</button></div><div id="alerts" class="analysis-list">No price rules saved</div><div id="crossings" class="analysis-list"></div><small class="muted">Evaluated against loaded historical closes only; no live monitoring or push notifications.</small><h2 style="margin-top:24px">Ask Athena · evidence mode</h2><label for="ask">Ask about the loaded historical chart</label><div class="controls"><select id="ask" class="grow"><option value="trend">How is the trend?</option><option value="rsi">What does RSI show?</option><option value="vwap">Price versus VWAP?</option><option value="events">Were there breakouts?</option><option value="levels">Support and resistance?</option></select><button id="askbtn">Explain</button></div><p id="answer" class="muted" style="font-size:13px;line-height:1.5">Load a historical chart first. Answers only reference deterministic measurements.</p><p class="muted" style="font-size:13px;margin-top:26px">This is M1's first read-only interface. Breakout annotations, news, AI research, live streaming, watchlists, and paper trading are not implemented here yet.</p>
 </aside>
 <section class="panel full"><h2>Paper trade journal <small>· simulated only · no real orders</small></h2><div class="controls"><div><label for="paperSide">Position</label><select id="paperSide"><option>LONG</option><option>SHORT</option></select></div><div><label for="paperQty">Quantity</label><input id="paperQty" type="number" min="1" step="1" value="1"/></div><div><label for="paperPrice">Hypothetical entry price ₹</label><input id="paperPrice" type="number" min="0.01" step="0.01"/></div><button id="paperOpen">Record paper entry</button><button id="paperRefresh" style="background:#253a58">Refresh journal</button></div><small class="muted">Enter a hypothetical fill price yourself. Displayed P&amp;L is gross and excludes fees, slippage and taxes. Never sends broker orders.</small><div id="paperStatus" role="status" style="margin:12px 0;color:#d6ac68"></div><div id="paperTrades" style="overflow-x:auto"></div></section>
 </div>
@@ -66,10 +66,27 @@ input{min-width:120px}.grow{flex:1;min-width:150px}.chart{height:470px;position:
 const el=(id)=>document.getElementById(id);
 let selectedSymbol="RELIANCE";
 let chart,series,volumeSeries,currentBars=[],currentAnalysis=null,chartObserver=null;
-const WATCH_KEY="athena.historical.watchlist.v1";
-function readWatch(){try{const v=JSON.parse(localStorage.getItem(WATCH_KEY)||"[]");return Array.isArray(v)?v.filter(x=>x&&typeof x.key==="string"&&typeof x.symbol==="string").slice(0,30):[]}catch{return []}}
-function writeWatch(v){try{localStorage.setItem(WATCH_KEY,JSON.stringify(v.slice(0,30)))}catch{notice("Browser storage is unavailable.")}}
-function paintWatch(){const target=el("watchlist");target.replaceChildren();for(const x of readWatch()){const btn=document.createElement("button");btn.className="chip";btn.style.cursor="pointer";btn.textContent=x.symbol+" · "+x.exchange;btn.title="Load this saved instrument";btn.onclick=()=>{el("instrument").value=x.key;selectedSymbol=x.symbol;el("exchange").value=x.exchange;notice("Selected "+x.symbol+"; choose Load chart.")};target.append(btn)}if(!target.childNodes.length)target.textContent="No saved instruments"}
+async function apiPost(path,payload){const res=await fetch(path,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});const data=await res.json();if(!res.ok)throw Error(data.error||"Request failed");return data}
+async function paintWatch(){
+  const target=el("watchlist");target.replaceChildren();
+  try{
+    const res=await fetch("/api/watchlist");const data=await res.json();if(!res.ok)throw Error(data.error);
+    for(const x of data.items){const holder=document.createElement("span");holder.className="chip";
+      const select=document.createElement("button");select.textContent=x.symbol+" · "+x.exchange;select.title="Select this instrument";select.style.cssText="background:none;border:0;padding:1px;color:inherit";select.onclick=()=>{el("instrument").value=x.instrument_key;selectedSymbol=x.symbol;el("exchange").value=x.exchange;notice("Selected "+x.symbol+"; click Load chart.")};
+      const remove=document.createElement("button");remove.textContent="×";remove.title="Remove from watchlist";remove.style.cssText="background:none;border:0;padding:1px 5px;color:#e56570";remove.onclick=async()=>{try{await apiPost("/api/watchlist/remove",{instrument_key:x.instrument_key});paintWatch()}catch(e){notice(e.message)}};
+      holder.append(select,remove);target.append(holder);
+    }
+    if(!data.items.length)target.textContent="No saved instruments";
+  }catch(e){target.textContent="Unable to load watchlist: "+e.message}
+}
+async function paintAlerts(){
+  const host=el("alerts");host.replaceChildren();
+  try{const res=await fetch("/api/alerts");const data=await res.json();if(!res.ok)throw Error(data.error);
+    for(const a of data.items){const row=document.createElement("div");row.className="chip";row.textContent=a.symbol+" "+a.direction+" ₹"+number(a.level)+" · ";
+      const remove=document.createElement("button");remove.textContent="Remove";remove.style.cssText="padding:4px;background:#51303f";remove.onclick=async()=>{try{await apiPost("/api/alerts/remove",{id:a.id});paintAlerts()}catch(e){notice(e.message)}};row.append(remove);host.append(row)}
+    if(!data.items.length)host.textContent="No price rules saved";
+  }catch(e){host.textContent="Unable to load price rules: "+e.message}
+}
 function notice(text){el("notice").textContent=text}
 const number=(v)=>Number(v).toLocaleString("en-IN",{maximumFractionDigits:2});
 function render(bars,analysis){
@@ -101,11 +118,11 @@ function render(bars,analysis){
   chartObserver.observe(host);
 }
 async function load(){
-  let key=el("instrument").value,date=el("day").value,interval=el("interval").value;
+  let key=el("instrument").value,date=el("day").value,interval=el("interval").value,days=el("days").value;
   if(!key||!date){notice("Select an instrument and date.");return}
   notice("Loading historical candles from Upstox…");
   try{
-    const p=new URLSearchParams({key,date,interval});
+    const p=new URLSearchParams({key,date,interval,days});
     const res=await fetch("/api/candles?"+p);const data=await res.json();
     if(!res.ok)throw Error(data.error||"Unable to load candles");
     const bars=data.bars;
@@ -122,6 +139,9 @@ async function load(){
     el("volume").textContent=number(bars.reduce((acc,x)=>acc+x.volume,0));
     currentBars=bars;currentAnalysis=data.analysis||null;
     render(bars,currentAnalysis);
+    const crossings=el("crossings");crossings.replaceChildren();
+    for(const x of (data.historical_alert_crossings||[])){const p=document.createElement("p");p.textContent="Historical "+x.symbol+" "+x.direction+" ₹"+number(x.level)+" at "+new Date(x.time*1000).toLocaleString("en-IN",{timeZone:"Asia/Kolkata"});crossings.append(p)}
+    if(!crossings.childNodes.length)crossings.textContent="No saved price rule crossed in the displayed historical window.";
     const info=el("indicators");info.replaceChildren();
     const v=currentAnalysis?.summary||{};
     for(const [label,key] of [["EMA 9","ema9"],["EMA 21","ema21"],["SMA 20","sma20"],["VWAP","vwap"],["RSI 14","rsi14"],["Support (20)","support_20"],["Resistance (20)","resistance_20"]]){
@@ -154,12 +174,15 @@ async function find(){
     notice(data.instruments.length+" instrument results.");
   }catch(e){notice("Search failed: "+e.message)}
 }
-el("savewatch").addEventListener("click",()=>{
-  const key=el("instrument").value,symbol=selectedSymbol,exchange=el("exchange").value;
-  if(!key){notice("Select an instrument first.");return}
-  const items=readWatch();if(!items.some(x=>x.key===key))items.push({key,symbol,exchange});
-  writeWatch(items);paintWatch();notice(symbol+" saved in this browser only.");
+el("savewatch").addEventListener("click",async()=>{try{
+  await apiPost("/api/watchlist/add",{instrument_key:el("instrument").value,symbol:selectedSymbol,exchange:el("exchange").value});
+  paintWatch();notice(selectedSymbol+" saved to local watchlist.");
+}catch(e){notice(e.message)}});
+el("addAlert").addEventListener("click",async()=>{const level=Number(el("alertLevel").value);
+  if(!Number.isFinite(level)||level<=0){notice("Enter a valid positive price level.");return}
+  try{await apiPost("/api/alerts/add",{instrument_key:el("instrument").value,symbol:selectedSymbol,direction:el("alertDirection").value,level});paintAlerts();notice("Historical price rule saved. Reload chart to evaluate it.")}catch(e){notice(e.message)}
 });
+paintAlerts();
 el("askbtn").addEventListener("click",()=>{
   const output=el("answer"),v=currentAnalysis?.summary;
   if(!v||!currentBars.length){output.textContent="Load a historical chart first.";return}
