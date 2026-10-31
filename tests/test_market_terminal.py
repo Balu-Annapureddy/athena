@@ -70,6 +70,17 @@ class TerminalHTTPTests(unittest.TestCase):
         self.assertEqual(body["bars"][0]["close"], 104)
         self.assertIs(body["realtime"], False)
 
+    def test_multiday_historical_candles(self):
+        with patch.object(terminal, "UpstoxV3MarketData", FakeBroker):
+            code, body = self.request("/api/candles?key=NSE_EQ%7CINE002A01018&date=2026-10-30&interval=5&days=5")
+        self.assertEqual(code, 200)
+        self.assertEqual(body["from_date"], "2026-10-26")
+        self.assertIn("historical_alert_crossings", body)
+
+    def test_rejects_unsupported_history_window(self):
+        code, _ = self.request("/api/candles?key=NSE_EQ%7CX&date=2026-10-30&interval=5&days=50")
+        self.assertEqual(code, 400)
+
     def test_rejects_future_date(self):
         code, _ = self.request("/api/candles?key=NSE_EQ%7CX&date=9999-01-01&interval=5")
         self.assertEqual(code, 400)
