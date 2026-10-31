@@ -37,6 +37,7 @@ def analyze(bars: Sequence[dict[str, Any]]) -> dict[str, Any]:
     previous_close = None
     session_date = None
     session_zone = ZoneInfo("Asia/Kolkata")
+    last_event_index = {}
     for i, bar in enumerate(bars):
         close = float(bar["close"])
         volume = float(bar["volume"])
@@ -88,7 +89,10 @@ def analyze(bars: Sequence[dict[str, Any]]) -> dict[str, Any]:
 
         # Prior 20 complete bars (current candle excluded), not a future-looking pivot.
         if i >= 20:
-            prior = bars[i-20:i]
+            prior = [b for b in bars[i-20:i] if dt.datetime.fromtimestamp(b["time"], dt.timezone.utc).astimezone(session_zone).date() == current_date]
+            if len(prior) < 20:
+                previous_close = close
+                continue
             resistance = max(x["high"] for x in prior)
             support = min(x["low"] for x in prior)
             baseline_volume = mean(float(x["volume"]) for x in prior)
@@ -99,7 +103,8 @@ def analyze(bars: Sequence[dict[str, Any]]) -> dict[str, Any]:
                 kind, level = "breakout", resistance
             elif previous_close is not None and previous_close >= support and close < support:
                 kind, level = "breakdown", support
-            if kind:
+            if kind and i - last_event_index.get(kind, -1000) > 5:
+                last_event_index[kind] = i
                 events.append({
                     "time": int(bar["time"]),
                     "type": kind,
@@ -125,7 +130,7 @@ def analyze(bars: Sequence[dict[str, Any]]) -> dict[str, Any]:
             "support_20": min(b["low"] for b in last_20) if len(bars) >= 20 else None,
             "resistance_20": max(b["high"] for b in last_20) if len(bars) >= 20 else None,
             "event_count": len(events),
-            "method": "Observed 20-bar close crossing; volume confirmation >=1.5x previous 20 bars",
+            "method": "Observed 20-bar same-session crossing; volume confirmation >=1.5x; five-bar cooldown",
             "warning": "Historical technical observations, not buy/sell signals or profit probabilities.",
         },
     }
