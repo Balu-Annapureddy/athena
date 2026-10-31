@@ -20,12 +20,12 @@ class AnalysisTests(unittest.TestCase):
         self.assertIsNone(small["summary"]["ema9"])
         self.assertIsNone(small["summary"]["rsi14"])
 
-    def test_flat_market_rsi_neutral(self):
+    def test_flat_market_rsi_matches_canonical_zero_loss_rule(self):
         bars = sample(50)
         for b in bars:
             b.update(open=100., high=101., low=99., close=100.)
         result = analyze(bars)
-        self.assertEqual(result["summary"]["rsi14"], 50)
+        self.assertEqual(result["summary"]["rsi14"], 100)
         self.assertAlmostEqual(result["summary"]["vwap"], 100)
 
     def test_constant_increasing_price_rsi(self):
