@@ -15,6 +15,7 @@ from zoneinfo import ZoneInfo
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 from core.data.connectors.upstox_v3_market_data import MarketDataError, UpstoxV3MarketData
+from core.data.technical_analysis import analyze
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 FRONTEND = ROOT / "terminal"
@@ -92,6 +93,7 @@ class Handler(BaseHTTPRequestHandler):
                 "source": "Upstox V3 historical candles",
                 "retrieved_at": dt.datetime.now(dt.timezone.utc).isoformat(),
                 "realtime": False, "bars": bars,
+                "analysis": analyze(bars),
             })
         except (MarketDataError, ValueError) as exc:
             return json_response(self, 400, {"error": str(exc)})
