@@ -76,7 +76,7 @@ def analyze(bars: Sequence[dict[str, Any]]) -> dict[str, Any]:
             avg_loss = (avg_loss * 13 + losses[-1]) / 14
         rsi = None
         if i >= 14:
-            rsi = 100 if avg_loss == 0 and avg_gain > 0 else (50 if avg_loss == 0 and avg_gain == 0 else 100 - 100 / (1 + avg_gain / avg_loss))
+            rsi = 100 if avg_loss == 0 else 100 - 100 / (1 + avg_gain / avg_loss)
         sma20 = mean(close_window) if i >= 19 else None
         indicators.append({
             "time": int(bar["time"]),
