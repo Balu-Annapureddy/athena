@@ -50,6 +50,21 @@ class AnalysisTests(unittest.TestCase):
         self.assertTrue(result["events"][0]["volume_confirmed"])
         self.assertEqual(result["events"][0]["reference_level"], 101.)
 
+    def test_vwap_resets_on_next_ist_session(self):
+        import datetime as dt
+        from zoneinfo import ZoneInfo
+        india = ZoneInfo("Asia/Kolkata")
+        bars = sample(30)
+        for i, b in enumerate(bars):
+            day = dt.datetime(2026, 10, 29 if i < 15 else 30, 9, 15, tzinfo=india)
+            b["time"] = int((day + dt.timedelta(minutes=i if i < 15 else i - 15)).timestamp())
+            b.update(open=100. if i < 15 else 200., high=100. if i < 15 else 200.,
+                     low=100. if i < 15 else 200., close=100. if i < 15 else 200., volume=10.)
+        result = analyze(bars)
+        self.assertAlmostEqual(result["indicators"][14]["vwap"], 100.)
+        self.assertAlmostEqual(result["indicators"][15]["vwap"], 200.)
+        self.assertAlmostEqual(result["summary"]["vwap"], 200.)
+
     def test_out_of_order_candles_rejected(self):
         bars = sample(2)
         bars.reverse()
