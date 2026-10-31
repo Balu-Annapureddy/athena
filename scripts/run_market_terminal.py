@@ -18,6 +18,7 @@ from core.data.connectors.upstox_v3_market_data import MarketDataError, UpstoxV3
 from core.data.technical_analysis import analyze
 from core.data.paper_journal import PaperJournal
 from core.data.research_store import ResearchStore, historical_crossings
+from core.data.market_overview import compare_watchlist
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 FRONTEND = ROOT / "terminal"
@@ -60,6 +61,33 @@ class Handler(BaseHTTPRequestHandler):
                 return json_response(self, 200, {"items": store.watch() if path == "/api/watchlist" else store.alerts()})
             finally:
                 store.close()
+        if path == "/api/overview":
+            try:
+                day = arg("date")
+                interval = int(arg("interval", "15"))
+                if interval not in (1, 5, 15):
+                    raise ValueError("Invalid interval")
+                selected = dt.date.fromisoformat(day)
+                if selected > dt.datetime.now(IST).date():
+                    raise ValueError("Date is in future")
+                store = ResearchStore()
+                try:
+                    items = store.watch()
+                finally:
+                    store.close()
+                broker = UpstoxV3MarketData()
+                def get_bars(key):
+                    candles = broker.candles(key, interval=interval, from_date=day, to_date=day)
+                    return [{"time": int(c.timestamp.timestamp()), "open": c.open,
+                             "high": c.high, "low": c.low, "close": c.close, "volume": c.volume}
+                            for c in candles]
+                results = compare_watchlist(items, get_bars)
+                return json_response(self, 200, {"date": day, "interval": interval, "mode": "historical",
+                                                 "requested": min(len(items), 12), "results": results})
+            except (ValueError, MarketDataError) as exc:
+                return json_response(self, 400, {"error": str(exc)})
+            except Exception:
+                return json_response(self, 502, {"error": "Historical overview unavailable"})
         if path == "/api/paper/trades":
             journal = PaperJournal()
             try:
