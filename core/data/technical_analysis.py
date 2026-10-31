@@ -6,6 +6,8 @@ Calculations use only the candle prefix available at each timestamp (no look-ahe
 from __future__ import annotations
 
 import math
+import datetime as dt
+from zoneinfo import ZoneInfo
 from statistics import mean
 from typing import Any, Sequence
 
@@ -33,6 +35,8 @@ def analyze(bars: Sequence[dict[str, Any]]) -> dict[str, Any]:
     indicators: list[dict[str, Any]] = []
     events: list[dict[str, Any]] = []
     previous_close = None
+    session_date = None
+    session_zone = ZoneInfo("Asia/Kolkata")
     for i, bar in enumerate(bars):
         close = float(bar["close"])
         volume = float(bar["volume"])
@@ -51,6 +55,10 @@ def analyze(bars: Sequence[dict[str, Any]]) -> dict[str, Any]:
             ema21 = mean(float(b["close"]) for b in bars[:21])
         elif i > 20:
             ema21 = close * (2 / 22) + ema21 * (20 / 22)
+        current_date = dt.datetime.fromtimestamp(bar["time"], dt.timezone.utc).astimezone(session_zone).date()
+        if current_date != session_date:
+            session_date = current_date
+            running_pv = running_volume = 0.0
         typical = (bar["high"] + bar["low"] + close) / 3
         running_pv += typical * volume
         running_volume += volume
