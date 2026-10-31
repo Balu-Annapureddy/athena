@@ -75,3 +75,41 @@ Sources:
 - Implement bounded reconnect backfill, normalized quote events and completed candle
   semantics before advancing to UI live trading-hours charts.
 \n## Progress since initial M0 commit\n\nA separate reconciliation helper and offline tests were committed. This does **not**\nmean live reconnect backfill is complete. The GitHub Actions workflow now includes\nall three offline test modules, but its success must be confirmed from a workflow run.\n
+
+## M1: First local historical market terminal (prototype)
+
+**Status:** Code committed on feature branch; backend unit tests and live UI
+rendering require verification on a local checkout. Not a finished M1 terminal.
+
+From the repository root, with your Upstox Analytics Token already stored in the
+current PowerShell environment as `UPSTOX_ACCESS_TOKEN`:
+
+```powershell
+git fetch origin
+git switch feat/market-data-v3
+git pull --ff-only
+python -m pytest tests/test_upstox_v3_market_data.py tests/test_upstox_v3_stream.py tests/test_candle_reconciliation.py tests/test_market_terminal.py -q
+python scripts/run_market_terminal.py
+```
+
+Then open **http://127.0.0.1:8765** in a browser. Enter a symbol, select an exchange,
+select the instrument returned by Upstox, choose a historical trading date and
+1m/5m/15m timeframe, and click **Load chart**.
+
+Features of this prototype:
+- Localhost-only Python HTTP server (no public binding, no broker orders).
+- Instrument search and Upstox historical candle fetch through existing V3 adapter.
+- Candlestick/volume chart rendered with Lightweight Charts loaded from an external
+  unpkg CDN; **this prototype therefore needs internet connectivity for the chart
+  library, even though the HTTP server is local**.
+- Historical-only labels, retrieval timestamp, basic OHLCV statistics and empty-data
+  messaging. No claim of live quotes or streaming.
+
+Known limitations before M1 acceptance:
+- Browser chart library uses a CDN instead of locally bundled and locked dependencies;
+  migrate to a locally packaged frontend before claiming offline capability.
+- No live stream-to-browser relay, watchlists, annotations, news, option chains, or
+  AI analysis.
+- No holiday-calendar logic or multi-day range selection yet.
+- Verify chart exchange-time labels and actual browser rendering locally.
+- This deliberately **does not call any broker trading/order endpoint**.
