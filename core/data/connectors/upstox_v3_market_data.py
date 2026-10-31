@@ -95,7 +95,7 @@ class UpstoxV3MarketData:
         transport: Callable[..., Any] | None = None,
         timeout: float = 15.0,
     ) -> None:
-        self._token = token or os.environ.get("UPSTOX_ACCESS_TOKEN", "")
+        self._token = os.environ.get("UPSTOX_ACCESS_TOKEN", "") if token is None else token
         self._transport = transport or urllib.request.urlopen
         self._timeout = timeout
 
