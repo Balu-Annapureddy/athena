@@ -63,8 +63,15 @@ class MarketDataV3Tests(unittest.TestCase):
             ]}}, "NSE_EQ|X", 5)
 
     def test_missing_token_rejected(self):
+        # Explicit empty credentials must not silently inherit developer secrets.
         with self.assertRaises(MarketDataError):
             UpstoxV3MarketData(token="", transport=lambda *a, **k: None)._get("/v3/test")
+
+    def test_missing_environment_token_rejected(self):
+        from unittest.mock import patch
+        with patch.dict("os.environ", {"UPSTOX_ACCESS_TOKEN": ""}):
+            with self.assertRaises(MarketDataError):
+                UpstoxV3MarketData(transport=lambda *a, **k: None)._get("/v3/test")
 
     def test_invalid_range_rejected(self):
         with self.assertRaises(ValueError):
