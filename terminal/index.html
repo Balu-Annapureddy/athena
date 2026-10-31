@@ -58,6 +58,7 @@ input{min-width:120px}.grow{flex:1;min-width:150px}.chart{height:470px;position:
 </div>
 <h2 style="margin-top:28px">Technical context</h2><div class="chips" id="indicators">Load a chart to calculate indicators.</div><h2 style="margin-top:24px">Observed events</h2><ul id="events" class="analysis-list"><li>No analysis loaded.</li></ul><h2 style="margin-top:24px">Ask Athena · evidence mode</h2><label for="ask">Ask about the loaded historical chart</label><div class="controls"><select id="ask" class="grow"><option value="trend">How is the trend?</option><option value="rsi">What does RSI show?</option><option value="vwap">Price versus VWAP?</option><option value="events">Were there breakouts?</option><option value="levels">Support and resistance?</option></select><button id="askbtn">Explain</button></div><p id="answer" class="muted" style="font-size:13px;line-height:1.5">Load a historical chart first. Answers only reference deterministic measurements.</p><p class="muted" style="font-size:13px;margin-top:26px">This is M1's first read-only interface. Breakout annotations, news, AI research, live streaming, watchlists, and paper trading are not implemented here yet.</p>
 </aside>
+<section class="panel full"><h2>Paper trade journal <small>· simulated only · no real orders</small></h2><div class="controls"><div><label for="paperSide">Position</label><select id="paperSide"><option>LONG</option><option>SHORT</option></select></div><div><label for="paperQty">Quantity</label><input id="paperQty" type="number" min="1" step="1" value="1"/></div><div><label for="paperPrice">Hypothetical entry price ₹</label><input id="paperPrice" type="number" min="0.01" step="0.01"/></div><button id="paperOpen">Record paper entry</button><button id="paperRefresh" style="background:#253a58">Refresh journal</button></div><small class="muted">Enter a hypothetical fill price yourself. Displayed P&amp;L is gross and excludes fees, slippage and taxes. Never sends broker orders.</small><div id="paperStatus" role="status" style="margin:12px 0;color:#d6ac68"></div><div id="paperTrades" style="overflow-x:auto"></div></section>
 </div>
 <script src="https://unpkg.com/lightweight-charts@4.2.3/dist/lightweight-charts.standalone.production.js"></script>
 <script>
@@ -172,6 +173,39 @@ el("askbtn").addEventListener("click",()=>{
   if(q==="levels")output.textContent="Recent 20-bar observed low: ₹"+fmt(v.support_20)+"; high: ₹"+fmt(v.resistance_20)+". These are reference extrema, not guaranteed future barriers.";
 });
 paintWatch();
+async function refreshPaper(){
+  const host=el("paperTrades");host.replaceChildren();
+  try{
+    const res=await fetch("/api/paper/trades");const data=await res.json();
+    if(!res.ok)throw Error(data.error||"Unable to load journal");
+    if(!data.trades.length){host.textContent="No simulated trades recorded.";return}
+    const table=document.createElement("table");table.style.cssText="width:100%;border-collapse:collapse;font-size:13px";
+    const head=document.createElement("tr");
+    for(const label of ["ID","Instrument","Side","Qty","Entry ₹","Exit ₹","Gross P&L ₹","Action"]){const th=document.createElement("th");th.textContent=label;th.style.cssText="padding:9px;text-align:left;border-bottom:1px solid #344660";head.append(th)}
+    table.append(head);
+    for(const t of data.trades){
+      const row=document.createElement("tr");
+      for(const value of [t.id,t.symbol,t.side,t.quantity,t.entry_price,t.exit_price??"Open",t.gross_pnl??"—"]){const td=document.createElement("td");td.textContent=String(value);td.style.cssText="padding:9px;border-bottom:1px solid #263149";row.append(td)}
+      const cell=document.createElement("td");cell.style.padding="8px";
+      if(t.exit_price===null){const btn=document.createElement("button");btn.textContent="Close";btn.onclick=async()=>{
+        const input=prompt("Enter the hypothetical exit price for "+t.symbol+" (₹)");
+        if(input===null)return;
+        const price=Number(input);if(!Number.isFinite(price)||price<=0){el("paperStatus").textContent="Invalid exit price";return}
+        try{const res=await fetch("/api/paper/close",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id:t.id,exit_price:price})});const value=await res.json();if(!res.ok)throw Error(value.error||"Failed");el("paperStatus").textContent="Paper trade closed (simulated).";refreshPaper()}catch(e){el("paperStatus").textContent=e.message}
+      };cell.append(btn)}
+      row.append(cell);table.append(row);
+    }
+    host.append(table);
+  }catch(e){el("paperStatus").textContent=e.message}
+}
+el("paperOpen").addEventListener("click",async()=>{
+  const quantity=Number(el("paperQty").value),price=Number(el("paperPrice").value);
+  if(!Number.isSafeInteger(quantity)||quantity<1||!Number.isFinite(price)||price<=0){el("paperStatus").textContent="Provide a valid quantity and hypothetical entry price.";return}
+  const payload={instrument_key:el("instrument").value,symbol:selectedSymbol,side:el("paperSide").value,quantity,entry_price:price};
+  try{const res=await fetch("/api/paper/open",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});const data=await res.json();if(!res.ok)throw Error(data.error||"Failed");el("paperStatus").textContent="Simulated entry recorded. No broker order sent.";refreshPaper()}catch(e){el("paperStatus").textContent=e.message}
+});
+el("paperRefresh").addEventListener("click",refreshPaper);
+refreshPaper();
 el("find").addEventListener("click",find);el("load").addEventListener("click",load);
 el("search").addEventListener("keydown",e=>{if(e.key==="Enter")find()});
 for(const id of ["showema","showsma","showvwap","showevents"]){el(id).addEventListener("change",()=>{if(currentBars.length)render(currentBars,currentAnalysis)})}
