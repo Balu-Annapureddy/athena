@@ -20,3 +20,14 @@ jobs:
         run: python -m compileall -q core/data/connectors/upstox_v3_market_data.py core/data/connectors/upstox_v3_stream.py scripts/verify_upstox_market_data.py scripts/run_market_terminal.py core/data/connectors/candle_reconciliation.py
       - name: Run offline market data tests
         run: python -m pytest tests/test_upstox_v3_market_data.py tests/test_upstox_v3_stream.py tests/test_candle_reconciliation.py tests/test_market_terminal.py -q
+      - name: Validate terminal inline JavaScript syntax
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          html = Path("terminal/index.html").read_text(encoding="utf-8")
+          scripts = re.findall(r"<script(?:\s[^>]*)?>([\s\S]*?)</script>", html, re.I)
+          assert scripts, "No inline scripts found"
+          Path("/tmp/athena-terminal-inline.js").write_text("\n".join(scripts), encoding="utf-8")
+          PY
+          node --check /tmp/athena-terminal-inline.js
