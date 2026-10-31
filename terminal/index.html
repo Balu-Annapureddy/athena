@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Athena | Market Terminal</title>
+<style>
+:root{color-scheme:dark;font-family:Inter,system-ui,Arial,sans-serif;background:#0d1220;color:#e6edf7}
+*{box-sizing:border-box}body{margin:0}header{padding:20px 28px;border-bottom:1px solid #283249;display:flex;justify-content:space-between;align-items:center}
+h1{margin:0;font-size:23px}small,.muted{color:#9aa9bf}.shell{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:18px;padding:20px;max-width:1600px;margin:auto}
+.panel{border:1px solid #283249;background:#121a2b;border-radius:14px;padding:20px}
+h2{font-size:17px;margin:0 0 14px}label{font-size:12px;color:#9aa9bf;display:block;margin:0 0 6px}
+.controls{display:flex;align-items:end;flex-wrap:wrap;gap:10px;margin-bottom:20px}
+input,select,button{font:inherit;border-radius:8px;border:1px solid #35455f;background:#1c2740;color:#e6edf7;padding:10px 12px}
+button{cursor:pointer;background:#2676d8;border-color:#2676d8}button:hover{background:#3989ef}
+input{min-width:120px}.grow{flex:1;min-width:150px}.chart{height:470px;position:relative}
+#chart{height:100%;width:100%}#notice{font-size:13px;color:#d6ac68;margin-bottom:8px;min-height:20px}
+.price{font-size:30px;font-weight:650}.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.stat{border-top:1px solid #263149;padding-top:11px}.stat strong{display:block;margin-top:5px}
+#results{max-height:220px;overflow:auto;display:none;margin-bottom:14px;border:1px solid #33435d;border-radius:9px}
+#results button{display:block;width:100%;text-align:left;background:none;border:0;border-radius:0;border-bottom:1px solid #263149}
+#results button:hover{background:#263753}.full{grid-column:1/-1}
+@media(max-width:900px){.shell{grid-template-columns:1fr}header{padding:14px}.shell{padding:12px}.chart{height:350px}}
+</style>
+</head>
+<body>
+<header><div><h1>Athena <small> / Market Terminal</small></h1><small>Personal research workspace · historical data only</small></div><small id="source">Upstox V3 · Not live</small></header>
+<div class="shell">
+<section class="panel">
+<h2>Explore market data</h2>
+<div class="controls">
+<div class="grow"><label for="search">Stock or instrument</label><input id="search" class="grow" placeholder="RELIANCE" value="RELIANCE"/></div>
+<div><label for="exchange">Exchange</label><select id="exchange"><option>NSE</option><option>BSE</option></select></div>
+<button id="find">Find</button>
+</div>
+<div id="results" role="listbox" aria-label="Search results"></div>
+<div class="controls">
+<div class="grow"><label for="instrument">Instrument key (resolved through Upstox)</label><input id="instrument" class="grow" readonly value="NSE_EQ|INE002A01018"/></div>
+<div><label for="day">Trading date</label><input type="date" id="day" value="2026-10-30"/></div>
+<div><label for="interval">Candle</label><select id="interval"><option value="1">1 minute</option><option value="5" selected>5 minutes</option><option value="15">15 minutes</option></select></div>
+<button id="load">Load chart</button>
+</div>
+<div id="notice" role="status" aria-live="polite">Historical candles are not live prices.</div>
+<div class="chart"><div id="chart"></div></div>
+</section>
+<aside class="panel">
+<h2 id="heading">RELIANCE</h2>
+<small id="metadata">NSE equity · No data loaded</small>
+<p class="price" id="last">—</p>
+<small>Last close on selected historical chart (not current LTP)</small>
+<div class="stats">
+<div class="stat"><small>Open</small><strong id="open">—</strong></div>
+<div class="stat"><small>High</small><strong id="high">—</strong></div>
+<div class="stat"><small>Low</small><strong id="low">—</strong></div>
+<div class="stat"><small>Volume</small><strong id="volume">—</strong></div>
+<div class="stat"><small>Candles</small><strong id="count">—</strong></div>
+<div class="stat"><small>Interval</small><strong id="selectedinterval">5m</strong></div>
+</div>
+<p class="muted" style="font-size:13px;margin-top:26px">This is M1's first read-only interface. Breakout annotations, news, AI research, live streaming, watchlists, and paper trading are not implemented here yet.</p>
+</aside>
+</div>
+<script src="https://unpkg.com/lightweight-charts@4.2.3/dist/lightweight-charts.standalone.production.js"></script>
+<script>
+"use strict";
+const el=(id)=>document.getElementById(id);
+let selectedSymbol="RELIANCE";
+let chart,series,volumeSeries;
+function notice(text){el("notice").textContent=text}
+const number=(v)=>Number(v).toLocaleString("en-IN",{maximumFractionDigits:2});
+function render(bars){
+  if(!window.LightweightCharts){notice("Chart library unavailable. Internet is required for this initial prototype.");return}
+  const host=el("chart");host.replaceChildren();
+  chart=LightweightCharts.createChart(host,{layout:{background:{color:"#121a2b"},textColor:"#a9bad1"},grid:{vertLines:{color:"#202c43"},horzLines:{color:"#202c43"}},timeScale:{timeVisible:true,secondsVisible:false},rightPriceScale:{borderColor:"#30415a"},width:host.clientWidth,height:host.clientHeight});
+  series=chart.addCandlestickSeries({upColor:"#27b39d",downColor:"#e56570",borderVisible:false,wickUpColor:"#27b39d",wickDownColor:"#e56570"});
+  volumeSeries=chart.addHistogramSeries({priceFormat:{type:"volume"},priceScaleId:""});
+  volumeSeries.priceScale().applyOptions({scaleMargins:{top:0.78,bottom:0}});
+  // Lightweight Charts expects UTC timestamps; actual timestamps are preserved, not shifted.
+  series.setData(bars.map(({time,open,high,low,close})=>({time,open,high,low,close})));
+  volumeSeries.setData(bars.map(x=>({time:x.time,value:x.volume,color:x.close>=x.open?"#27b39d80":"#e5657080"})));
+  chart.timeScale().fitContent();
+  new ResizeObserver(()=>chart&&chart.applyOptions({width:host.clientWidth,height:host.clientHeight})).observe(host);
+}
+async function load(){
+  let key=el("instrument").value,date=el("day").value,interval=el("interval").value;
+  if(!key||!date){notice("Select an instrument and date.");return}
+  notice("Loading historical candles from Upstox…");
+  try{
+    const p=new URLSearchParams({key,date,interval});
+    const res=await fetch("/api/candles?"+p);const data=await res.json();
+    if(!res.ok)throw Error(data.error||"Unable to load candles");
+    const bars=data.bars;
+    el("heading").textContent=selectedSymbol;
+    el("metadata").textContent=key+" · "+date+" · Upstox historical";
+    el("selectedinterval").textContent=interval+"m";
+    el("count").textContent=bars.length;
+    if(!bars.length){notice("No historical candles for selected date. Try a trading day.");return}
+    const first=bars[0],last=bars[bars.length-1];
+    el("last").textContent="₹"+number(last.close);
+    el("open").textContent="₹"+number(first.open);
+    el("high").textContent="₹"+number(Math.max(...bars.map(x=>x.high)));
+    el("low").textContent="₹"+number(Math.min(...bars.map(x=>x.low)));
+    el("volume").textContent=number(bars.reduce((acc,x)=>acc+x.volume,0));
+    render(bars);
+    notice(bars.length+" historical candles loaded. Data as of "+new Date(data.retrieved_at).toLocaleString()+". Not real-time.");
+  }catch(e){notice("Cannot load historical data: "+e.message)}
+}
+async function find(){
+  const query=el("search").value.trim(),exchange=el("exchange").value;
+  if(!query){notice("Enter a stock or instrument name");return}
+  notice("Searching Upstox instruments…");
+  try{
+    const res=await fetch("/api/search?"+new URLSearchParams({q:query,exchange}));const data=await res.json();
+    if(!res.ok)throw Error(data.error||"Search failed");
+    const box=el("results");box.replaceChildren();
+    for(const item of data.instruments){
+      const btn=document.createElement("button");
+      btn.textContent=(item.symbol||item.name)+" · "+item.segment+" · "+item.key;
+      btn.onclick=()=>{el("instrument").value=item.key;selectedSymbol=item.symbol||item.name;box.style.display="none";notice("Selected "+selectedSymbol+". Load chart to view historical data.");};
+      box.append(btn);
+    }
+    box.style.display=data.instruments.length?"block":"none";
+    notice(data.instruments.length+" instrument results.");
+  }catch(e){notice("Search failed: "+e.message)}
+}
+el("find").addEventListener("click",find);el("load").addEventListener("click",load);
+el("search").addEventListener("keydown",e=>{if(e.key==="Enter")find()});
+</script>
+</body></html>
