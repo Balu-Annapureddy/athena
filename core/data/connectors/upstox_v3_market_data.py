@@ -67,6 +67,8 @@ def parse_candles(
             raise MarketDataError("Malformed candle record")
         try:
             ts = dt.datetime.fromisoformat(str(row[0]).replace("Z", "+00:00"))
+            if ts.tzinfo is None or ts.utcoffset() is None:
+                raise ValueError("Candle timestamp lacks timezone")
             candle = Candle(
                 timestamp=ts.astimezone(UTC),
                 open=float(row[1]), high=float(row[2]),
@@ -79,8 +81,6 @@ def parse_candles(
             )
         except (ValueError, TypeError, OverflowError) as exc:
             raise MarketDataError("Malformed candle values or timestamp") from exc
-        if ts.tzinfo is None:
-            raise MarketDataError("Candle timestamp lacks timezone")
         if candle.timestamp in result and candle != result[candle.timestamp]:
             raise MarketDataError("Conflicting duplicate candle timestamp")
         result[candle.timestamp] = candle
