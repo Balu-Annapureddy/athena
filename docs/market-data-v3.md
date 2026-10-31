@@ -148,3 +148,36 @@ but not substitutes for end-to-end chart interaction.
 Not delivered: real live feed, reconciled streaming bars, persistent SQLite
 watchlist/journal, alert delivery, fundamentals/news, genuine tool-driven
 LLM Q&A, paper trading, and derivatives analytics.
+
+
+## Paused legacy daily automation
+
+The schedule was removed on default branch `main` from
+`.github/workflows/daily_signal.yml` (commit `9b198928`).
+The legacy CLI, Telegram notification code, and historic `signals/` ledgers
+are preserved. The workflow remains manually dispatchable, but will no longer
+run each morning automatically. The `actions-user` commits to ledgers are
+consistent with that automation, not evidence of a human stranger.
+
+## Paper journal prototype
+
+The local historical terminal now provides a **manual simulated** trade journal.
+It stores entries/exits in `~/.athena/terminal.sqlite3` by default; the path
+can be overridden by `ATHENA_TERMINAL_DB`. This file is not added to GitHub.
+Records are placed at **user-entered hypothetical prices**, not executed fills.
+Gross P&L does not include spreads, fees, STT, or slippage. Open/close actions
+are local origin-checked HTTP POST operations and never contact order APIs.
+This is intentionally separate from the old scheduled strategy pipeline.
+
+New offline tests: `tests/test_paper_journal.py`. The full feature-branch
+suite and browser workflow need local rerun and independent verification.
+
+For local verification after updating the branch:
+```powershell
+python -m pytest tests/test_upstox_v3_market_data.py tests/test_upstox_v3_stream.py tests/test_candle_reconciliation.py tests/test_market_terminal.py tests/test_technical_analysis.py tests/test_paper_journal.py -q
+python scripts/run_market_terminal.py
+```
+
+Open `http://127.0.0.1:8765` and check watchlist, indicator overlays, historical
+event display, manual paper entry and manual paper exit. None of these calls
+place brokerage orders.
