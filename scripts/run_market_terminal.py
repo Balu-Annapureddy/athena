@@ -40,8 +40,12 @@ def json_response(handler, code, data):
 
 
 class Handler(BaseHTTPRequestHandler):
+    def _local_host(self):
+        host = self.headers.get("Host", "")
+        return host in (f"127.0.0.1:{self.server.server_port}", f"localhost:{self.server.server_port}")
+
     def do_GET(self):
-        if self.headers.get("Host") not in ("127.0.0.1:8765", "localhost:8765"):
+        if not self._local_host():
             return json_response(self, 403, {"error": "Local host required"})
         parsed = urllib.parse.urlsplit(self.path)
         path = parsed.path
@@ -171,7 +175,7 @@ class Handler(BaseHTTPRequestHandler):
             return json_response(self, 502, {"error": "Market data request failed"})
 
     def do_POST(self):
-        if self.headers.get("Host") not in ("127.0.0.1:8765", "localhost:8765"):
+        if not self._local_host():
             return json_response(self, 403, {"error": "Local host required"})
         path = urllib.parse.urlsplit(self.path).path
         if path not in ("/api/paper/open", "/api/paper/close", "/api/watchlist/add", "/api/watchlist/remove", "/api/alerts/add", "/api/alerts/remove"):
