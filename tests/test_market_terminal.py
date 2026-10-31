@@ -77,6 +77,9 @@ class TerminalHTTPTests(unittest.TestCase):
         self.assertEqual(code, 200)
         self.assertEqual(body["bars"][0]["close"], 104)
         self.assertIs(body["realtime"], False)
+        self.assertEqual(body["latest_provenance"]["provider"], "Upstox V3")
+        self.assertIsNone(body["latest_provenance"]["finality"])
+        self.assertEqual(body["bars"][0]["instrument_key"], "NSE_EQ|INE002A01018")
 
     def test_multiday_historical_candles(self):
         with patch.object(terminal, "UpstoxV3MarketData", FakeBroker):
