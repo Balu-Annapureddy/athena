@@ -119,7 +119,8 @@ def analyze(bars: Sequence[dict[str, Any]]) -> dict[str, Any]:
                 })
         previous_close = close
     last = indicators[-1]
-    last_20 = bars[-20:]
+    last_date = dt.datetime.fromtimestamp(bars[-1]["time"], dt.timezone.utc).astimezone(session_zone).date()
+    last_20 = [b for b in bars if dt.datetime.fromtimestamp(b["time"], dt.timezone.utc).astimezone(session_zone).date() == last_date][-20:]
     return {
         "indicators": indicators,
         "events": events[-100:],
@@ -127,8 +128,8 @@ def analyze(bars: Sequence[dict[str, Any]]) -> dict[str, Any]:
             "status": "historical",
             "ema9": last["ema9"], "ema21": last["ema21"],
             "sma20": last["sma20"], "vwap": last["vwap"], "rsi14": last["rsi14"],
-            "support_20": min(b["low"] for b in last_20) if len(bars) >= 20 else None,
-            "resistance_20": max(b["high"] for b in last_20) if len(bars) >= 20 else None,
+            "support_20": min(b["low"] for b in last_20) if len(last_20) >= 20 else None,
+            "resistance_20": max(b["high"] for b in last_20) if len(last_20) >= 20 else None,
             "event_count": len(events),
             "method": "Observed 20-bar same-session crossing; volume confirmation >=1.5x; five-bar cooldown",
             "warning": "Historical technical observations, not buy/sell signals or profit probabilities.",
