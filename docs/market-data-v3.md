@@ -17,7 +17,7 @@ Use a Python 3.10+ virtual environment. From repository root:
 
 ```powershell
 python -m pip install -e ".[test,market_data]"
-python -m pytest tests/test_upstox_v3_market_data.py tests/test_upstox_v3_stream.py -q
+python -m pytest tests/test_upstox_v3_market_data.py tests/test_upstox_v3_stream.py tests/test_candle_reconciliation.py -q
 ```
 
 To verify against actual Upstox market data, provide a **valid read-only token in your
@@ -74,3 +74,4 @@ Sources:
 - Verify one market session streaming, reconnect, freshness and REST-vs-stream candles.
 - Implement bounded reconnect backfill, normalized quote events and completed candle
   semantics before advancing to UI live trading-hours charts.
+\n## Progress since initial M0 commit\n\nA separate reconciliation helper and offline tests were committed. This does **not**\nmean live reconnect backfill is complete. The GitHub Actions workflow now includes\nall three offline test modules, but its success must be confirmed from a workflow run.\n
