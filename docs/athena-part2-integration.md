@@ -88,3 +88,13 @@ This is a portable fixture primitive, **not** a broker stream capture daemon,
 durable market-data warehouse, or complete provenance archive. Instrument
 search, ingestion scheduling, exchange calendar and live stream reconciliation
 are still open.
+
+## Conservative candle-quality diagnostics
+
+`core/data/market_quality.py` and `tests/test_market_quality.py`
+diagnose timestamp alignment and gaps between **observed** candles within an
+IST-local date. The historical candles API now includes a `data_quality`
+section with counts and sampled intervals. It does not invent missing price
+bars, identify exchange holidays, or claim a thinly traded security must
+produce every 1m candle. Any flagged gap is diagnostic evidence requiring
+market session/source investigation.
