@@ -38,13 +38,13 @@ input{min-width:120px}.grow{flex:1;min-width:150px}.chart{height:470px;position:
 <div class="grow"><label for="instrument">Instrument key (resolved through Upstox)</label><input id="instrument" class="grow" readonly value="NSE_EQ|INE002A01018"/></div>
 <div><label for="day">Trading date</label><input type="date" id="day" value="2026-10-30"/></div>
 <div><label for="interval">Candle</label><select id="interval"><option value="1">1 minute</option><option value="5" selected>5 minutes</option><option value="15">15 minutes</option></select></div>
-<button id="load">Load chart</button>
+<button id="load">Load chart</button><button id="savewatch" type="button" style="background:#253a58;border-color:#415978">+ Watchlist</button>
 </div>
 <div id="notice" role="status" aria-live="polite">Historical candles are not live prices.</div>
 <div class="controls"><label><input type="checkbox" id="showema" checked/> EMA 9/21</label><label><input type="checkbox" id="showsma" checked/> SMA 20</label><label><input type="checkbox" id="showvwap" checked/> VWAP</label><label><input type="checkbox" id="showevents" checked/> Breakout markers</label></div><div class="chart"><div id="chart"></div></div><small class="muted">Chart times are Indian Standard Time (IST). Indicators are retrospective historical observations.</small>
 </section>
 <aside class="panel">
-<h2 id="heading">RELIANCE</h2>
+<h2>Watchlist</h2><div id="watchlist" class="chips">No saved instruments</div><h2 id="heading" style="margin-top:24px">RELIANCE</h2>
 <small id="metadata">NSE equity · No data loaded</small>
 <p class="price" id="last">—</p>
 <small>Last close on selected historical chart (not current LTP)</small>
@@ -56,7 +56,7 @@ input{min-width:120px}.grow{flex:1;min-width:150px}.chart{height:470px;position:
 <div class="stat"><small>Candles</small><strong id="count">—</strong></div>
 <div class="stat"><small>Interval</small><strong id="selectedinterval">5m</strong></div>
 </div>
-<h2 style="margin-top:28px">Technical context</h2><div class="chips" id="indicators">Load a chart to calculate indicators.</div><h2 style="margin-top:24px">Observed events</h2><ul id="events" class="analysis-list"><li>No analysis loaded.</li></ul><p class="muted" style="font-size:13px;margin-top:26px">This is M1's first read-only interface. Breakout annotations, news, AI research, live streaming, watchlists, and paper trading are not implemented here yet.</p>
+<h2 style="margin-top:28px">Technical context</h2><div class="chips" id="indicators">Load a chart to calculate indicators.</div><h2 style="margin-top:24px">Observed events</h2><ul id="events" class="analysis-list"><li>No analysis loaded.</li></ul><h2 style="margin-top:24px">Ask Athena · evidence mode</h2><label for="ask">Ask about the loaded historical chart</label><div class="controls"><select id="ask" class="grow"><option value="trend">How is the trend?</option><option value="rsi">What does RSI show?</option><option value="vwap">Price versus VWAP?</option><option value="events">Were there breakouts?</option><option value="levels">Support and resistance?</option></select><button id="askbtn">Explain</button></div><p id="answer" class="muted" style="font-size:13px;line-height:1.5">Load a historical chart first. Answers only reference deterministic measurements.</p><p class="muted" style="font-size:13px;margin-top:26px">This is M1's first read-only interface. Breakout annotations, news, AI research, live streaming, watchlists, and paper trading are not implemented here yet.</p>
 </aside>
 </div>
 <script src="https://unpkg.com/lightweight-charts@4.2.3/dist/lightweight-charts.standalone.production.js"></script>
@@ -65,6 +65,10 @@ input{min-width:120px}.grow{flex:1;min-width:150px}.chart{height:470px;position:
 const el=(id)=>document.getElementById(id);
 let selectedSymbol="RELIANCE";
 let chart,series,volumeSeries,currentBars=[],currentAnalysis=null,chartObserver=null;
+const WATCH_KEY="athena.historical.watchlist.v1";
+function readWatch(){try{const v=JSON.parse(localStorage.getItem(WATCH_KEY)||"[]");return Array.isArray(v)?v.filter(x=>x&&typeof x.key==="string"&&typeof x.symbol==="string").slice(0,30):[]}catch{return []}}
+function writeWatch(v){try{localStorage.setItem(WATCH_KEY,JSON.stringify(v.slice(0,30)))}catch{notice("Browser storage is unavailable.")}}
+function paintWatch(){const target=el("watchlist");target.replaceChildren();for(const x of readWatch()){const btn=document.createElement("button");btn.className="chip";btn.style.cursor="pointer";btn.textContent=x.symbol+" · "+x.exchange;btn.title="Load this saved instrument";btn.onclick=()=>{el("instrument").value=x.key;selectedSymbol=x.symbol;el("exchange").value=x.exchange;notice("Selected "+x.symbol+"; choose Load chart.")};target.append(btn)}if(!target.childNodes.length)target.textContent="No saved instruments"}
 function notice(text){el("notice").textContent=text}
 const number=(v)=>Number(v).toLocaleString("en-IN",{maximumFractionDigits:2});
 function render(bars,analysis){
@@ -149,6 +153,25 @@ async function find(){
     notice(data.instruments.length+" instrument results.");
   }catch(e){notice("Search failed: "+e.message)}
 }
+el("savewatch").addEventListener("click",()=>{
+  const key=el("instrument").value,symbol=selectedSymbol,exchange=el("exchange").value;
+  if(!key){notice("Select an instrument first.");return}
+  const items=readWatch();if(!items.some(x=>x.key===key))items.push({key,symbol,exchange});
+  writeWatch(items);paintWatch();notice(symbol+" saved in this browser only.");
+});
+el("askbtn").addEventListener("click",()=>{
+  const output=el("answer"),v=currentAnalysis?.summary;
+  if(!v||!currentBars.length){output.textContent="Load a historical chart first.";return}
+  const last=currentBars[currentBars.length-1].close;
+  const fmt=(x)=>x===null||x===undefined?"unavailable":number(x);
+  const q=el("ask").value;
+  if(q==="trend")output.textContent=v.ema9===null||v.ema21===null?"Not enough candles for EMA trend comparison.":("Latest historical close ₹"+fmt(last)+". EMA 9 ₹"+fmt(v.ema9)+" and EMA 21 ₹"+fmt(v.ema21)+". Short-term EMA is "+(v.ema9>v.ema21?"above":v.ema9<v.ema21?"below":"equal to")+" the longer EMA. This is descriptive, not a forecast.");
+  if(q==="rsi")output.textContent=v.rsi14===null?"Not enough candles for RSI(14).":"RSI(14) is "+fmt(v.rsi14)+". Conventional reference zones: above 70 and below 30; these do not guarantee reversals.";
+  if(q==="vwap")output.textContent=v.vwap===null?"No traded volume available for VWAP.":"Historical close ₹"+fmt(last)+" is "+(last>v.vwap?"above":last<v.vwap?"below":"equal to")+" session VWAP ₹"+fmt(v.vwap)+".";
+  if(q==="events")output.textContent=(currentAnalysis.events.length?currentAnalysis.events.length+" retrospective 20-bar close-crossings detected on this historical chart; "+currentAnalysis.events.filter(e=>e.volume_confirmed).length+" met the 1.5x volume rule.":"No 20-bar close-crossings found.")+" These are observations, not trade recommendations.";
+  if(q==="levels")output.textContent="Recent 20-bar observed low: ₹"+fmt(v.support_20)+"; high: ₹"+fmt(v.resistance_20)+". These are reference extrema, not guaranteed future barriers.";
+});
+paintWatch();
 el("find").addEventListener("click",find);el("load").addEventListener("click",load);
 el("search").addEventListener("keydown",e=>{if(e.key==="Enter")find()});
 for(const id of ["showema","showsma","showvwap","showevents"]){el(id).addEventListener("change",()=>{if(currentBars.length)render(currentBars,currentAnalysis)})}
