@@ -19,6 +19,7 @@ from core.data.technical_analysis import analyze
 from core.data.paper_journal import PaperJournal
 from core.data.research_store import ResearchStore, historical_crossings
 from core.data.market_overview import compare_watchlist
+from core.data.market_bar import MarketBar
 from core.data.paper_journal import database_path
 from core.data.terminal_backup import integrity_check
 
@@ -149,11 +150,7 @@ class Handler(BaseHTTPRequestHandler):
                 raise ValueError("Date cannot be in future")
             from_day = date - dt.timedelta(days=span-1)
             candles = client.candles(key, interval=interval, from_date=from_day.isoformat(), to_date=day)
-            bars = [{
-                "time": int(c.timestamp.timestamp()),
-                "open": c.open, "high": c.high, "low": c.low,
-                "close": c.close, "volume": c.volume,
-            } for c in candles]
+            bars = [MarketBar.from_upstox(c).display_row() for c in candles]
             store = ResearchStore()
             try:
                 rules = [x for x in store.alerts() if x["instrument_key"] == key]
