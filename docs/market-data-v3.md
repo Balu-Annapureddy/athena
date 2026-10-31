@@ -296,3 +296,22 @@ October 2026 development branch status: offline framework and historical
 Upstox candles previously demonstrated; newest checks and replay features
 are committed but have not been independently accepted by Windows browser
 or CI. The application is not a validated production trading platform.
+
+## Release A reliability batch
+
+- Windows launcher: `scripts/start_terminal.ps1` uses the existing local
+  `UPSTOX_ACCESS_TOKEN` variable and runs the read-only server.
+- Database manager: `python -m core.data.terminal_backup check`,
+  `python -m core.data.terminal_backup backup`, and
+  `python -m core.data.terminal_backup restore --source FILE --destination NEW_FILE`.
+  SQLite online backup is consistent while the database is in use.
+  Existing backup and restoration destinations are never overwritten.
+- Diagnostics: the local page now includes a button to check database
+  integrity, whether the bearer token is configured, and whether chart
+  rendering still needs a CDN. The server does not expose token values.
+- SQLite backup tests are included in the branch's CI workflow.
+
+The chart renderer is **not yet fully offline**: Lightweight Charts remains
+loaded from an external CDN. Live feed acceptance, browser E2E, installer,
+and a packaged release also remain open. The new tests have not yet been
+confirmed by an actual CI run.
