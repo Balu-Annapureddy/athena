@@ -16,6 +16,7 @@ from zoneinfo import ZoneInfo
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 from core.data.connectors.upstox_v3_market_data import MarketDataError, UpstoxV3MarketData
 from core.data.technical_analysis import analyze
+from core.data.paper_journal import PaperJournal
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 FRONTEND = ROOT / "terminal"
@@ -52,6 +53,12 @@ class Handler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(body)
             return
+        if path == "/api/paper/trades":
+            journal = PaperJournal()
+            try:
+                return json_response(self, 200, {"trades": journal.list()})
+            finally:
+                journal.close()
         if path == "/api/health":
             return json_response(self, 200, {"status": "ok", "mode": "historical", "live_verified": False})
         if path not in ("/api/search", "/api/candles"):
@@ -100,6 +107,46 @@ class Handler(BaseHTTPRequestHandler):
         except Exception:
             # Do not expose provider credentials, HTTP headers, internal paths, or stacktraces.
             return json_response(self, 502, {"error": "Market data request failed"})
+
+    def do_POST(self):
+        path = urllib.parse.urlsplit(self.path).path
+        if path not in ("/api/paper/open", "/api/paper/close"):
+            return json_response(self, 404, {"error": "Not found"})
+        # Localhost-only is not a substitute for CSRF protection.
+        origin = self.headers.get("Origin")
+        if origin not in ("http://127.0.0.1:8765", "http://localhost:8765"):
+            return json_response(self, 403, {"error": "Forbidden origin"})
+        if self.headers.get("Content-Type", "").split(";")[0].strip() != "application/json":
+            return json_response(self, 415, {"error": "JSON required"})
+        try:
+            length = int(self.headers.get("Content-Length", "0"))
+            if not 1 <= length <= 4096:
+                raise ValueError("Invalid request size")
+            body = json.loads(self.rfile.read(length))
+            if not isinstance(body, dict):
+                raise ValueError("Expected JSON object")
+            journal = PaperJournal()
+            try:
+                if path == "/api/paper/open":
+                    item = journal.open(
+                        instrument_key=body["instrument_key"],
+                        symbol=body["symbol"],
+                        side=body["side"],
+                        quantity=body["quantity"],
+                        entry_price=body["entry_price"],
+                        note=body.get("note", ""),
+                    )
+                else:
+                    if isinstance(body.get("id"), bool) or not isinstance(body.get("id"), int):
+                        raise ValueError("Invalid trade ID")
+                    item = journal.close_trade(body["id"], body["exit_price"])
+                return json_response(self, 200, {"trade": item})
+            finally:
+                journal.close()
+        except (ValueError, KeyError, TypeError, json.JSONDecodeError) as exc:
+            return json_response(self, 400, {"error": str(exc)})
+        except Exception:
+            return json_response(self, 500, {"error": "Paper journal failed"})
 
     def log_message(self, fmt, *args):
         # Avoid raw query-string logging; URLs may include arbitrary user input.
