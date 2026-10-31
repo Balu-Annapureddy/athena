@@ -20,6 +20,7 @@ from core.data.paper_journal import PaperJournal
 from core.data.research_store import ResearchStore, historical_crossings
 from core.data.market_overview import compare_watchlist
 from core.data.market_bar import MarketBar
+from core.data.market_quality import inspect_candles
 from core.data.connectors.upstox_v3_athena_adapter import candle_payload
 from core.data.paper_journal import database_path
 from core.data.terminal_backup import integrity_check
@@ -173,6 +174,7 @@ class Handler(BaseHTTPRequestHandler):
                 "instrument_key": key, "interval": interval, "date": day,
                 "from_date": from_day.isoformat(), "historical_alert_crossings": crossings,
                 "source": "Upstox V3 historical candles", "latest_provenance": provenance,
+                "data_quality": inspect_candles(bars, interval),
                 "retrieved_at": dt.datetime.now(dt.timezone.utc).isoformat(),
                 "realtime": False, "bars": bars,
                 "analysis": analyze(bars),
