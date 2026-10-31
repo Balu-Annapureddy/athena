@@ -222,3 +222,28 @@ browser interactions still need independent execution/confirmation. Do not
 describe the new price rules as live alerts. Multi-session VWAP and indicator
 reset behavior require explicit specification and additional tests before
 using these indicators for intraday trading decisions.
+
+
+## Batch: historical watchlist market overview
+
+The new `/api/overview?date=YYYY-MM-DD&interval=5` route reads up to 12
+SQLite watchlist instruments and retrieves **historical** candles for the
+selected date. It computes per-instrument first open, last close, historical
+percentage change, range, volume, 14-period RSI and bar count. Provider
+failures are displayed as unavailable, never silently replaced with invented
+data. Chart buttons select and load the relevant instrument.
+
+The view is a bounded per-session watchlist comparison, **not** a full-market
+NSE/BSE index overview, real-time scanner, sector heat map, portfolio
+recommendation, or verified live analysis. Do not interpret it as any of those.
+
+Run the eight feature test modules:
+```powershell
+python -m pytest tests/test_upstox_v3_market_data.py tests/test_upstox_v3_stream.py tests/test_candle_reconciliation.py tests/test_market_terminal.py tests/test_technical_analysis.py tests/test_paper_journal.py tests/test_research_store.py tests/test_market_overview.py -q
+```
+Then restart the local terminal and hard-refresh, save at least two instruments
+in the watchlist and choose **Compare saved instruments**.
+
+These newest frontend features and tests have not been independently executed
+in a browser in this session. Historical broker authentication/candles and
+the earlier base chart had already been confirmed by the project owner.
