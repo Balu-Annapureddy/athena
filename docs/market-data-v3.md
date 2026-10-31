@@ -181,3 +181,44 @@ python scripts/run_market_terminal.py
 Open `http://127.0.0.1:8765` and check watchlist, indicator overlays, historical
 event display, manual paper entry and manual paper exit. None of these calls
 place brokerage orders.
+
+
+## Multi-instrument terminal upgrade
+
+RELIANCE is a **default example**, not a market-data restriction.
+Type a symbol/name, press **Find**, and select the matching broker-resolved
+NSE/BSE instrument; a new selection is loaded by pressing **Load chart**.
+Availability for individual stocks, indices, and derivative contracts depends on
+Upstox search results and historical candle entitlements; derivatives/indices
+have not received an end-to-end acceptance test.
+
+- Chart calendar windows: 1, 5, 10, or 20 days ending on the selected date.
+  The 20-day limit keeps requests within the conservative V3 minute history
+  window; **these are calendar days, not trading sessions**.
+- Watchlists are now in the same local SQLite database as paper trades.
+  Add, select and remove from the UI. Earlier browser-only watchlists do not
+  migrate automatically.
+- Historical price rules save above/below thresholds and evaluate previous and
+  current historical closing prices for crossings in the requested chart range.
+  **They do not monitor live prices, trigger notifications, or guarantee that
+  the event is recent**. Reloading a chart reevaluates its historical events.
+- No real-order permissions or brokerage order endpoints have been added.
+
+Manual verification after stopping the server, pulling the branch and restarting:
+
+```powershell
+python -m pytest tests/test_upstox_v3_market_data.py tests/test_upstox_v3_stream.py tests/test_candle_reconciliation.py tests/test_market_terminal.py tests/test_technical_analysis.py tests/test_paper_journal.py tests/test_research_store.py -q
+python scripts/run_market_terminal.py
+```
+
+Search two different symbols (for example TCS and RELIANCE), select each
+result's exact Upstox instrument key, load 5m historical data, change the window
+to 5 calendar days, save/reopen a watchlist item, create a threshold rule,
+reload history to see any historical crossing, and create/review a paper entry.
+
+**Verification boundary:** These features are committed but the latest GitHub
+workflow, new Python tests, external SDK search result variants, and actual
+browser interactions still need independent execution/confirmation. Do not
+describe the new price rules as live alerts. Multi-session VWAP and indicator
+reset behavior require explicit specification and additional tests before
+using these indicators for intraday trading decisions.
