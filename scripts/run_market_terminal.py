@@ -19,6 +19,8 @@ from core.data.technical_analysis import analyze
 from core.data.paper_journal import PaperJournal
 from core.data.research_store import ResearchStore, historical_crossings
 from core.data.market_overview import compare_watchlist
+from core.data.paper_journal import database_path
+from core.data.terminal_backup import integrity_check
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 FRONTEND = ROOT / "terminal"
@@ -94,6 +96,16 @@ class Handler(BaseHTTPRequestHandler):
                 return json_response(self, 200, {"trades": journal.list()})
             finally:
                 journal.close()
+        if path == "/api/diagnostics":
+            db = database_path()
+            try:
+                db_ok = integrity_check(db) if db.is_file() else None
+            except Exception:
+                db_ok = False
+            return json_response(self, 200, {"historical_only": True,
+                "live_stream_verified": False, "upstox_token_configured": bool(os.environ.get("UPSTOX_ACCESS_TOKEN", "").strip()),
+                "database_exists": db.is_file(), "database_integrity_ok": db_ok,
+                "chart_asset_mode": "external_cdn", "broker_order_access": False})
         if path == "/api/health":
             return json_response(self, 200, {"status": "ok", "mode": "historical", "live_verified": False})
         if path not in ("/api/search", "/api/candles"):
