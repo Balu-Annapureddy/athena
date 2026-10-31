@@ -1,9 +1,8 @@
 name: Athena Daily Signal Automation
 
 on:
-  schedule:
-    # Run daily at 03:00 UTC (8:30 AM IST)
-    - cron: '0 3 * * *'
+  # Paused during Athena market terminal modernization. Manual dispatch only.
+  # No scheduled Telegram messages or automatic signal/ledger commits.
   workflow_dispatch:
 
 permissions:
