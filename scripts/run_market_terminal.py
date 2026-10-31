@@ -32,6 +32,7 @@ def json_response(handler, code, data):
     handler.send_response(code)
     handler.send_header("Content-Type", "application/json; charset=utf-8")
     handler.send_header("Cache-Control", "no-store")
+    handler.send_header("Referrer-Policy", "no-referrer")
     handler.send_header("X-Content-Type-Options", "nosniff")
     handler.send_header("Content-Length", str(len(body)))
     handler.end_headers()
@@ -40,6 +41,8 @@ def json_response(handler, code, data):
 
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
+        if self.headers.get("Host") not in ("127.0.0.1:8765", "localhost:8765"):
+            return json_response(self, 403, {"error": "Local host required"})
         parsed = urllib.parse.urlsplit(self.path)
         path = parsed.path
         qs = urllib.parse.parse_qs(parsed.query)
@@ -53,6 +56,7 @@ class Handler(BaseHTTPRequestHandler):
             self.send_response(200)
             self.send_header("Content-Type", "text/html; charset=utf-8")
             self.send_header("Cache-Control", "no-store")
+            self.send_header("Referrer-Policy", "no-referrer")
             self.send_header("Content-Length", str(len(body)))
             self.end_headers()
             self.wfile.write(body)
@@ -167,6 +171,8 @@ class Handler(BaseHTTPRequestHandler):
             return json_response(self, 502, {"error": "Market data request failed"})
 
     def do_POST(self):
+        if self.headers.get("Host") not in ("127.0.0.1:8765", "localhost:8765"):
+            return json_response(self, 403, {"error": "Local host required"})
         path = urllib.parse.urlsplit(self.path).path
         if path not in ("/api/paper/open", "/api/paper/close", "/api/watchlist/add", "/api/watchlist/remove", "/api/alerts/add", "/api/alerts/remove"):
             return json_response(self, 404, {"error": "Not found"})
