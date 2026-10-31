@@ -1,9 +1,7 @@
 name: Athena Daily Signal Automation
 
 on:
-  schedule:
-    # Run daily at 03:00 UTC (8:30 AM IST)
-    - cron: '0 3 * * *'
+  # Legacy scheduled signals paused for Athena rebuild; manual dispatch only.
   workflow_dispatch:
 
 permissions:
