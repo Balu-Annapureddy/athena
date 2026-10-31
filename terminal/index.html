@@ -15,7 +15,7 @@ input,select,button{font:inherit;border-radius:8px;border:1px solid #35455f;back
 button{cursor:pointer;background:#2676d8;border-color:#2676d8}button:hover{background:#3989ef}
 input{min-width:120px}.grow{flex:1;min-width:150px}.chart{height:470px;position:relative}
 #chart{height:100%;width:100%}#notice{font-size:13px;color:#d6ac68;margin-bottom:8px;min-height:20px}
-.price{font-size:30px;font-weight:650}.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.price{font-size:30px;font-weight:650}.analysis-list{font-size:13px;color:#c4d3e5;line-height:1.55;padding-left:18px}.analysis-list li{margin:8px 0}.chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.chip{font-size:12px;padding:5px 9px;border:1px solid #344660;border-radius:6px;color:#c1ccdc}.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
 .stat{border-top:1px solid #263149;padding-top:11px}.stat strong{display:block;margin-top:5px}
 #results{max-height:220px;overflow:auto;display:none;margin-bottom:14px;border:1px solid #33435d;border-radius:9px}
 #results button{display:block;width:100%;text-align:left;background:none;border:0;border-radius:0;border-bottom:1px solid #263149}
@@ -41,7 +41,7 @@ input{min-width:120px}.grow{flex:1;min-width:150px}.chart{height:470px;position:
 <button id="load">Load chart</button>
 </div>
 <div id="notice" role="status" aria-live="polite">Historical candles are not live prices.</div>
-<div class="chart"><div id="chart"></div></div>
+<div class="controls"><label><input type="checkbox" id="showema" checked/> EMA 9/21</label><label><input type="checkbox" id="showsma" checked/> SMA 20</label><label><input type="checkbox" id="showvwap" checked/> VWAP</label><label><input type="checkbox" id="showevents" checked/> Breakout markers</label></div><div class="chart"><div id="chart"></div></div><small class="muted">Chart times are Indian Standard Time (IST). Indicators are retrospective historical observations.</small>
 </section>
 <aside class="panel">
 <h2 id="heading">RELIANCE</h2>
@@ -56,7 +56,7 @@ input{min-width:120px}.grow{flex:1;min-width:150px}.chart{height:470px;position:
 <div class="stat"><small>Candles</small><strong id="count">—</strong></div>
 <div class="stat"><small>Interval</small><strong id="selectedinterval">5m</strong></div>
 </div>
-<p class="muted" style="font-size:13px;margin-top:26px">This is M1's first read-only interface. Breakout annotations, news, AI research, live streaming, watchlists, and paper trading are not implemented here yet.</p>
+<h2 style="margin-top:28px">Technical context</h2><div class="chips" id="indicators">Load a chart to calculate indicators.</div><h2 style="margin-top:24px">Observed events</h2><ul id="events" class="analysis-list"><li>No analysis loaded.</li></ul><p class="muted" style="font-size:13px;margin-top:26px">This is M1's first read-only interface. Breakout annotations, news, AI research, live streaming, watchlists, and paper trading are not implemented here yet.</p>
 </aside>
 </div>
 <script src="https://unpkg.com/lightweight-charts@4.2.3/dist/lightweight-charts.standalone.production.js"></script>
@@ -64,22 +64,36 @@ input{min-width:120px}.grow{flex:1;min-width:150px}.chart{height:470px;position:
 "use strict";
 const el=(id)=>document.getElementById(id);
 let selectedSymbol="RELIANCE";
-let chart,series,volumeSeries;
+let chart,series,volumeSeries,currentBars=[],currentAnalysis=null,chartObserver=null;
 function notice(text){el("notice").textContent=text}
 const number=(v)=>Number(v).toLocaleString("en-IN",{maximumFractionDigits:2});
-function render(bars){
+function render(bars,analysis){
   if(!window.LightweightCharts){notice("Chart library unavailable. Internet is required for this initial prototype.");return}
+  if(chartObserver){chartObserver.disconnect();chartObserver=null}
   if(chart){chart.remove();chart=null}
   const host=el("chart");host.replaceChildren();
-  chart=LightweightCharts.createChart(host,{layout:{background:{color:"#121a2b"},textColor:"#a9bad1"},grid:{vertLines:{color:"#202c43"},horzLines:{color:"#202c43"}},localization:{timeFormatter:(timestamp)=>new Intl.DateTimeFormat("en-IN",{timeZone:"Asia/Kolkata",hour:"2-digit",minute:"2-digit",hour12:false}).format(new Date(timestamp*1000))},timeScale:{timeVisible:true,secondsVisible:false},rightPriceScale:{borderColor:"#30415a"},width:host.clientWidth,height:host.clientHeight});
+  chart=LightweightCharts.createChart(host,{layout:{background:{color:"#121a2b"},textColor:"#a9bad1"},grid:{vertLines:{color:"#202c43"},horzLines:{color:"#202c43"}},localization:{timeFormatter:(timestamp)=>new Intl.DateTimeFormat("en-IN",{timeZone:"Asia/Kolkata",hour:"2-digit",minute:"2-digit",hour12:false}).format(new Date(timestamp*1000))},timeScale:{timeVisible:true,secondsVisible:false,tickMarkFormatter:(time)=>new Intl.DateTimeFormat("en-IN",{timeZone:"Asia/Kolkata",hour:"2-digit",minute:"2-digit",hour12:false}).format(new Date(time*1000))},rightPriceScale:{borderColor:"#30415a"},width:host.clientWidth,height:host.clientHeight});
   series=chart.addCandlestickSeries({upColor:"#27b39d",downColor:"#e56570",borderVisible:false,wickUpColor:"#27b39d",wickDownColor:"#e56570"});
   volumeSeries=chart.addHistogramSeries({priceFormat:{type:"volume"},priceScaleId:""});
   volumeSeries.priceScale().applyOptions({scaleMargins:{top:0.78,bottom:0}});
   // Epoch seconds remain UTC; chart display labels are formatted in Asia/Kolkata.
   series.setData(bars.map(({time,open,high,low,close})=>({time,open,high,low,close})));
   volumeSeries.setData(bars.map(x=>({time:x.time,value:x.volume,color:x.close>=x.open?"#27b39d80":"#e5657080"})));
+  if(analysis){
+    const lines=[["ema9","showema","#f3a44b"],["ema21","showema","#8b8aff"],["sma20","showsma","#69b9fa"],["vwap","showvwap","#e1c671"]];
+    for(const [field,checkbox,color] of lines){
+      if(!el(checkbox).checked)continue;
+      const data=analysis.indicators.filter(x=>x[field]!==null).map(x=>({time:x.time,value:x[field]}));
+      if(data.length){const line=chart.addLineSeries({color,lineWidth:2,priceLineVisible:false,lastValueVisible:false});line.setData(data)}
+    }
+    if(el("showevents").checked){
+      const markers=analysis.events.map(x=>({time:x.time,position:x.type==="breakout"?"belowBar":"aboveBar",color:x.volume_confirmed?"#27b39d":"#d5a05e",shape:x.type==="breakout"?"arrowUp":"arrowDown",text:x.type==="breakout"?"BO":"BD"}));
+      series.setMarkers(markers);
+    }
+  }
   chart.timeScale().fitContent();
-  new ResizeObserver(()=>chart&&chart.applyOptions({width:host.clientWidth,height:host.clientHeight})).observe(host);
+  chartObserver=new ResizeObserver(()=>{if(chart)chart.applyOptions({width:host.clientWidth,height:host.clientHeight})});
+  chartObserver.observe(host);
 }
 async function load(){
   let key=el("instrument").value,date=el("day").value,interval=el("interval").value;
@@ -101,7 +115,19 @@ async function load(){
     el("high").textContent="₹"+number(Math.max(...bars.map(x=>x.high)));
     el("low").textContent="₹"+number(Math.min(...bars.map(x=>x.low)));
     el("volume").textContent=number(bars.reduce((acc,x)=>acc+x.volume,0));
-    render(bars);
+    currentBars=bars;currentAnalysis=data.analysis||null;
+    render(bars,currentAnalysis);
+    const info=el("indicators");info.replaceChildren();
+    const v=currentAnalysis?.summary||{};
+    for(const [label,key] of [["EMA 9","ema9"],["EMA 21","ema21"],["SMA 20","sma20"],["VWAP","vwap"],["RSI 14","rsi14"],["Support (20)","support_20"],["Resistance (20)","resistance_20"]]){
+      const item=document.createElement("span");item.className="chip";item.textContent=label+": "+(v[key]===null||v[key]===undefined?"Insufficient data":number(v[key]));info.append(item);
+    }
+    const list=el("events");list.replaceChildren();
+    const events=(currentAnalysis?.events||[]).slice(-12).reverse();
+    if(!events.length){const li=document.createElement("li");li.textContent="No 20-bar close-crossing events found on this historical chart.";list.append(li)}
+    for(const event of events){
+      const li=document.createElement("li");li.textContent=new Date(event.time*1000).toLocaleTimeString("en-IN",{timeZone:"Asia/Kolkata",hour:"2-digit",minute:"2-digit"})+" · "+event.type.toUpperCase()+": "+event.description;list.append(li);
+    }
     notice(bars.length+" historical candles loaded. Data as of "+new Date(data.retrieved_at).toLocaleString()+". Not real-time.");
   }catch(e){notice("Cannot load historical data: "+e.message)}
 }
@@ -125,5 +151,6 @@ async function find(){
 }
 el("find").addEventListener("click",find);el("load").addEventListener("click",load);
 el("search").addEventListener("keydown",e=>{if(e.key==="Enter")find()});
+for(const id of ["showema","showsma","showvwap","showevents"]){el(id).addEventListener("change",()=>{if(currentBars.length)render(currentBars,currentAnalysis)})}
 </script>
 </body></html>
