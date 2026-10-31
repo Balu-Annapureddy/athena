@@ -7,14 +7,14 @@
 <style>
 :root{color-scheme:dark;font-family:Inter,system-ui,Arial,sans-serif;background:#0d1220;color:#e6edf7}
 *{box-sizing:border-box}body{margin:0}header{padding:20px 28px;border-bottom:1px solid #283249;display:flex;justify-content:space-between;align-items:center}
-h1{margin:0;font-size:23px}small,.muted{color:#9aa9bf}.shell{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,350px);gap:18px;padding:20px;width:100%;max-width:none;margin:0 auto}
+h1{margin:0;font-size:23px}small,.muted{color:#9aa9bf}.shell{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:18px;padding:20px;max-width:1600px;margin:auto}
 .panel{border:1px solid #283249;background:#121a2b;border-radius:14px;padding:20px}
 h2{font-size:17px;margin:0 0 14px}label{font-size:12px;color:#9aa9bf;display:block;margin:0 0 6px}
 .controls{display:flex;align-items:end;flex-wrap:wrap;gap:10px;margin-bottom:20px}
 input,select,button{font:inherit;border-radius:8px;border:1px solid #35455f;background:#1c2740;color:#e6edf7;padding:10px 12px}
 button{cursor:pointer;background:#2676d8;border-color:#2676d8}button:hover{background:#3989ef}
-input{min-width:120px}.grow{flex:1;min-width:150px}.chart{height:clamp(470px,66vh,850px);position:relative}
-#chart{height:100%;width:100%}#notice{font-size:14px;color:#d6ac68;margin-bottom:8px;min-height:20px}
+input{min-width:120px}.grow{flex:1;min-width:150px}.chart{height:470px;position:relative}
+#chart{height:100%;width:100%}#notice{font-size:13px;color:#d6ac68;margin-bottom:8px;min-height:20px}
 .price{font-size:30px;font-weight:650}.analysis-list{font-size:13px;color:#c4d3e5;line-height:1.55;padding-left:18px}.analysis-list li{margin:8px 0}.chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.chip{font-size:12px;padding:5px 9px;border:1px solid #344660;border-radius:6px;color:#c1ccdc}.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
 .stat{border-top:1px solid #263149;padding-top:11px}.stat strong{display:block;margin-top:5px}
 #results{max-height:220px;overflow:auto;display:none;margin-bottom:14px;border:1px solid #33435d;border-radius:9px}
@@ -24,7 +24,7 @@ input{min-width:120px}.grow{flex:1;min-width:150px}.chart{height:clamp(470px,66v
 </style>
 </head>
 <body>
-<header><div><h1>Athena <small> / Market Terminal</small></h1><small>Personal research workspace · historical data only</small></div><div style="display:flex;gap:12px;align-items:center"><small id="source">Upstox V3 · Not live</small><button type="button" id="zoomhelp" style="font-size:12px;background:#28344c;border-color:#40536e">Display help</button></div></header>
+<header><div><h1>Athena <small> / Market Terminal</small></h1><small>Personal research workspace · historical data only</small></div><small id="source">Upstox V3 · Not live</small></header>
 <div class="shell">
 <section class="panel">
 <h2>Explore market data</h2>
@@ -229,7 +229,6 @@ el("paperOpen").addEventListener("click",async()=>{
 });
 el("paperRefresh").addEventListener("click",refreshPaper);
 refreshPaper();
-el("zoomhelp").addEventListener("click",()=>{notice("If everything looks tiny, press Ctrl+0 in Chrome to restore 100% browser zoom. The terminal now uses the full available width.");window.scrollTo({top:0,behavior:"smooth"})});
 el("find").addEventListener("click",find);el("load").addEventListener("click",load);
 el("search").addEventListener("keydown",e=>{if(e.key==="Enter")find()});
 for(const id of ["showema","showsma","showvwap","showevents"]){el(id).addEventListener("change",()=>{if(currentBars.length)render(currentBars,currentAnalysis)})}
