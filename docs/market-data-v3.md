@@ -113,3 +113,38 @@ Known limitations before M1 acceptance:
 - No holiday-calendar logic or multi-day range selection yet.
 - Verify chart exchange-time labels and actual browser rendering locally.
 - This deliberately **does not call any broker trading/order endpoint**.
+
+
+## M2/M3 early research workspace features (feature-branch prototype)
+
+The historical terminal now includes deterministic:
+- EMA(9), EMA(21), SMA(20), session VWAP, and Wilder RSI(14).
+- Retrospective 20-prior-bar breakout/breakdown events, optionally marked on the
+  chart. Volume confirmation means >=1.5 times mean volume of the **previous**
+  20 bars. Events are descriptive and do not imply positive expected returns.
+- 20-bar rolling extrema shown as reference support/resistance (not guaranteed
+  levels). Indicators reset with the selected date: EMA/RSI warm-up and VWAP
+  require care at day boundaries; no multi-session EMA continuity yet.
+- Browser-local watchlist (localStorage, not persisted server-side or shared
+  across browsers). Click saved symbol then **Load chart**.
+- A constrained 'Ask Athena · evidence mode' question panel. It answers from
+  actual returned indicator/event values; it is **not an LLM** and does not
+  have access to news, fundamentals, or trade execution.
+- Display of tick labels in IST using tickMarkFormatter. Browser verification
+  of time-axis labels still required.
+
+Run automated tests:
+```powershell
+python -m pytest tests/test_upstox_v3_market_data.py tests/test_upstox_v3_stream.py tests/test_candle_reconciliation.py tests/test_market_terminal.py tests/test_technical_analysis.py -q
+```
+
+**Verification:** user previously confirmed the first historical chart rendered
+and the prior 20 tests passed. The newly committed analysis, UI overlays,
+watchlist, and evidence panel have **not yet been browser-tested or
+independently verified to pass CI**. GitHub Actions syntax-checks inline JS,
+and Python tests cover deterministic indicator behavior; these are necessary
+but not substitutes for end-to-end chart interaction.
+
+Not delivered: real live feed, reconciled streaming bars, persistent SQLite
+watchlist/journal, alert delivery, fundamentals/news, genuine tool-driven
+LLM Q&A, paper trading, and derivatives analytics.
