@@ -146,17 +146,6 @@ async function load(){
     const crossings=el("crossings");crossings.replaceChildren();
     for(const x of (data.historical_alert_crossings||[])){const p=document.createElement("p");p.textContent="Historical "+x.symbol+" "+x.direction+" ₹"+number(x.level)+" at "+new Date(x.time*1000).toLocaleString("en-IN",{timeZone:"Asia/Kolkata"});crossings.append(p)}
     if(!crossings.childNodes.length)crossings.textContent="No saved price rule crossed in the displayed historical window.";
-    const info=el("indicators");info.replaceChildren();
-    const v=currentAnalysis?.summary||{};
-    for(const [label,key] of [["EMA 9","ema9"],["EMA 21","ema21"],["SMA 20","sma20"],["VWAP","vwap"],["RSI 14","rsi14"],["Support (20)","support_20"],["Resistance (20)","resistance_20"]]){
-      const item=document.createElement("span");item.className="chip";item.textContent=label+": "+(v[key]===null||v[key]===undefined?"Insufficient data":number(v[key]));info.append(item);
-    }
-    const list=el("events");list.replaceChildren();
-    const events=(currentAnalysis?.events||[]).slice(-12).reverse();
-    if(!events.length){const li=document.createElement("li");li.textContent="No 20-bar close-crossing events found on this historical chart.";list.append(li)}
-    for(const event of events){
-      const li=document.createElement("li");li.textContent=new Date(event.time*1000).toLocaleTimeString("en-IN",{timeZone:"Asia/Kolkata",hour:"2-digit",minute:"2-digit"})+" · "+event.type.toUpperCase()+": "+event.description;list.append(li);
-    }
     notice(bars.length+" historical candles loaded. Data as of "+new Date(data.retrieved_at).toLocaleString()+". Not real-time.");
   }catch(e){notice("Cannot load historical data: "+e.message)}
 }
@@ -217,16 +206,24 @@ el("addAlert").addEventListener("click",async()=>{const level=Number(el("alertLe
 });
 paintAlerts();
 el("askbtn").addEventListener("click",()=>{
-  const output=el("answer"),v=currentAnalysis?.summary;
-  if(!v||!currentBars.length){output.textContent="Load a historical chart first.";return}
-  const last=currentBars[Math.max(0,(replayPosition||currentBars.length)-1)].close;
+  const output=el("answer");
+  if(!currentAnalysis||!currentBars.length){output.textContent="Load a historical chart first.";return}
+  const visible=currentBars.slice(0,replayPosition||currentBars.length);
+  const last=visible[visible.length-1].close;
+  const indicator=currentAnalysis.indicators[visible.length-1];
+  const v={...indicator};
+  const recent=visible.slice(-20);
+  v.support_20=recent.length>=20?Math.min(...recent.map(x=>x.low)):null;
+  v.resistance_20=recent.length>=20?Math.max(...recent.map(x=>x.high)):null;
+  const events=currentAnalysis.events.filter(x=>x.time<=visible[visible.length-1].time);
   const fmt=(x)=>x===null||x===undefined?"unavailable":number(x);
   const q=el("ask").value;
-  if(q==="trend")output.textContent=v.ema9===null||v.ema21===null?"Not enough candles for EMA trend comparison.":("Latest historical close ₹"+fmt(last)+". EMA 9 ₹"+fmt(v.ema9)+" and EMA 21 ₹"+fmt(v.ema21)+". Short-term EMA is "+(v.ema9>v.ema21?"above":v.ema9<v.ema21?"below":"equal to")+" the longer EMA. This is descriptive, not a forecast.");
-  if(q==="rsi")output.textContent=v.rsi14===null?"Not enough candles for RSI(14).":"RSI(14) is "+fmt(v.rsi14)+". Conventional reference zones: above 70 and below 30; these do not guarantee reversals.";
-  if(q==="vwap")output.textContent=v.vwap===null?"No traded volume available for VWAP.":"Historical close ₹"+fmt(last)+" is "+(last>v.vwap?"above":last<v.vwap?"below":"equal to")+" session VWAP ₹"+fmt(v.vwap)+".";
-  if(q==="events")output.textContent=(currentAnalysis.events.length?currentAnalysis.events.length+" retrospective 20-bar close-crossings detected on this historical chart; "+currentAnalysis.events.filter(e=>e.volume_confirmed).length+" met the 1.5x volume rule.":"No 20-bar close-crossings found.")+" These are observations, not trade recommendations.";
-  if(q==="levels")output.textContent="Recent 20-bar observed low: ₹"+fmt(v.support_20)+"; high: ₹"+fmt(v.resistance_20)+". These are reference extrema, not guaranteed future barriers.";
+  if(q==="trend")output.textContent=v.ema9===null||v.ema21===null?"Not enough candles for EMA trend comparison.":"Historical close ₹"+fmt(last)+". EMA 9 ₹"+fmt(v.ema9)+", EMA 21 ₹"+fmt(v.ema21)+". The short EMA is "+(v.ema9>v.ema21?"above":v.ema9<v.ema21?"below":"equal to")+" the longer EMA at this replay position.";
+  if(q==="rsi")output.textContent=v.rsi14===null?"Not enough candles for RSI(14).":"RSI(14) at replay position: "+fmt(v.rsi14)+". Above 70 or below 30 does not guarantee reversal.";
+  if(q==="vwap")output.textContent=v.vwap===null?"No volume data for session VWAP.":"Close ₹"+fmt(last)+" versus session VWAP ₹"+fmt(v.vwap)+"; price is "+(last>v.vwap?"above":last<v.vwap?"below":"at")+" VWAP.";
+  if(q==="events")output.textContent=events.length+" historical crossing events through this candle, of which "+events.filter(e=>e.volume_confirmed).length+" met the volume rule. These are not trade recommendations.";
+  if(q==="levels")output.textContent="20-bar observed low: ₹"+fmt(v.support_20)+"; high: ₹"+fmt(v.resistance_20)+". Not future guaranteed support/resistance.";
+
 });
 paintWatch();
 async function refreshPaper(){
