@@ -41,7 +41,7 @@ input{min-width:120px}.grow{flex:1;min-width:150px}.chart{height:470px;position:
 <button id="load">Load chart</button><button id="savewatch" type="button" style="background:#253a58;border-color:#415978">+ Watchlist</button>
 </div>
 <div id="notice" role="status" aria-live="polite">Historical candles are not live prices.</div>
-<div class="controls"><label><input type="checkbox" id="showema" checked/> EMA 9/21</label><label><input type="checkbox" id="showsma" checked/> SMA 20</label><label><input type="checkbox" id="showvwap" checked/> VWAP</label><label><input type="checkbox" id="showevents" checked/> Breakout markers</label></div><div class="chart"><div id="chart"></div></div><small class="muted">Chart times are Indian Standard Time (IST). Indicators are retrospective historical observations.</small>
+<div class="controls"><label><input type="checkbox" id="showema" checked/> EMA 9/21</label><label><input type="checkbox" id="showsma" checked/> SMA 20</label><label><input type="checkbox" id="showvwap" checked/> VWAP</label><label><input type="checkbox" id="showevents" checked/> Breakout markers</label></div><div class="controls" style="align-items:center"><label for="replaySlider">Historical replay</label><input type="range" min="1" max="1" value="1" id="replaySlider" style="flex:1;min-width:150px"/><button type="button" id="replayBack">◀</button><button type="button" id="replayForward">▶</button><button type="button" id="replayAll">Full history</button><span id="replayStatus" class="muted"></span></div><div class="chart"><div id="chart"></div></div><small class="muted">Chart times are Indian Standard Time (IST). Indicators are retrospective historical observations.</small>
 </section>
 <aside class="panel">
 <h2>Watchlist</h2><div id="watchlist" class="chips">No saved instruments</div><small class="muted">Saved to local SQLite. Click a symbol to select; × removes it.</small><h2 id="heading" style="margin-top:24px">RELIANCE</h2>
@@ -66,7 +66,7 @@ input{min-width:120px}.grow{flex:1;min-width:150px}.chart{height:470px;position:
 "use strict";
 const el=(id)=>document.getElementById(id);
 let selectedSymbol="RELIANCE";
-let chart,series,volumeSeries,currentBars=[],currentAnalysis=null,chartObserver=null;
+let chart,series,volumeSeries,currentBars=[],currentAnalysis=null,chartObserver=null,replayPosition=0;
 async function apiPost(path,payload){const res=await fetch(path,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});const data=await res.json();if(!res.ok)throw Error(data.error||"Request failed");return data}
 async function paintWatch(){
   const target=el("watchlist");target.replaceChildren();
@@ -139,7 +139,10 @@ async function load(){
     el("low").textContent="₹"+number(Math.min(...bars.map(x=>x.low)));
     el("volume").textContent=number(bars.reduce((acc,x)=>acc+x.volume,0));
     currentBars=bars;currentAnalysis=data.analysis||null;
-    render(bars,currentAnalysis);
+    replayPosition=bars.length;
+    el("replaySlider").max=String(bars.length);
+    el("replaySlider").value=String(bars.length);
+    drawReplay();
     const crossings=el("crossings");crossings.replaceChildren();
     for(const x of (data.historical_alert_crossings||[])){const p=document.createElement("p");p.textContent="Historical "+x.symbol+" "+x.direction+" ₹"+number(x.level)+" at "+new Date(x.time*1000).toLocaleString("en-IN",{timeZone:"Asia/Kolkata"});crossings.append(p)}
     if(!crossings.childNodes.length)crossings.textContent="No saved price rule crossed in the displayed historical window.";
@@ -157,6 +160,35 @@ async function load(){
     notice(bars.length+" historical candles loaded. Data as of "+new Date(data.retrieved_at).toLocaleString()+". Not real-time.");
   }catch(e){notice("Cannot load historical data: "+e.message)}
 }
+function drawReplay(){
+  if(!currentBars.length)return;
+  replayPosition=Math.max(1,Math.min(currentBars.length,replayPosition||currentBars.length));
+  const visible=currentBars.slice(0,replayPosition);
+  const a=currentAnalysis;
+  const prefix=a?{indicators:a.indicators.slice(0,replayPosition),
+    events:a.events.filter(e=>e.time<=visible[visible.length-1].time)}:null;
+  render(visible,prefix);
+  const last=visible[visible.length-1], indicator=prefix?.indicators[prefix.indicators.length-1];
+  el("last").textContent="₹"+number(last.close);
+  el("replayStatus").textContent="Bar "+replayPosition+"/"+currentBars.length+" · "+new Date(last.time*1000).toLocaleString("en-IN",{timeZone:"Asia/Kolkata"});
+  el("replaySlider").value=String(replayPosition);
+  const info=el("indicators");info.replaceChildren();
+  if(indicator){
+    const recent=visible.slice(-20);
+    const metrics=[["EMA 9",indicator.ema9],["EMA 21",indicator.ema21],["SMA 20",indicator.sma20],["VWAP",indicator.vwap],["RSI 14",indicator.rsi14],
+    ["Range low (20)",recent.length>=20?Math.min(...recent.map(x=>x.low)):null],["Range high (20)",recent.length>=20?Math.max(...recent.map(x=>x.high)):null]];
+    for(const [label,val] of metrics){const chip=document.createElement("span");chip.className="chip";chip.textContent=label+": "+(val===null||val===undefined?"Insufficient history":number(val));info.append(chip)}
+  }
+  const events=el("events");events.replaceChildren();
+  const recentEvents=(prefix?.events||[]).slice(-12).reverse();
+  if(!recentEvents.length){const li=document.createElement("li");li.textContent="No observed event through this replay position.";events.append(li)}
+  for(const event of recentEvents){const li=document.createElement("li");li.textContent=new Date(event.time*1000).toLocaleTimeString("en-IN",{timeZone:"Asia/Kolkata",hour:"2-digit",minute:"2-digit"})+" · "+event.type.toUpperCase()+": "+event.description;events.append(li)}
+}
+el("replaySlider").addEventListener("input",()=>{replayPosition=Number(el("replaySlider").value);drawReplay()});
+el("replayBack").addEventListener("click",()=>{replayPosition-=1;drawReplay()});
+el("replayForward").addEventListener("click",()=>{replayPosition+=1;drawReplay()});
+el("replayAll").addEventListener("click",()=>{replayPosition=currentBars.length;drawReplay()});
+
 async function find(){
   const query=el("search").value.trim(),exchange=el("exchange").value;
   if(!query){notice("Enter a stock or instrument name");return}
@@ -187,7 +219,7 @@ paintAlerts();
 el("askbtn").addEventListener("click",()=>{
   const output=el("answer"),v=currentAnalysis?.summary;
   if(!v||!currentBars.length){output.textContent="Load a historical chart first.";return}
-  const last=currentBars[currentBars.length-1].close;
+  const last=currentBars[Math.max(0,(replayPosition||currentBars.length)-1)].close;
   const fmt=(x)=>x===null||x===undefined?"unavailable":number(x);
   const q=el("ask").value;
   if(q==="trend")output.textContent=v.ema9===null||v.ema21===null?"Not enough candles for EMA trend comparison.":("Latest historical close ₹"+fmt(last)+". EMA 9 ₹"+fmt(v.ema9)+" and EMA 21 ₹"+fmt(v.ema21)+". Short-term EMA is "+(v.ema9>v.ema21?"above":v.ema9<v.ema21?"below":"equal to")+" the longer EMA. This is descriptive, not a forecast.");
