@@ -41,7 +41,7 @@ input{min-width:120px}.grow{flex:1;min-width:150px}.chart{height:470px;position:
 <button id="load">Load chart</button><button id="savewatch" type="button" style="background:#253a58;border-color:#415978">+ Watchlist</button>
 </div>
 <div id="notice" role="status" aria-live="polite">Historical candles are not live prices.</div>
-<div class="controls"><label><input type="checkbox" id="showema" checked/> EMA 9/21</label><label><input type="checkbox" id="showsma" checked/> SMA 20</label><label><input type="checkbox" id="showvwap" checked/> VWAP</label><label><input type="checkbox" id="showevents" checked/> Breakout markers</label></div><div class="controls" style="align-items:center"><label for="replaySlider">Historical replay</label><input type="range" min="1" max="1" value="1" id="replaySlider" style="flex:1;min-width:150px"/><button type="button" id="replayBack">◀</button><button type="button" id="replayForward">▶</button><button type="button" id="replayAll">Full history</button><span id="replayStatus" class="muted"></span></div><div class="chart"><div id="chart"></div></div><small class="muted">Chart times are Indian Standard Time (IST). Indicators are retrospective historical observations.</small>
+<div class="controls"><label><input type="checkbox" id="showema" checked/> EMA 9/21</label><label><input type="checkbox" id="showsma" checked/> SMA 20</label><label><input type="checkbox" id="showvwap" checked/> VWAP</label><label><input type="checkbox" id="showevents" checked/> Breakout markers</label></div><div class="controls" style="align-items:center"><label for="replaySlider">Historical replay</label><input type="range" min="1" max="1" value="1" id="replaySlider" style="flex:1;min-width:150px"/><button type="button" id="replayBack">◀</button><button type="button" id="replayForward">▶</button><button type="button" id="replayAll">Full history</button><button type="button" id="exportCsv">Export revealed data CSV</button><span id="replayStatus" class="muted"></span></div><div class="chart"><div id="chart"></div></div><small class="muted">Chart times are Indian Standard Time (IST). Indicators are retrospective historical observations.</small>
 </section>
 <aside class="panel">
 <h2>Watchlist</h2><div id="watchlist" class="chips">No saved instruments</div><small class="muted">Saved to local SQLite. Click a symbol to select; × removes it.</small><h2 id="heading" style="margin-top:24px">RELIANCE</h2>
@@ -177,6 +177,21 @@ el("replaySlider").addEventListener("input",()=>{replayPosition=Number(el("repla
 el("replayBack").addEventListener("click",()=>{replayPosition-=1;drawReplay()});
 el("replayForward").addEventListener("click",()=>{replayPosition+=1;drawReplay()});
 el("replayAll").addEventListener("click",()=>{replayPosition=currentBars.length;drawReplay()});
+el("exportCsv").addEventListener("click",()=>{
+  if(!currentBars.length){notice("Load a chart before exporting.");return}
+  const count=replayPosition||currentBars.length;
+  const header=["utc_timestamp","open","high","low","close","volume","ema9","ema21","sma20","vwap_session","rsi14"];
+  const rows=[header.join(",")];
+  for(let i=0;i<count;i++){
+    const b=currentBars[i],ind=currentAnalysis?.indicators[i]||{};
+    rows.push([new Date(b.time*1000).toISOString(),b.open,b.high,b.low,b.close,b.volume,ind.ema9??"",ind.ema21??"",ind.sma20??"",ind.vwap??"",ind.rsi14??""].join(","));
+  }
+  const blob=new Blob([rows.join("\n")],{type:"text/csv;charset=utf-8"});
+  const url=URL.createObjectURL(blob),link=document.createElement("a");
+  link.href=url;link.download="athena-"+selectedSymbol.replace(/[^a-zA-Z0-9_-]/g,"_")+"-"+el("day").value+"-"+el("interval").value+"m.csv";
+  link.click();URL.revokeObjectURL(url);
+  notice("Exported "+count+" revealed historical candles and indicator rows. Not real-time.");
+});
 
 async function find(){
   const query=el("search").value.trim(),exchange=el("exchange").value;
