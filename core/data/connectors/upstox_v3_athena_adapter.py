@@ -10,9 +10,11 @@ from core.data.factory import ObservationFactory
 
 
 def candle_payload(candle, retrieved_at=None, run_id=None):
-    received = retrieved_at or dt.datetime.now(dt.timezone.utc)
+    received = retrieved_at if retrieved_at is not None else dt.datetime.now(dt.timezone.utc)
     if received.tzinfo is None or received.utcoffset() is None:
         raise ValueError("retrieval timestamp must have timezone")
+    if not candle.instrument_key or "|" not in candle.instrument_key:
+        raise ValueError("Invalid instrument key")
     if candle.interval_minutes not in (1, 5, 15):
         raise ValueError("Invalid minute interval")
     timestamp = candle.timestamp.astimezone(dt.timezone.utc)
@@ -25,7 +27,7 @@ def candle_payload(candle, retrieved_at=None, run_id=None):
         provider="Upstox V3",
         retrieval_timestamp=received.astimezone(dt.timezone.utc),
         publication_timestamp=timestamp,
-        raw_source_id=f"{candle.instrument_key}@{timestamp.isoformat()}",
+        raw_source_id=f"{candle.instrument_key}@{timestamp.isoformat()}/{candle.interval_minutes}M",
         checksum=digest,
         connector_version="v3-adapter-1",
         ingestion_run_id=run_id or str(uuid.uuid4()),
