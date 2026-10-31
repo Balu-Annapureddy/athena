@@ -52,6 +52,14 @@ class TerminalHTTPTests(unittest.TestCase):
         conn.close()
         return code, json.loads(data)
 
+    def test_rejects_unknown_host(self):
+        conn = http.client.HTTPConnection("127.0.0.1", self.server.server_port, timeout=3)
+        conn.request("GET", "/api/health", headers={"Host": "other.invalid"})
+        response = conn.getresponse()
+        self.assertEqual(response.status, 403)
+        response.read()
+        conn.close()
+
     def test_health_is_explicitly_not_live(self):
         code, body = self.request("/api/health")
         self.assertEqual(code, 200)
