@@ -73,3 +73,18 @@ The new tests are included in CI configuration, but no successful CI run has bee
 ## Terminal API wired to provenance (additional change)
 
 `/api/candles` now uses immutable `MarketBar` objects for response serialization and includes a `latest_provenance` object generated through the original `candle_payload` boundary for the final returned candle. The object includes provider, source ID, content checksum, adapter version, retrieval/bar timestamps and a nullable finality value. Existing OHLCV keys remain available to chart consumers. The API smoke test asserts the provenance fields without requiring a token. This is **not** an archive of every candle's provenance and does not yet feed strategy execution. The complete canonical ingestion flow, streaming finality and replay storage are still acceptance gates.
+
+## Deterministic Upstox fixture handoff (added)
+
+`core/data/connectors/v3_fixture.py` can export a sorted single-instrument,
+single-interval V3 Candle sequence to a new JSON file and reload it to the
+original V3 Candle dataclass. The fixture retains UTC timestamps, instrument
+key, interval, OHLCV, OI and unknown/true/false finality, and verifies a
+SHA-256 checksum on import. No authentication token or order data is serialized.
+The fixture deliberately requires a new output path and refuses to overwrite
+an existing one. A roundtrip/tampering test was added to the branch CI.
+
+This is a portable fixture primitive, **not** a broker stream capture daemon,
+durable market-data warehouse, or complete provenance archive. Instrument
+search, ingestion scheduling, exchange calendar and live stream reconciliation
+are still open.
