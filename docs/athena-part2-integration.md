@@ -63,3 +63,9 @@ G. Package chart rendering locally and run real browser E2E checks on Windows.
 **Live verified** means observed a market-session Upstox stream.
 **Part 2 complete** requires all Part 2 acceptance gates, including the
 runtime/live checks. The current state is PARTIALLY IMPLEMENTED; NOT ACCEPTED.
+
+## Additional implementation: lossless market bars
+
+The new `core/data/market_bar.py` defines immutable `MarketBar` with aware timestamp, instrument key, minute interval, OHLCV, open interest, and nullable `is_final`. The historical terminal's `/api/candles` serialization now uses this type. Additional response keys do not remove existing OHLCV fields. Tests in `tests/test_market_bar.py` verify the retained OI/unknown finality and input validation. This avoids losing the source fields in presentation and future adapter integrations; the older `PricePayload` still does **not** encode these fields, so the canonical cognitive-event enrichment design remains an open acceptance task.
+
+The new tests are included in CI configuration, but no successful CI run has been observed. As a result, do not mark Part 2 complete. Next acceptance: full offline suite, live trading-session stream test, restart/reconnect recovery, canonical indicator service consolidation, provider data-quality tests, and local chart bundle/browser smoke testing.
