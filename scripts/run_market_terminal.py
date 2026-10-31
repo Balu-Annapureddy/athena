@@ -17,6 +17,7 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 from core.data.connectors.upstox_v3_market_data import MarketDataError, UpstoxV3MarketData
 from core.data.technical_analysis import analyze
 from core.data.paper_journal import PaperJournal
+from core.data.research_store import ResearchStore, historical_crossings
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 FRONTEND = ROOT / "terminal"
@@ -53,6 +54,12 @@ class Handler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(body)
             return
+        if path in ("/api/watchlist", "/api/alerts"):
+            store = ResearchStore()
+            try:
+                return json_response(self, 200, {"items": store.watch() if path == "/api/watchlist" else store.alerts()})
+            finally:
+                store.close()
         if path == "/api/paper/trades":
             journal = PaperJournal()
             try:
@@ -87,16 +94,27 @@ class Handler(BaseHTTPRequestHandler):
             if not day:
                 raise ValueError("date is required in YYYY-MM-DD format")
             date = dt.date.fromisoformat(day)
+            span = int(arg("days", "1"))
+            if span not in (1, 5, 10, 20):
+                raise ValueError("History window must be 1, 5, 10 or 20 calendar days")
             if date > dt.datetime.now(IST).date():
                 raise ValueError("Date cannot be in future")
-            candles = client.candles(key, interval=interval, from_date=day, to_date=day)
+            from_day = date - dt.timedelta(days=span-1)
+            candles = client.candles(key, interval=interval, from_date=from_day.isoformat(), to_date=day)
             bars = [{
                 "time": int(c.timestamp.timestamp()),
                 "open": c.open, "high": c.high, "low": c.low,
                 "close": c.close, "volume": c.volume,
             } for c in candles]
+            store = ResearchStore()
+            try:
+                rules = [x for x in store.alerts() if x["instrument_key"] == key]
+                crossings = historical_crossings(bars, rules)
+            finally:
+                store.close()
             return json_response(self, 200, {
                 "instrument_key": key, "interval": interval, "date": day,
+                "from_date": from_day.isoformat(), "historical_alert_crossings": crossings,
                 "source": "Upstox V3 historical candles",
                 "retrieved_at": dt.datetime.now(dt.timezone.utc).isoformat(),
                 "realtime": False, "bars": bars,
@@ -110,7 +128,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         path = urllib.parse.urlsplit(self.path).path
-        if path not in ("/api/paper/open", "/api/paper/close"):
+        if path not in ("/api/paper/open", "/api/paper/close", "/api/watchlist/add", "/api/watchlist/remove", "/api/alerts/add", "/api/alerts/remove"):
             return json_response(self, 404, {"error": "Not found"})
         # Localhost-only is not a substitute for CSRF protection.
         origin = self.headers.get("Origin")
@@ -125,6 +143,20 @@ class Handler(BaseHTTPRequestHandler):
             body = json.loads(self.rfile.read(length))
             if not isinstance(body, dict):
                 raise ValueError("Expected JSON object")
+            if path.startswith("/api/watchlist/") or path.startswith("/api/alerts/"):
+                store = ResearchStore()
+                try:
+                    if path == "/api/watchlist/add":
+                        items = store.add_watch(body["instrument_key"], body["symbol"], body["exchange"])
+                    elif path == "/api/watchlist/remove":
+                        items = store.remove_watch(body["instrument_key"])
+                    elif path == "/api/alerts/add":
+                        items = store.add_alert(body["instrument_key"], body["symbol"], body["direction"], body["level"])
+                    else:
+                        items = store.remove_alert(body["id"])
+                    return json_response(self, 200, {"items": items})
+                finally:
+                    store.close()
             journal = PaperJournal()
             try:
                 if path == "/api/paper/open":
